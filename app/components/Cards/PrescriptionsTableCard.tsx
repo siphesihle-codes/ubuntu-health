@@ -1,7 +1,6 @@
 "use client";
-import React, { useState } from "react";
 import { Pill, Calendar, Pencil, Trash2 } from "lucide-react";
-import { Prescription } from "@/types";
+import type { Prescription } from "@/types";
 import ClientDate from "../ClientDate";
 
 interface PrescriptionsPageProps {
@@ -77,10 +76,14 @@ const PrescriptionsTableCard = ({ prescriptions }: PrescriptionsPageProps) => {
 										</td>
 										<td className="px-6 py-4">
 											<div className="flex gap-4">
-												<button className="text-blue-600 hover:text-blue-800 transition-colors">
+												<button 
+													type="button"
+													className="text-blue-600 hover:text-blue-800 transition-colors">
 													<Pencil size={18} />
 												</button>
-												<button className="text-red-600 hover:text-red-800 transition-colors">
+												<button
+													type="button"
+													className="text-red-600 hover:text-red-800 transition-colors">
 													<Trash2 size={18} />
 												</button>
 											</div>
@@ -99,14 +102,14 @@ const PrescriptionsTableCard = ({ prescriptions }: PrescriptionsPageProps) => {
 						</div>
 						<div className="flex gap-2">
 							<button
-								className="px-3 py-1 rounded border border-gray-300 bg-white
-          hover:bg-gray-50 transition-colors"
+								type="button"
+								className="px-3 py-1 rounded border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
 							>
 								Previous
 							</button>
 							<button
-								className="px-3 py-1 rounded border border-gray-300 bg-white
-          hover:bg-gray-50 transition-colors"
+								type="button"
+								className="px-3 py-1 rounded border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
 							>
 								Next
 							</button>

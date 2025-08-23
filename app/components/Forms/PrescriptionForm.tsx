@@ -107,6 +107,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
       max-h-[90vh] overflow-y-auto"
 			>
 				<button
+					type="button"
 					onClick={onClose}
 					className="absolute top-4 right-4 text-blue-700 hover:text-gray-700 text-2xl"
 				>

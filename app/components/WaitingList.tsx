@@ -1,11 +1,9 @@
 "use client";
-import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../api/firebase";
 import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const WaitingList = () => {
@@ -59,8 +57,7 @@ const WaitingList = () => {
 							Name
 						</label>
 						<div
-							className="mt-2 pb-4 w-[18rem] md:w-[20rem] md:flex flex-col items-center
-                            justify-center"
+							className="mt-2 pb-4 w-[18rem] md:w-[20rem] md:flex flex-col items-center justify-center"
 						>
 							<input
 								type="text"
@@ -70,8 +67,7 @@ const WaitingList = () => {
 								onChange={formik.handleChange}
 								placeholder="John Doe"
 								className="rounded-lg bg-gray-50 border text-gray-900 focus:ring-blue-500
-                                focus:border-blue-600 block flex-1 min-w-0 w-full text-sm
-                                border-gray-300 p-2.5"
+              focus:border-blue-600 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
 							/>
 						</div>
 					</div>
@@ -92,17 +88,14 @@ const WaitingList = () => {
 								onChange={formik.handleChange}
 								placeholder="john.doe@email.com"
 								className="rounded-lg bg-gray-50 border text-gray-900 focus:ring-blue-500
-                                focus:border-blue-600 block flex-1 min-w-0 w-full text-sm
-                                border-gray-300 p-2.5"
+              focus:border-blue-600 block flex-1 min-w-0 w-full text-smborder-gray-300 p-2.5"
 							/>
 						</div>
 					</div>
 					<button
 						type="submit"
-						className="px-6 py-2 bg-gradient-to-r w-48
-                        from-cyan-500 to-blue-500 rounded-md
-                        text-sm font-medium shadow-lg shadow-cyan-500/20
-                        hover:shadow-cyan-500/40 transition-all"
+						className="px-6 py-2 bg-gradient-to-r w-48 from-cyan-500 to-blue-500 rounded-md 
+						text-sm font-medium shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all"
 					>
 						Join Waitlist
 					</button>

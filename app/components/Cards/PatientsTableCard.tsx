@@ -117,6 +117,7 @@ const PatientsTableCard = ({
 							className="hover:bg-gray-50 transition-colors cursor-pointer"
 						>
 							<td
+								onKeyPress={() => handleRowClick(String(patient.id))}
 								onClick={() => handleRowClick(String(patient.id))}
 								className="px-6 py-4"
 							>
@@ -176,6 +177,7 @@ const PatientsTableCard = ({
 							<td className="px-6 py-4">
 								<div className="flex gap-4">
 									<button
+										type="button"
 										onClick={() => handleEditClick(patient)}
 										className="text-blue-600 hover:text-blue-800 transition-colors"
 										title="Edit Patient"
@@ -183,6 +185,7 @@ const PatientsTableCard = ({
 										<Pencil size={18} />
 									</button>
 									<button
+										type="button"
 										onClick={() => handleDelete(String(patient.id))}
 										className="text-red-600 hover:text-red-800 transition-colors"
 										title="Delete Patient"
@@ -211,12 +214,14 @@ const PatientsTableCard = ({
 				</div>
 				<div className="flex gap-2">
 					<button
+						type="button"
 						className="px-3 py-1 rounded border border-gray-300 bg-white
           hover:bg-gray-50 transition-colors"
 					>
 						Previous
 					</button>
 					<button
+						type="button"
 						className="px-3 py-1 rounded border border-gray-300 bg-white
           hover:bg-gray-50 transition-colors"
 					>

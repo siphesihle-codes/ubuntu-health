@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
@@ -70,6 +70,7 @@ const Navbar = () => {
 				</div>
 
 				<button
+					type="button"
 					className="md:hidden z-50"
 					onClick={handleMenuToggle}
 					aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
@@ -120,7 +121,8 @@ const Navbar = () => {
 				</nav>
 
 				{isMenuOpen && (
-					<div
+					<button
+						type="button"
 						className="fixed inset bg-black bg-opacity-50 z-30 md:hidden"
 						onClick={handleMenuClose}
 					/>

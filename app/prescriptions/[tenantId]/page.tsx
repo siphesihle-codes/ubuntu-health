@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Search, PlusCircle } from "lucide-react";
 import Layout from "@/app/components/Layout";
 import PrescriptionsTable from "@/app/components/Tables/PrescriptionsTable";
@@ -40,6 +40,7 @@ const Page = () => {
 								/>
 							</div>
 							<button
+								type="button"
 								onClick={() => setActiveModal("addPrescription")}
 								className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-md
                 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -55,7 +56,8 @@ const Page = () => {
 			</div>
 
 			{isOpen && (
-				<div
+				<button
+					type="button"
 					className="fixed inset-0 backdrop-blur-sm z-30 md:hidden"
 					onClick={() => setIsOpen(false)}
 				/>

@@ -9,12 +9,13 @@ import {
 	Check,
 	Clock,
 	AlertCircle,
+	CheckCircle,
 } from "lucide-react";
 import Link from "next/link";
 import Layout from "@/app/components/Layout";
 import ClientDate from "@/app/components/ClientDate";
 import useApiData from "@/hooks/useApiData";
-import { Invoice } from "@/types";
+import type { Invoice } from "@/types";
 
 const InvoicePage = () => {
 	const [filter, setFilter] = useState<
@@ -43,8 +44,6 @@ const InvoicePage = () => {
 
 	const getStatusColor = (status: string) => {
 		switch (status) {
-			case "draft":
-				return "   ";
 			case "sent":
 				return "bg-blue-900/30 text-blue-400";
 			case "paid":
@@ -52,7 +51,7 @@ const InvoicePage = () => {
 			case "overdue":
 				return "bg-red-900/30 text-red-400";
 			default:
-				return "   ";
+				return "bg-gray-900/10 text-gray-400";
 		}
 	};
 
@@ -89,15 +88,15 @@ const InvoicePage = () => {
 									type="text"
 									placeholder="Search invoices..."
 									className="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 
-                  focus:ring-cyan-500/50"
+                focus:ring-blue-500"
 									value={searchQuery}
 									onChange={(e) => setSearchQuery(e.target.value)}
 								/>
 							</div>
 							<Link
 								href="/invoices/new"
-								className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-md
-                text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+								className="inline-flex items-center gap-2 px-1.5 py-1.5 bg-blue-600 rounded-md
+            	text-white text-sm font-medium hover:bg-blue-700 transition-colors"
 							>
 								<Plus size={18} />
 								New Invoice
@@ -107,22 +106,22 @@ const InvoicePage = () => {
 
 					{/* Stats Cards */}
 					<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-						<div className="  border   rounded-lg p-4">
+						<div className="border rounded-lg p-4">
 							<div className="flex justify-between items-center">
 								<div>
-									<p className="text-sm  ">Total Invoices</p>
-									<p className="text-2xl font-semibold  ">{invoices.length}</p>
+									<p className="text-sm">Total Invoices</p>
+									<p className="text-2xl font-semibold">{invoices.length}</p>
 								</div>
-								<div className="p-3 rounded-full    ">
+								<div className="p-3 rounded-full">
 									<FileText size={20} />
 								</div>
 							</div>
 						</div>
 
-						<div className="  border   rounded-lg p-4">
+						<div className="border rounded-lg p-4">
 							<div className="flex justify-between items-center">
 								<div>
-									<p className="text-sm  ">Amount Due</p>
+									<p className="text-sm">Amount Due</p>
 									<p className="text-2xl font-semibold text-yellow-600">
 										R
 										{invoices
@@ -131,7 +130,7 @@ const InvoicePage = () => {
 											.toLocaleString()}
 									</p>
 								</div>
-								<div className="p-3 rounded-full bg-yellow-900/30 text-yellow-400">
+								<div className="p-3 rounded-full text-yellow-400">
 									<AlertCircle size={20} />
 								</div>
 							</div>
@@ -145,7 +144,7 @@ const InvoicePage = () => {
 										{invoices.filter((i) => i.status === "overdue").length}
 									</p>
 								</div>
-								<div className="p-3 rounded-full bg-red-900/30 text-red-400">
+								<div className="p-3 rounded-full text-red-400">
 									<Clock size={20} />
 								</div>
 							</div>
@@ -163,8 +162,8 @@ const InvoicePage = () => {
 											.toLocaleString()}
 									</p>
 								</div>
-								<div className="p-3 rounded-full bg-green-900/30 text-green-400">
-									<Check size={20} />
+								<div className="p-3 rounded-full text-green-400">
+									<CheckCircle size={20} />
 								</div>
 							</div>
 						</div>
@@ -186,8 +185,8 @@ const InvoicePage = () => {
 							onClick={() => setFilter("draft")}
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "draft"
-									? "  border-gray-500/50"
-									: "    hover:bg-cyan-900/20"
+									? "border-gray-500/50"
+									: "hover:bg-cyan-900/20"
 							}`}
 						>
 							Drafts
@@ -198,7 +197,7 @@ const InvoicePage = () => {
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "sent"
 									? "bg-blue-900/30 border-blue-500/50 text-blue-400"
-									: "    hover:bg-cyan-900/20"
+									: "hover:bg-cyan-900/20"
 							}`}
 						>
 							Sent
@@ -209,7 +208,7 @@ const InvoicePage = () => {
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "paid"
 									? "bg-green-900/30 border-green-500/50 text-green-400"
-									: "    hover:bg-cyan-900/20"
+									: "hover:bg-cyan-900/20"
 							}`}
 						>
 							Paid
@@ -220,7 +219,7 @@ const InvoicePage = () => {
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "overdue"
 									? "bg-red-900/30 border-red-500/50 text-red-400"
-									: "    hover:bg-cyan-900/20"
+									: "hover:bg-cyan-900/20"
 							}`}
 						>
 							Overdue

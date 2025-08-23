@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import PatientOverview from "@/app/components/Modals/PatientOverview";
-import {
+import type {
 	Prescription,
 	Appointment,
 	Patient,
@@ -14,7 +14,6 @@ import PrescriptionsOverview from "@/app/components/Modals/PrescriptionsOverview
 import Layout from "@/app/components/Layout";
 import { PlusCircle } from "lucide-react";
 import InvoicesOverview from "@/app/components/Modals/InvoicesOverview";
-import useApiData from "@/hooks/useApiData";
 import { toast } from "react-toastify";
 
 interface PatientPageProps {
@@ -165,7 +164,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		fetchClinicalNotes();
 		fetchPrescriptions();
 		fetchInvoices();
-	}, []);
+	}, [params.id, token]);
 
 	if (isLoading) {
 		return (
@@ -210,6 +209,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 					{/* Tabs */}
 					<div className="flex gap-6 mb-6 border-b">
 						<button
+							type="button"
 							onClick={() => setActiveTab("overview")}
 							className={`pb-4 px-2 relative ${
 								activeTab === "overview" ? " " : "  hover: "
@@ -221,6 +221,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 							)}
 						</button>
 						<button
+							type="button"
 							onClick={() => setActiveTab("visits")}
 							className={`pb-4 px-2 relative ${
 								activeTab === "visits" ? " " : "  hover: "
@@ -232,6 +233,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 							)}
 						</button>
 						<button
+							type="button"
 							onClick={() => setActiveTab("prescriptions")}
 							className={`pb-4 px-2 relative ${
 								activeTab === "prescriptions" ? " " : "  hover: "
@@ -243,6 +245,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 							)}
 						</button>
 						<button
+							type="button"
 							onClick={() => setActiveTab("invoices")}
 							className={`pb-4 px-2 relative ${
 								activeTab === "invoices" ? " " : " hover: "

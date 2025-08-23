@@ -1,6 +1,4 @@
-import { ClinicalNote } from "@/types";
-import React from "react";
-
+import type { ClinicalNote } from "@/types";
 interface clinicalNoteOverviewProps {
 	clinicalNotes: ClinicalNote[];
 }
@@ -14,7 +12,7 @@ const clinicalNotesOverview = ({
 			{clinicalNotes.map((clinicalNote) => (
 				<div
 					key={clinicalNote.id}
-					className="  border   rounded-lg p-6 backdrop-blur-sm"
+					className="border rounded-lg p-6 backdrop-blur-sm"
 				>
 					<div className="flex justify-between mb-4">
 						<div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
 	LayoutDashboard,
@@ -7,7 +7,6 @@ import {
 	Users,
 	PillBottle,
 	CreditCard,
-	FileText,
 	Menu,
 	X,
 } from "lucide-react";
@@ -56,6 +55,7 @@ const DashboardNav = () => {
 	return (
 		<>
 			<button
+				type="button"
 				className="md:hidden mb-auto fixed top-4 left-4 z-50 p-2 border border-cyan-400/20
         rounded-full shadow-lg  "
 				onClick={() => setIsOpen(!isOpen)}
@@ -84,7 +84,7 @@ const DashboardNav = () => {
 									<Link
 										href={item.href}
 										className="flex items-center px-6 py-3 hover:bg-blue-200 hover:text-blue-600
-                                        transition-colors duration-300 rounded-lg mx-2"
+                    transition-colors duration-300 rounded-lg mx-2"
 									>
 										<Icon className="mr-4" size={20} />
 										<span className="font-medium">{item.name}</span>
@@ -95,6 +95,7 @@ const DashboardNav = () => {
 					</ul>
 					<div className="p-4 border-t text-white">
 						<button
+							type="button"
 							onClick={() => setActiveModal("addPatient")}
 							className="w-full bg-blue-600 py-2 rounded-md hover:bg-blue-700 shadow-lg
               transition-all mb-3 font-medium"
@@ -103,6 +104,7 @@ const DashboardNav = () => {
 						</button>
 
 						<button
+							type="button"
 							onClick={() => setActiveModal("scheduleAppointment")}
 							className="w-full bg-blue-600 py-2 rounded-md hover:bg-blue-700 shadow-lg
               transition-all font-medium"
@@ -113,7 +115,8 @@ const DashboardNav = () => {
 				</div>
 			</nav>
 			{isOpen && (
-				<div
+				<button
+					type="button"
 					className="fixed inset-0 backdrop-blur-sm z-30 md:hidden"
 					onClick={() => setIsOpen(false)}
 				/>
