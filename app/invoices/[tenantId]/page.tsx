@@ -1,12 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
 	Search,
 	Plus,
 	FileText,
 	Printer,
 	Download,
-	ChevronDown,
 	Check,
 	Clock,
 	AlertCircle,
@@ -174,6 +173,7 @@ const InvoicePage = () => {
 					{/* Filters */}
 					<div className="flex flex-wrap gap-3 mb-6">
 						<button
+							type="button"
 							onClick={() => setFilter("all")}
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "all" ? "border-cyan-500/50" : "hover:bg-cyan-900/20"
@@ -182,6 +182,7 @@ const InvoicePage = () => {
 							All Invoices
 						</button>
 						<button
+							type="button"
 							onClick={() => setFilter("draft")}
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "draft"
@@ -192,6 +193,7 @@ const InvoicePage = () => {
 							Drafts
 						</button>
 						<button
+							type="button"
 							onClick={() => setFilter("sent")}
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "sent"
@@ -202,6 +204,7 @@ const InvoicePage = () => {
 							Sent
 						</button>
 						<button
+							type="button"
 							onClick={() => setFilter("paid")}
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "paid"
@@ -212,6 +215,7 @@ const InvoicePage = () => {
 							Paid
 						</button>
 						<button
+							type="button"
 							onClick={() => setFilter("overdue")}
 							className={`px-4 py-2 rounded-md text-sm font-medium border ${
 								filter === "overdue"
@@ -268,18 +272,21 @@ const InvoicePage = () => {
 											<td className="px-6 py-4">
 												<div className="flex gap-4">
 													<button
+														type="button"
 														className="hover:text-cyan-300 transition-colors"
 														title="View"
 													>
 														<FileText size={18} />
 													</button>
 													<button
+														type="button"
 														className="hover:text-cyan-300 transition-colors"
 														title="Print"
 													>
 														<Printer size={18} />
 													</button>
 													<button
+														type="button"
 														className="hover:text-cyan-300 transition-colors"
 														title="Download"
 													>

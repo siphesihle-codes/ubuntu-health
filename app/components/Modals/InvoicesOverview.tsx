@@ -119,18 +119,21 @@ const InvoicesOverview = ({ invoices }: InvoicesOverviewProps) => {
 							<td className="px-6 py-4">
 								<div className="flex gap-4">
 									<button
+										type="button"
 										className="hover:text-cyan-300 transition-colors"
 										title="View"
 									>
 										<FileText size={18} />
 									</button>
 									<button
+										type="button"
 										className="hover:text-cyan-300 transition-colors"
 										title="Print"
 									>
 										<Printer size={18} />
 									</button>
 									<button
+										type="button"
 										className="hover:text-cyan-300 transition-colors"
 										title="Download"
 									>
@@ -142,19 +145,6 @@ const InvoicesOverview = ({ invoices }: InvoicesOverviewProps) => {
 					))}
 				</tbody>
 			</table>
-
-			{/* Empty State */}
-			{/* {filteredInvoices.length === 0 && (
-				<div className="p-8 text-center">
-					<FileText className="mx-auto" size={48} />
-					<h3 className="mt-4 text-lg font-medium">No invoices found</h3>
-					<p className="mt-2">
-						{searchQuery
-							? "Try a different search term"
-							: "Create a new invoice to get started"}
-					</p>
-				</div>
-			)} */}
 		</div>
 	);
 };

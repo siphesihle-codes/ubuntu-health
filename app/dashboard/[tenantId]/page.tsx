@@ -103,18 +103,6 @@ const DashboardPage = ({ params }: DashboardPageProps) => {
 								Overview of your medical practice
 							</p>
 						</div>
-						<div className="relative mt-4 md:mt-0">
-							<Search
-								className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-								size={18}
-							/>
-							<input
-								type="text"
-								placeholder="Search..."
-								className="pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white
-                focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-							/>
-						</div>
 					</div>
 
 					{/* Stats Cards */}

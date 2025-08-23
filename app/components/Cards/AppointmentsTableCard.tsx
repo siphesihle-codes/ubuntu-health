@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Trash2, Pencil } from "lucide-react";
 import {
-	Appointment,
+	type Appointment,
 	APPOINTMENT_TYPES,
 	STATUS_COLORS,
 	STATUS_LABELS,
@@ -157,6 +157,7 @@ const AppointmentsTableCard = ({
 								<td className="px-6 py-4">
 									<div className="flex gap-4">
 										<button
+											type="button"
 											onClick={() => handleEditClick(appointment)}
 											className="text-blue-600 hover:text-blue-800 transition-colors"
 											title="Edit Appointment"
@@ -164,6 +165,7 @@ const AppointmentsTableCard = ({
 											<Pencil size={18} />
 										</button>
 										<button
+											type="button"
 											onClick={() => handleDelete(String(appointment.id))}
 											className="text-red-600 hover:text-red-800 transition-colors"
 											title="Delete Appointment"
@@ -193,12 +195,14 @@ const AppointmentsTableCard = ({
 				</div>
 				<div className="flex gap-2">
 					<button
+						type="button"
 						className="px-3 py-1 rounded border border-gray-300 bg-white
           hover:bg-gray-50 transition-colors"
 					>
 						Previous
 					</button>
 					<button
+						type="button"
 						className="px-3 py-1 rounded border border-gray-300 bg-white
           hover:bg-gray-50 transition-colors"
 					>
