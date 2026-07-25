@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/router";
+import type { GetServerSideProps } from "next";
 import { API_BASE_URL } from "@/lib/api/config";
 import { getApiErrorMessage } from "@/lib/api/errors";
 
@@ -454,10 +455,16 @@ const SignUpForm = ({ plan = "basic" }) => {
 	);
 };
 
-const SignUpPage = () => {
-	const { plan } = useRouter().query;
+interface SignUpPageProps {
+	plan: string;
+}
 
-	return <SignUpForm plan={typeof plan === "string" ? plan : "basic"} />;
-};
+export const getServerSideProps: GetServerSideProps<SignUpPageProps> = async ({
+	query,
+}) => ({
+	props: { plan: typeof query.plan === "string" ? query.plan : "basic" },
+});
+
+const SignUpPage = ({ plan }: SignUpPageProps) => <SignUpForm plan={plan} />;
 
 export default SignUpPage;
