@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { API_BASE_URL } from "@/app/api/config";
+import { API_BASE_URL } from "@/lib/api/config";
 
 export default function useApiData<T>(endpoint: string) {
 	const [data, setData] = useState<T[]>([]);
