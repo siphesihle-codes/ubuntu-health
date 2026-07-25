@@ -12,6 +12,7 @@ import {
 	FileText,
 	CalendarCheck,
 } from "lucide-react";
+import { API_BASE_URL } from "@/app/api/config";
 
 interface AppointmentFormProps {
 	onClose: () => void;
@@ -46,7 +47,7 @@ const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
 				console.log("======= APPOINTMENT =======");
 				console.log(JSON.stringify(values, null, 2));
 
-				const response = await fetch("http://localhost:5290/api/Appointments", {
+				const response = await fetch(`${API_BASE_URL}/api/Appointments`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",

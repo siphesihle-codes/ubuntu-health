@@ -15,6 +15,7 @@ import Layout from "@/app/components/Layout";
 import { PlusCircle } from "lucide-react";
 import InvoicesOverview from "@/app/components/Modals/InvoicesOverview";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "@/app/api/config";
 
 interface PatientPageProps {
 	params: {
@@ -37,7 +38,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		const fetchPatientData = async () => {
 			try {
 				const response = await fetch(
-					`http://localhost:5290/api/Patients/${params.id}`,
+					`${API_BASE_URL}/api/Patients/${params.id}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -66,7 +67,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		const fetchClinicalNotes = async () => {
 			try {
 				const response = await fetch(
-					`http://localhost:5290/api/ClinicalNotes/${params.id}`,
+					`${API_BASE_URL}/api/ClinicalNotes/${params.id}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -91,7 +92,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		const fetchPrescriptions = async () => {
 			try {
 				const response = await fetch(
-					`http://localhost:5290/api/Prescriptions/${params.id}`,
+					`${API_BASE_URL}/api/Prescriptions/${params.id}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -115,7 +116,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		// Fetch Invoices
 		const fetchInvoices = async () => {
 			try {
-				const response = await fetch(`http://localhost:5290/api/Invoices/`, {
+				const response = await fetch(`${API_BASE_URL}/api/Invoices/`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
@@ -138,7 +139,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		const fetchAppointments = async () => {
 			try {
 				const response = await fetch(
-					`http://localhost:5290/api/Appointments/`,
+					`${API_BASE_URL}/api/Appointments/`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,

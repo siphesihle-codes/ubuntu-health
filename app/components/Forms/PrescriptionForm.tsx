@@ -13,6 +13,7 @@ import {
 	FileText,
 } from "lucide-react";
 import { PRESCRIPTION_STATUS } from "@/types";
+import { API_BASE_URL } from "@/app/api/config";
 
 interface PrescriptionFormProps {
 	onClose: () => void;
@@ -59,7 +60,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 				console.log(JSON.stringify(values, null, 2));
 
 				const response = await fetch(
-					"http://localhost:5290/api/Prescriptions",
+					`${API_BASE_URL}/api/Prescriptions`,
 					{
 						method: "POST",
 						headers: {

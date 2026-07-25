@@ -4,6 +4,7 @@ import { Patient } from "@/types/index";
 import { toast } from "react-toastify";
 import EditPatientModal from "../Modals/EditPatientModal";
 import { useParams, useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/app/api/config";
 
 interface PatientsTableProps {
 	patients: Patient[];
@@ -24,7 +25,7 @@ const PatientsTableCard = ({
 	const token = localStorage.getItem("token");
 	const handleDelete = async (id: string) => {
 		try {
-			const response = await fetch(`http://localhost:5290/api/Patients/${id}`, {
+			const response = await fetch(`${API_BASE_URL}/api/Patients/${id}`, {
 				method: "DELETE",
 				headers: {
 					"Content-Type": "application/json",
@@ -56,7 +57,7 @@ const PatientsTableCard = ({
 	const handleSave = async (updatedPatient: Patient) => {
 		try {
 			const response = await fetch(
-				`http://localhost:5290/api/Patients/${updatedPatient.id}`,
+				`${API_BASE_URL}/api/Patients/${updatedPatient.id}`,
 				{
 					method: "PUT",
 					headers: {

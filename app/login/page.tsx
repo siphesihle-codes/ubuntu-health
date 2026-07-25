@@ -6,6 +6,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "@/app/api/config";
 
 const LoginPage = () => {
 	const [showPassword, setShowPassword] = React.useState(false);
@@ -28,7 +29,7 @@ const LoginPage = () => {
 		onSubmit: async (values) => {
 			setIsLoading(true);
 			try {
-				const response = await fetch("http://localhost:5290/api/auth/login", {
+				const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",

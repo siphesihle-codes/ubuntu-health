@@ -12,6 +12,7 @@ import {
 	UserRoundPen,
 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
+import { API_BASE_URL } from "@/app/api/config";
 
 interface PatientFormProps {
 	onClose: () => void;
@@ -62,7 +63,7 @@ export default function PatientForm({ onClose }: PatientFormProps) {
 				console.log("======= VALUES =======");
 				console.log(JSON.stringify(values, null, 2));
 
-				const response = await fetch("http://localhost:5290/api/Patients", {
+				const response = await fetch(`${API_BASE_URL}/api/Patients`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",

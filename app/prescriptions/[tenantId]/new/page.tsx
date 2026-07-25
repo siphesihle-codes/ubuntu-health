@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { Calendar, Pill, User } from "lucide-react";
 import Link from "next/link";
+import { API_BASE_URL } from "@/app/api/config";
 
 const NewPrescriptionPage = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +32,7 @@ const NewPrescriptionPage = () => {
 			setIsSubmitting(true);
 			try {
 				const response = await fetch(
-					"http://localhost:5290/api/Prescriptions",
+					`${API_BASE_URL}/api/Prescriptions`,
 					{
 						method: "POST",
 						headers: {

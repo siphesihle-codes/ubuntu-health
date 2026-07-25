@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/app/api/config";
 
 export default function useApiData<T>(endpoint: string) {
 	const [data, setData] = useState<T[]>([]);
@@ -11,7 +12,7 @@ export default function useApiData<T>(endpoint: string) {
 			const token = localStorage.getItem("token");
 
 			try {
-				const response = await fetch(`http://localhost:5290/api/${endpoint}`, {
+				const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},

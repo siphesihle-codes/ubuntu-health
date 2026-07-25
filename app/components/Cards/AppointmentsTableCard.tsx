@@ -9,6 +9,7 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditAppointmentModal from "../Modals/EditAppointmentModal";
+import { API_BASE_URL } from "@/app/api/config";
 
 interface AppointmentsCardProps {
 	appointments: Appointment[];
@@ -30,7 +31,7 @@ const AppointmentsTableCard = ({
 	const handleDelete = async (id: string) => {
 		try {
 			const response = await fetch(
-				`http://localhost:5290/api/Appointments/${id}`,
+				`${API_BASE_URL}/api/Appointments/${id}`,
 				{
 					method: "DELETE",
 					headers: {
@@ -74,7 +75,7 @@ const AppointmentsTableCard = ({
 			};
 
 			const response = await fetch(
-				`http://localhost:5290/api/Appointments/${updatedAppointment.id}`,
+				`${API_BASE_URL}/api/Appointments/${updatedAppointment.id}`,
 				{
 					method: "PUT",
 					headers: {

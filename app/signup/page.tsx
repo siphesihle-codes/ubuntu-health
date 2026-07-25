@@ -7,6 +7,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/app/api/config";
 
 const SignUpForm = ({ plan = "basic" }) => {
 	const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +40,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 		onSubmit: async (values) => {
 			try {
 				const response = await fetch(
-					"http://localhost:5290/api/auth/register",
+					`${API_BASE_URL}/api/auth/register`,
 					{
 						method: "POST",
 						headers: {
