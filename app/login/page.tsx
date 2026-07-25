@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "@/app/api/config";
+import { getApiErrorMessage } from "@/app/api/errors";
 
 const LoginPage = () => {
 	const [showPassword, setShowPassword] = React.useState(false);
@@ -40,7 +41,7 @@ const LoginPage = () => {
 				const data = await response.json();
 
 				if (!response.ok) {
-					toast.error(`Login failed: ${data.message}`);
+					toast.error(getApiErrorMessage(data, "Login failed"));
 					return;
 				}
 

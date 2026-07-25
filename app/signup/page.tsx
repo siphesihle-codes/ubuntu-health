@@ -8,6 +8,13 @@ import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/app/api/config";
+import { getApiErrorMessage } from "@/app/api/errors";
+
+const PASSWORD_PATTERN =
+	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
+const formatSubscriptionPlan = (plan: string) =>
+	plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase();
 
 const SignUpForm = ({ plan = "basic" }) => {
 	const [showPassword, setShowPassword] = useState(false);
@@ -33,9 +40,14 @@ const SignUpForm = ({ plan = "basic" }) => {
 			email: Yup.string().email("Invalid email").required("Required"),
 			password: Yup.string()
 				.min(8, "Minimum 8 characters")
+				.matches(
+					PASSWORD_PATTERN,
+					"Must include an uppercase letter, a lowercase letter, a digit, and one of @$!%*?&"
+				)
 				.required("Required"),
 			licenseNumber: Yup.string().required("Medical license required"),
 			specialty: Yup.string().required("Specialty required"),
+			role: Yup.string().required("Role required"),
 		}),
 		onSubmit: async (values) => {
 			try {
@@ -46,23 +58,25 @@ const SignUpForm = ({ plan = "basic" }) => {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify(values),
+						body: JSON.stringify({
+							...values,
+							subscriptionPlan: formatSubscriptionPlan(values.subscriptionPlan),
+							practiceName: values.practiceName || undefined,
+							practicePhone: values.practicePhone || undefined,
+						}),
 					}
 				);
 
 				const data = await response.json();
 
 				if (!response.ok) {
-					toast.error(`Registration failed: ${data.message}`);
+					toast.error(getApiErrorMessage(data, "Registration failed"));
 					return;
 				}
 
-				localStorage.setItem("token", data.token);
-				localStorage.setItem("tenantId", data.tenantId);
-
 				formik.resetForm();
-				toast.success("Registration successful!");
-				router.push(`/dashboard/${data.tenantId}`);
+				toast.success("Registration successful! Please sign in.");
+				router.push("/login");
 			} catch (err) {
 				console.error(`Error registering user: ${err}`);
 				toast.error("An unexpected error occurred");
