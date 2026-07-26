@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PatientsTableCard from "../Cards/PatientsTableCard";
 import useApiData from "@/hooks/useApiData";
 import { Patient } from "@/types";
 
-const PatientsTable = () => {
+interface PatientsTableProps {
+	searchTerm?: string;
+}
+
+const PatientsTable = ({ searchTerm = "" }: PatientsTableProps) => {
 	const {
 		data: patients,
 		isLoading: patientsLoading,
@@ -12,6 +16,19 @@ const PatientsTable = () => {
 
 	const isLoading = patientsLoading;
 	const error = patientsError;
+
+	const filteredPatients = useMemo(() => {
+		const query = searchTerm.trim().toLowerCase();
+		if (!query) return patients;
+
+		return patients.filter((patient) =>
+			`${patient.firstName} ${patient.lastName} ${patient.email ?? ""} ${
+				patient.phone ?? ""
+			}`
+				.toLowerCase()
+				.includes(query)
+		);
+	}, [patients, searchTerm]);
 
 	if (isLoading) {
 		return (
@@ -32,7 +49,7 @@ const PatientsTable = () => {
 	return (
 		<div className="space-y-6">
 			<div className="mt-8">
-				<PatientsTableCard patients={patients} />
+				<PatientsTableCard patients={filteredPatients} />
 			</div>
 		</div>
 	);

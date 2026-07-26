@@ -15,21 +15,10 @@ import { PlusCircle } from "lucide-react";
 import InvoicesOverview from "@/components/Modals/InvoicesOverview";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "@/lib/api/config";
-import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 
-interface PatientPageProps {
-	params: {
-		id: string;
-	};
-}
-
-export const getServerSideProps: GetServerSideProps<PatientPageProps> = async ({
-	params,
-}) => ({
-	props: { params: { id: params?.id as string } },
-});
-
-const PatientPage = ({ params }: PatientPageProps) => {
+const PatientPage = () => {
+	const { id } = useRouter().query as { id?: string };
 	const [activeTab, setActiveTab] = useState<string>("overview");
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [patient, setPatient] = useState<Patient>();
@@ -38,13 +27,15 @@ const PatientPage = ({ params }: PatientPageProps) => {
 	const [invoices, setInvoices] = useState<Invoice>();
 	const [appointments, setAppointments] = useState<Appointment>();
 	useEffect(() => {
+		if (!id) return;
+
 		const token = localStorage.getItem("token");
 
 		// Fetch Patient Data
 		const fetchPatientData = async () => {
 			try {
 				const response = await fetch(
-					`${API_BASE_URL}/api/Patients/${params.id}`,
+					`${API_BASE_URL}/api/Patients/${id}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -53,14 +44,10 @@ const PatientPage = ({ params }: PatientPageProps) => {
 				);
 
 				if (!response.ok) {
-					throw new Error(`API error: ${response.text}`);
+					throw new Error(`API error: ${response.status}`);
 				}
 
 				const result = await response.json();
-
-				console.log("======= PATIENT =======");
-				console.log(JSON.stringify(result, null, 2));
-
 				setPatient(result);
 				setIsLoading(false);
 			} catch (error) {
@@ -73,7 +60,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		const fetchClinicalNotes = async () => {
 			try {
 				const response = await fetch(
-					`${API_BASE_URL}/api/ClinicalNotes/${params.id}`,
+					`${API_BASE_URL}/api/ClinicalNotes/${id}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -82,7 +69,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 				);
 
 				if (!response.ok) {
-					throw new Error(`API error: ${response.text}`);
+					throw new Error(`API error: ${response.status}`);
 				}
 
 				const result = await response.json();
@@ -98,7 +85,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		const fetchPrescriptions = async () => {
 			try {
 				const response = await fetch(
-					`${API_BASE_URL}/api/Prescriptions/${params.id}`,
+					`${API_BASE_URL}/api/Prescriptions/${id}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -107,7 +94,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 				);
 
 				if (!response.ok) {
-					throw new Error(`API error: ${response.text}`);
+					throw new Error(`API error: ${response.status}`);
 				}
 
 				const result = await response.json();
@@ -129,7 +116,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 				});
 
 				if (!response.ok) {
-					throw new Error(`API error: ${response.text}`);
+					throw new Error(`API error: ${response.status}`);
 				}
 
 				const result = await response.json();
@@ -154,7 +141,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 				);
 
 				if (!response.ok) {
-					throw new Error(`API error: ${response.text}`);
+					throw new Error(`API error: ${response.status}`);
 				}
 
 				const result = await response.json();
@@ -171,7 +158,7 @@ const PatientPage = ({ params }: PatientPageProps) => {
 		fetchClinicalNotes();
 		fetchPrescriptions();
 		fetchInvoices();
-	}, [params.id]);
+	}, [id]);
 
 	if (isLoading) {
 		return (

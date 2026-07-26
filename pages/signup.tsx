@@ -18,7 +18,7 @@ const formatSubscriptionPlan = (plan: string) =>
 
 const SignUpForm = ({ plan = "basic" }) => {
 	const [showPassword, setShowPassword] = useState(false);
-	const [isLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 
 	const formik = useFormik({
@@ -50,6 +50,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 			role: Yup.string().required("Role required"),
 		}),
 		onSubmit: async (values) => {
+			setIsLoading(true);
 			try {
 				const response = await fetch(
 					`${API_BASE_URL}/api/auth/register`,
@@ -80,6 +81,8 @@ const SignUpForm = ({ plan = "basic" }) => {
 			} catch (err) {
 				console.error(`Error registering user: ${err}`);
 				toast.error("An unexpected error occurred");
+			} finally {
+				setIsLoading(false);
 			}
 		},
 	});
@@ -421,11 +424,11 @@ const SignUpForm = ({ plan = "basic" }) => {
 						<div className="ml-3 text-sm">
 							<label htmlFor="terms" className="text-gray-700">
 								I agree to the{" "}
-								<Link href="terms" className="text-blue-600 hover:underline">
+								<Link href="/terms" className="text-blue-600 hover:underline">
 									Terms of Service
 								</Link>{" "}
 								and{" "}
-								<Link href="policy" className="text-blue-600 hover:underline">
+								<Link href="/policy" className="text-blue-600 hover:underline">
 									Privacy Policy
 								</Link>
 							</label>
@@ -435,11 +438,14 @@ const SignUpForm = ({ plan = "basic" }) => {
 					<div className="md:col-span-2">
 						<button
 							type="submit"
-							className="w-full text-white py-2 px-4 border border-transparent rounded-md
+							disabled={isLoading}
+							className={`w-full text-white py-2 px-4 border border-transparent rounded-md
               shadow-sm text-sm font-medium  bg-blue-600 hover:bg-blue-700 focus:outline-none
-              focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+								isLoading ? "opacity-70 cursor-not-allowed" : ""
+							}`}
 						>
-							Register Account
+							{isLoading ? "Registering..." : "Register Account"}
 						</button>
 					</div>
 

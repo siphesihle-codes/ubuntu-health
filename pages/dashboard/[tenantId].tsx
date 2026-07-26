@@ -13,10 +13,10 @@ import {
 	ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
 import useApiData from "@/hooks/useApiData";
-import type { GetServerSideProps } from "next";
 import {
 	Appointment,
 	Invoice,
@@ -25,18 +25,8 @@ import {
 	STATUS_LABELS,
 } from "@/types";
 
-interface DashboardPageProps {
-	params: { tenantId: string };
-}
-
-export const getServerSideProps: GetServerSideProps<DashboardPageProps> = async ({
-	params,
-}) => ({
-	props: { params: { tenantId: params?.tenantId as string } },
-});
-
-const DashboardPage = ({ params }: DashboardPageProps) => {
-	const tenantId = params.tenantId;
+const DashboardPage = () => {
+	const { tenantId } = useRouter().query as { tenantId: string };
 
 	const {
 		data: patients,
@@ -66,9 +56,12 @@ const DashboardPage = ({ params }: DashboardPageProps) => {
 		patients: patients.length,
 		appointments: appointments.length,
 		prescriptions: prescriptions.length,
-		invoices: 15,
-		revenue: 58250,
-		pendingPayments: 12750,
+		revenue: invoices
+			.filter((invoice) => invoice.status === "paid")
+			.reduce((sum, invoice) => sum + invoice.totalAmount, 0),
+		pendingPayments: invoices
+			.filter((invoice) => invoice.status !== "paid")
+			.reduce((sum, invoice) => sum + invoice.totalAmount, 0),
 	};
 
 	const getStatusColor = (status: string) => {

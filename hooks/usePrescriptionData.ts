@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Prescription } from "@/types";
 import useApiData from "./useApiData";
 
-export default function useInvoiceData(patientId: number) {
+export default function usePrescriptionData(patientId: number) {
 	const {
 		data: prescriptions,
 		isLoading: prescriptionsLoading,

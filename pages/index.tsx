@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Navbar from "@/components/Navbar";
 import Landing from "@/components/Landing";
+import Mission from "@/components/Mission";
 import Services from "@/components/Services";
 import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
@@ -24,6 +25,9 @@ export default function Home() {
 
 			{/* Hero Section */}
 			<Landing />
+
+			{/* Mission Section */}
+			<Mission />
 
 			{/* Features Section */}
 			<Services />

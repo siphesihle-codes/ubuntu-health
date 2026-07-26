@@ -69,7 +69,7 @@ const PatientsTableCard = ({
 			);
 
 			if (!response.ok) {
-				console.error("Failed to update patient", response.text);
+				console.error("Failed to update patient", response.status);
 
 				toast.error("Failed to update patient");
 				throw new Error("Failed to update patient");
