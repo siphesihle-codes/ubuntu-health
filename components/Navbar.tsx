@@ -13,7 +13,7 @@ const Navbar = () => {
 				!navRef.current.contains(event.target as Node) &&
 				window.innerWidth < 768
 			) {
-				handleMenuClose();
+				setIsMenuOpen(false);
 			}
 		};
 

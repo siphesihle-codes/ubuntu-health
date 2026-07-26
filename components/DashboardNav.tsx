@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
 	LayoutDashboard,
@@ -12,16 +12,19 @@ import {
 import PatientForm from "./Forms/PatientForm";
 import AppointmentForm from "./Forms/AppointmentForm";
 
+const subscribeToTenantId = () => () => {};
+const getTenantId = () => localStorage.getItem("tenantId");
+const getServerTenantId = () => null;
+
 const DashboardNav = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeModal, setActiveModal] = useState("");
-	const [tenantId, setTenantId] = useState<string | null>(null);
+	const tenantId = useSyncExternalStore(
+		subscribeToTenantId,
+		getTenantId,
+		getServerTenantId
+	);
 	const handleCloseModal = () => setActiveModal("");
-
-	useEffect(() => {
-		const storedtenantId = localStorage.getItem("tenantId");
-		setTenantId(storedtenantId);
-	}, []);
 
 	const navItems = [
 		{

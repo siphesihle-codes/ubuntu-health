@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 
 const formatRelativeTime = (date: Date, locale: string): string => {
 	const now = new Date();
@@ -26,15 +26,27 @@ interface ClientDateProps {
 	timeZone?: string;
 }
 
+const subscribeToClient = () => () => {};
+const getIsClient = () => true;
+const getIsServer = () => false;
+
 const ClientDate = ({
 	dateString,
 	format = "date",
 	locale = "en-ZA",
 	timeZone,
 }: ClientDateProps) => {
-	const [formattedDate, setFormattedDate] = useState("");
+	const isClient = useSyncExternalStore(
+		subscribeToClient,
+		getIsClient,
+		getIsServer
+	);
 
-	useEffect(() => {
+	const formattedDate = useMemo(() => {
+		if (!isClient) {
+			return "";
+		}
+
 		try {
 			const date = new Date(dateString);
 
@@ -42,7 +54,6 @@ const ClientDate = ({
 				throw new Error("Invalid date string");
 			}
 
-			let formatted;
 			const options: Intl.DateTimeFormatOptions = {
 				timeZone: timeZone || undefined,
 			};
@@ -52,14 +63,12 @@ const ClientDate = ({
 					options.year = "numeric";
 					options.month = "short";
 					options.day = "numeric";
-					formatted = date.toLocaleDateString(locale, options);
-					break;
+					return date.toLocaleDateString(locale, options);
 
 				case "time":
 					options.hour = "2-digit";
 					options.minute = "2-digit";
-					formatted = date.toLocaleTimeString(locale, options);
-					break;
+					return date.toLocaleTimeString(locale, options);
 
 				case "datetime":
 					options.year = "numeric";
@@ -67,23 +76,19 @@ const ClientDate = ({
 					options.day = "numeric";
 					options.hour = "2-digit";
 					options.minute = "2-digit";
-					formatted = date.toLocaleString(locale, options);
-					break;
+					return date.toLocaleString(locale, options);
 
 				case "relative":
-					formatted = formatRelativeTime(date, locale);
-					break;
+					return formatRelativeTime(date, locale);
 
 				default:
-					formatted = date.toISOString();
+					return date.toISOString();
 			}
-
-			setFormattedDate(formatted);
 		} catch (error) {
 			console.error("Error formatting date:", error);
-			setFormattedDate("Invalid date");
+			return "Invalid date";
 		}
-	}, [dateString, format, locale, timeZone]);
+	}, [isClient, dateString, format, locale, timeZone]);
 
 	return <span>{formattedDate}</span>;
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useId, useRef, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
@@ -20,6 +20,8 @@ interface PrescriptionFormProps {
 
 export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 	const [status, setStatus] = useState("active");
+	const medicationIdPrefix = useId();
+	const medicationCount = useRef(0);
 
 	const formik = useFormik({
 		initialValues: {
@@ -32,7 +34,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 			status: "active",
 			medications: [
 				{
-					medicationId: Date.now().toString(),
+					medicationId: medicationIdPrefix,
 					name: "",
 					dosage: "",
 					instructions: "",
@@ -85,9 +87,15 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 	});
 
 	const addMedication = () => {
+		medicationCount.current += 1;
 		formik.setFieldValue("medications", [
 			...formik.values.medications,
-			{ id: Date.now().toString(), name: "", dosage: "", instructions: "" },
+			{
+				medicationId: `${medicationIdPrefix}-${medicationCount.current}`,
+				name: "",
+				dosage: "",
+				instructions: "",
+			},
 		]);
 	};
 
