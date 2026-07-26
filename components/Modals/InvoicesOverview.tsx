@@ -13,7 +13,7 @@ import {
 import ClientDate from "../ClientDate";
 
 interface InvoicesOverviewProps {
-	invoices: Invoice;
+	invoices: Invoice[];
 }
 
 const InvoicesOverview = ({ invoices }: InvoicesOverviewProps) => {

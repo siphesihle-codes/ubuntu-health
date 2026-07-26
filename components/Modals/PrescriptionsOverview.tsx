@@ -4,7 +4,7 @@ import React from "react";
 import ClientDate from "../ClientDate";
 
 interface PrescriptionsOverviewProps {
-	prescriptions: any[];
+	prescriptions: Prescription[];
 }
 
 const PrescriptionsOverview = ({

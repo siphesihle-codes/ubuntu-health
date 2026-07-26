@@ -23,9 +23,9 @@ const PatientPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [patient, setPatient] = useState<Patient>();
 	const [clinicalNotes, setClinicalNotes] = useState<ClinicalNote[]>([]);
-	const [prescriptions, setPrescriptions] = useState<Prescription>();
-	const [invoices, setInvoices] = useState<Invoice>();
-	const [appointments, setAppointments] = useState<Appointment>();
+	const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+	const [invoices, setInvoices] = useState<Invoice[]>([]);
+	const [appointments, setAppointments] = useState<Appointment[]>([]);
 	useEffect(() => {
 		if (!id) return;
 
@@ -98,7 +98,7 @@ const PatientPage = () => {
 				}
 
 				const result = await response.json();
-				setPrescriptions(result);
+				setPrescriptions(Array.isArray(result) ? result : [result]);
 				setIsLoading(false);
 			} catch (error) {
 				toast.error("Failed to fetch prescription data");
@@ -120,7 +120,7 @@ const PatientPage = () => {
 				}
 
 				const result = await response.json();
-				setInvoices(result);
+				setInvoices(Array.isArray(result) ? result : [result]);
 				setIsLoading(false);
 			} catch (error) {
 				toast.error("Failed to fetch invoices data");
@@ -145,7 +145,7 @@ const PatientPage = () => {
 				}
 
 				const result = await response.json();
-				setAppointments(result);
+				setAppointments(Array.isArray(result) ? result : [result]);
 				setIsLoading(false);
 			} catch (error) {
 				toast.error("Failed to fetch appointment data");
@@ -266,18 +266,10 @@ const PatientPage = () => {
 
 						{/* Prescriptions Tab */}
 						{activeTab === "prescriptions" && (
-							<PrescriptionsOverview
-								prescriptions={
-									prescriptions
-										? Array.isArray(prescriptions)
-											? prescriptions
-											: [prescriptions]
-										: []
-								}
-							/>
+							<PrescriptionsOverview prescriptions={prescriptions} />
 						)}
 
-						{activeTab === "invoices" && invoices && (
+						{activeTab === "invoices" && (
 							<InvoicesOverview invoices={invoices} />
 						)}
 					</div>
