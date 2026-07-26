@@ -20,9 +20,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 					content={`Ubuntu Health is an intuitive Electronic Health Records (EHR) platform designed to simplify
          patient care and practice management for family doctors and small clinics. It offers features
          such as patient management, appointment scheduling, e-prescriptions, billing, and secure
-         communication. We aim to optimize workflow efficiency and enhance patient satisfaction.
-         Join the waiting list for exclusive updates and early access to this innovative healthcare
-         solution.`}
+         communication. We aim to optimize workflow efficiency and enhance patient satisfaction.`}
 				/>
 			</Head>
 			<Component {...pageProps} />
