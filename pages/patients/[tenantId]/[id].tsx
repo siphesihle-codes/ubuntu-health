@@ -33,7 +33,7 @@ const PatientPage = () => {
 	if (isLoading) {
 		return (
 			<Layout title="Patient">
-				<div className="mx-auto flex max-w-7xl flex-col gap-4">
+				<div className="flex max-w-7xl flex-col gap-4">
 					<Skeleton className="h-9 w-64" />
 					<Card className="gap-3">
 						{Array.from({ length: 5 }).map((_, index) => (
