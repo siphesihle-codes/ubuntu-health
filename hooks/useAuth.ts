@@ -1,5 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/api/client";
+import { queryKeys } from "@/lib/api/queryKeys";
+import type { InvitationPreview, UserProfile } from "@/types";
 
 export interface LoginPayload {
 	email: string;
@@ -11,12 +13,23 @@ export interface RegisterPayload {
 	lastName: string;
 	email: string;
 	password: string;
-	licenseNumber: string;
-	specialty: string;
-	practiceName?: string;
+	practiceName: string;
 	practicePhone?: string;
 	subscriptionPlan: string;
-	role: string;
+}
+
+export interface ProfilePayload {
+	firstName: string;
+	lastName: string;
+	phone?: string;
+	licenseNumber?: string;
+	specialty?: string;
+}
+
+export interface AcceptInvitationPayload {
+	firstName: string;
+	lastName: string;
+	password: string;
 }
 
 export interface AuthResponse {
@@ -29,6 +42,8 @@ export interface AuthResponse {
 }
 
 export function useLogin() {
+	const queryClient = useQueryClient();
+
 	return useMutation({
 		mutationFn: (credentials: LoginPayload) =>
 			apiRequest<AuthResponse>("auth/login", {
@@ -37,6 +52,19 @@ export function useLogin() {
 			}),
 		onSuccess: (data) => {
 			localStorage.setItem("tenantId", data.tenantId);
+			queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
+		},
+	});
+}
+
+export function useLogout() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: () => apiRequest<AuthResponse>("auth/logout", { method: "POST" }),
+		onSettled: () => {
+			localStorage.removeItem("tenantId");
+			queryClient.clear();
 		},
 	});
 }
@@ -47,6 +75,46 @@ export function useRegister() {
 			apiRequest<AuthResponse>("auth/register", {
 				method: "POST",
 				body: JSON.stringify(registration),
+			}),
+	});
+}
+
+export function useCurrentUser() {
+	return useQuery({
+		queryKey: queryKeys.auth.me,
+		queryFn: () => apiRequest<UserProfile>("auth/me"),
+		retry: false,
+	});
+}
+
+export function useUpdateProfile() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (profile: ProfilePayload) =>
+			apiRequest<UserProfile>("auth/me", {
+				method: "PUT",
+				body: JSON.stringify(profile),
+			}),
+		onSuccess: (data) => queryClient.setQueryData(queryKeys.auth.me, data),
+	});
+}
+
+export function useInvitationPreview(token: string | undefined) {
+	return useQuery({
+		queryKey: queryKeys.invitations.preview(token ?? ""),
+		queryFn: () => apiRequest<InvitationPreview>(`Invitations/${token}`),
+		enabled: Boolean(token),
+		retry: false,
+	});
+}
+
+export function useAcceptInvitation(token: string | undefined) {
+	return useMutation({
+		mutationFn: (acceptance: AcceptInvitationPayload) =>
+			apiRequest<AuthResponse>(`Invitations/${token}/accept`, {
+				method: "POST",
+				body: JSON.stringify(acceptance),
 			}),
 	});
 }

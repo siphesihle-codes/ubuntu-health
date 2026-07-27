@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { useCurrentUser } from "@/hooks/useAuth";
 import DashboardNav from "./DashboardNav";
 
 interface LayoutProps {
@@ -16,6 +18,13 @@ const Layout: React.FC<LayoutProps> = ({
 	description,
 	actions,
 }) => {
+	const router = useRouter();
+	const { isError } = useCurrentUser();
+
+	useEffect(() => {
+		if (isError) router.replace("/login");
+	}, [isError, router]);
+
 	return (
 		<SidebarProvider>
 			<DashboardNav />

@@ -1,4 +1,14 @@
 export const queryKeys = {
+	auth: {
+		me: ["auth", "me"] as const,
+	},
+	staff: {
+		all: ["staff"] as const,
+		invitations: ["staff", "invitations"] as const,
+	},
+	invitations: {
+		preview: (token: string) => ["invitations", token] as const,
+	},
 	patients: {
 		all: ["patients"] as const,
 		detail: (id: string) => ["patients", id] as const,

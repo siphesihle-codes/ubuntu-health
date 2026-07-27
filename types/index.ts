@@ -5,6 +5,56 @@ export interface PagedResult<T> {
 	pageSize: number;
 }
 
+export type Role = keyof typeof ROLE_LABELS;
+
+export interface UserProfile {
+	id: string;
+	email: string;
+	firstName: string | null;
+	lastName: string | null;
+	phone: string | null;
+	licenseNumber: string | null;
+	specialty: string | null;
+	tenantId: string;
+	isOwner: boolean;
+	isActive: boolean;
+	roles: Role[];
+	practiceName: string | null;
+	subscriptionPlan: string | null;
+	requiresProfessionalDetails: boolean;
+}
+
+export interface StaffMember {
+	id: string;
+	email: string;
+	firstName: string | null;
+	lastName: string | null;
+	phone: string | null;
+	licenseNumber: string | null;
+	specialty: string | null;
+	isOwner: boolean;
+	isActive: boolean;
+	roles: Role[];
+	createdAt: string;
+}
+
+export interface Invitation {
+	id: number;
+	email: string;
+	role: Role;
+	invitedByEmail: string;
+	expiresAt: string;
+	createdAt: string;
+	isExpired: boolean;
+}
+
+export interface InvitationPreview {
+	email: string;
+	role: Role;
+	practiceName: string;
+	expiresAt: string;
+}
+
 export interface Patient {
 	id: number;
 	firstName: string;
@@ -82,6 +132,33 @@ export interface ClinicalNote {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export const ROLE_LABELS = {
+	admin: "Administrator",
+	doctor: "Doctor",
+	nurse: "Nurse",
+	receptionist: "Receptionist",
+} as const;
+
+export const ROLE_DESCRIPTIONS: Record<keyof typeof ROLE_LABELS, string> = {
+	admin: "Full access, plus staff management",
+	doctor: "Patients, appointments, notes and prescriptions",
+	nurse: "Patients, appointments and clinical notes",
+	receptionist: "Patients, appointments and invoices",
+};
+
+export const MEDICAL_SPECIALTIES = [
+	"family medicine",
+	"pediatrics",
+	"internal medicine",
+	"cardiology",
+	"dermatology",
+	"neurology",
+	"ob/gyn",
+	"ophthalmology",
+	"orthopedics",
+	"psychiatry",
+] as const;
 
 export const APPOINTMENT_TYPES = {
 	initialConsultation: "Initial consultation",

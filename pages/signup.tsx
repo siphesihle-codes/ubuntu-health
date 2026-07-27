@@ -13,13 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
 	Card,
 	CardContent,
 	CardDescription,
@@ -27,29 +20,10 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 
-const PASSWORD_PATTERN =
-	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
-
-const MEDICAL_SPECIALTIES = [
-	"family medicine",
-	"pediatrics",
-	"internal medicine",
-	"cardiology",
-	"dermatology",
-	"neurology",
-	"ob/gyn",
-	"ophthalmology",
-	"orthopedics",
-	"psychiatry",
-];
-
-const ROLES = ["admin", "doctor", "nurse", "receptionist"];
+const MINIMUM_PASSWORD_LENGTH = 12;
 
 const formatSubscriptionPlan = (plan: string) =>
 	plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase();
-
-const toTitleCase = (value: string) =>
-	value.charAt(0).toUpperCase() + value.slice(1);
 
 const SignUpForm = ({ plan = "basic" }) => {
 	const [showPassword, setShowPassword] = useState(false);
@@ -63,40 +37,33 @@ const SignUpForm = ({ plan = "basic" }) => {
 			lastName: "",
 			email: "",
 			password: "",
-			licenseNumber: "",
-			specialty: "",
 			practiceName: "",
 			practicePhone: "",
 			subscriptionPlan: plan,
-			role: "",
 		},
 		validationSchema: Yup.object({
 			firstName: Yup.string().required("Required"),
 			lastName: Yup.string().required("Required"),
 			email: Yup.string().email("Invalid email").required("Required"),
 			password: Yup.string()
-				.min(8, "Minimum 8 characters")
-				.matches(
-					PASSWORD_PATTERN,
-					"Must include an uppercase letter, a lowercase letter, a digit, and one of @$!%*?&"
+				.min(
+					MINIMUM_PASSWORD_LENGTH,
+					`Minimum ${MINIMUM_PASSWORD_LENGTH} characters`
 				)
 				.required("Required"),
-			licenseNumber: Yup.string().required("Medical license required"),
-			specialty: Yup.string().required("Specialty required"),
-			role: Yup.string().required("Role required"),
+			practiceName: Yup.string().required("Required"),
 		}),
 		onSubmit: (values) => {
 			register.mutate(
 				{
 					...values,
 					subscriptionPlan: formatSubscriptionPlan(values.subscriptionPlan),
-					practiceName: values.practiceName || undefined,
 					practicePhone: values.practicePhone || undefined,
 				},
 				{
 					onSuccess: () => {
 						formik.resetForm();
-						toast.success("Registration successful! Please sign in.");
+						toast.success("Practice created! Please sign in.");
 						router.push("/login");
 					},
 					onError: (error) => {
@@ -117,7 +84,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-muted/40 p-4 py-10">
-			<div className="w-full max-w-2xl">
+			<div className="w-full max-w-xl">
 				<div className="mb-8 flex justify-center">
 					<Link
 						href="/"
@@ -130,12 +97,15 @@ const SignUpForm = ({ plan = "basic" }) => {
 
 				<Card>
 					<CardHeader className="text-center">
-						<CardTitle className="text-xl">Create your account</CardTitle>
+						<CardTitle className="text-xl">Set up your practice</CardTitle>
 						<CardDescription>
-							Set up your practice on Ubuntu Health in a couple of minutes
+							You will be the practice administrator. Invite your team once you
+							are signed in.
 						</CardDescription>
 						<div className="mt-2 flex justify-center">
-							<Badge variant="secondary">{toTitleCase(plan)} plan</Badge>
+							<Badge variant="secondary">
+								{formatSubscriptionPlan(plan)} plan
+							</Badge>
 						</div>
 					</CardHeader>
 
@@ -143,7 +113,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 						<form onSubmit={formik.handleSubmit} className="flex flex-col gap-8">
 							<section className="flex flex-col gap-4">
 								<div className="flex flex-col gap-1">
-									<h2 className="text-sm font-medium">Personal details</h2>
+									<h2 className="text-sm font-medium">Your details</h2>
 									<Separator />
 								</div>
 								<div className="grid gap-4 sm:grid-cols-2">
@@ -173,16 +143,8 @@ const SignUpForm = ({ plan = "basic" }) => {
 										/>
 										{fieldError("lastName")}
 									</div>
-								</div>
-							</section>
 
-							<section className="flex flex-col gap-4">
-								<div className="flex flex-col gap-1">
-									<h2 className="text-sm font-medium">Account</h2>
-									<Separator />
-								</div>
-								<div className="grid gap-4 sm:grid-cols-2">
-									<div className="flex flex-col gap-2">
+									<div className="flex flex-col gap-2 sm:col-span-2">
 										<Label htmlFor="email">Email</Label>
 										<div className="relative">
 											<Mail className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -203,28 +165,6 @@ const SignUpForm = ({ plan = "basic" }) => {
 										{fieldError("email")}
 									</div>
 
-									<div className="flex flex-col gap-2">
-										<Label htmlFor="role">Role</Label>
-										<Select
-											value={formik.values.role}
-											onValueChange={(value) =>
-												formik.setFieldValue("role", value ?? "")
-											}
-										>
-											<SelectTrigger id="role" className="w-full">
-												<SelectValue placeholder="Select your role" />
-											</SelectTrigger>
-											<SelectContent>
-												{ROLES.map((role) => (
-													<SelectItem key={role} value={role}>
-														{toTitleCase(role)}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										{fieldError("role")}
-									</div>
-
 									<div className="flex flex-col gap-2 sm:col-span-2">
 										<Label htmlFor="password">Password</Label>
 										<div className="relative">
@@ -238,7 +178,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 												onBlur={formik.handleBlur}
 												value={formik.values.password}
 												className="px-10"
-												placeholder="••••••••"
+												placeholder="••••••••••••"
 												disabled={isLoading}
 												aria-invalid={isInvalid("password")}
 											/>
@@ -260,53 +200,10 @@ const SignUpForm = ({ plan = "basic" }) => {
 										</div>
 										{fieldError("password") ?? (
 											<p className="text-xs text-muted-foreground">
-												At least 8 characters with upper and lowercase letters,
-												a digit, and one of @$!%*?&
+												At least {MINIMUM_PASSWORD_LENGTH} characters. A short
+												phrase works well.
 											</p>
 										)}
-									</div>
-								</div>
-							</section>
-
-							<section className="flex flex-col gap-4">
-								<div className="flex flex-col gap-1">
-									<h2 className="text-sm font-medium">Professional details</h2>
-									<Separator />
-								</div>
-								<div className="grid gap-4 sm:grid-cols-2">
-									<div className="flex flex-col gap-2">
-										<Label htmlFor="licenseNumber">Medical license number</Label>
-										<Input
-											id="licenseNumber"
-											name="licenseNumber"
-											onChange={formik.handleChange}
-											onBlur={formik.handleBlur}
-											value={formik.values.licenseNumber}
-											disabled={isLoading}
-											aria-invalid={isInvalid("licenseNumber")}
-										/>
-										{fieldError("licenseNumber")}
-									</div>
-									<div className="flex flex-col gap-2">
-										<Label htmlFor="specialty">Specialty</Label>
-										<Select
-											value={formik.values.specialty}
-											onValueChange={(value) =>
-												formik.setFieldValue("specialty", value ?? "")
-											}
-										>
-											<SelectTrigger id="specialty" className="w-full">
-												<SelectValue placeholder="Select your specialty" />
-											</SelectTrigger>
-											<SelectContent>
-												{MEDICAL_SPECIALTIES.map((specialty) => (
-													<SelectItem key={specialty} value={specialty}>
-														{toTitleCase(specialty)}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										{fieldError("specialty")}
 									</div>
 								</div>
 							</section>
@@ -318,10 +215,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 								</div>
 								<div className="grid gap-4 sm:grid-cols-2">
 									<div className="flex flex-col gap-2">
-										<Label htmlFor="practiceName">
-											Practice name{" "}
-											<span className="text-muted-foreground">(optional)</span>
-										</Label>
+										<Label htmlFor="practiceName">Practice name</Label>
 										<Input
 											id="practiceName"
 											name="practiceName"
@@ -329,7 +223,9 @@ const SignUpForm = ({ plan = "basic" }) => {
 											onBlur={formik.handleBlur}
 											value={formik.values.practiceName}
 											disabled={isLoading}
+											aria-invalid={isInvalid("practiceName")}
 										/>
+										{fieldError("practiceName")}
 									</div>
 									<div className="flex flex-col gap-2">
 										<Label htmlFor="practicePhone">
@@ -382,10 +278,10 @@ const SignUpForm = ({ plan = "basic" }) => {
 								{isLoading ? (
 									<>
 										<Loader2 className="animate-spin" />
-										Creating account...
+										Creating practice...
 									</>
 								) : (
-									"Create account"
+									"Create practice"
 								)}
 							</Button>
 						</form>

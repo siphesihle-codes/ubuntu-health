@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -9,6 +9,8 @@ import {
 	LogOut,
 	PillBottle,
 	Plus,
+	ShieldCheck,
+	UserCog,
 	Users,
 } from "lucide-react";
 import {
@@ -25,34 +27,69 @@ import {
 	SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useCurrentUser, useLogout } from "@/hooks/useAuth";
+import type { Role } from "@/types";
 import PatientForm from "./Forms/PatientForm";
 import AppointmentForm from "./Forms/AppointmentForm";
 
-const subscribeToTenantId = () => () => {};
-const getTenantId = () => localStorage.getItem("tenantId");
-const getServerTenantId = () => null;
+const NAV_ITEMS: {
+	name: string;
+	root: string;
+	icon: typeof LayoutDashboard;
+	roles: Role[];
+}[] = [
+	{
+		name: "Dashboard",
+		root: "/dashboard",
+		icon: LayoutDashboard,
+		roles: ["admin", "doctor", "nurse", "receptionist"],
+	},
+	{
+		name: "Appointments",
+		root: "/appointments",
+		icon: CalendarCheck,
+		roles: ["admin", "doctor", "nurse", "receptionist"],
+	},
+	{
+		name: "Patients",
+		root: "/patients",
+		icon: Users,
+		roles: ["admin", "doctor", "nurse", "receptionist"],
+	},
+	{
+		name: "Prescriptions",
+		root: "/prescriptions",
+		icon: PillBottle,
+		roles: ["admin", "doctor", "nurse"],
+	},
+	{
+		name: "Invoices",
+		root: "/invoices",
+		icon: CreditCard,
+		roles: ["admin", "receptionist"],
+	},
+];
 
 const DashboardNav = () => {
 	const [activeModal, setActiveModal] = useState("");
 	const router = useRouter();
-	const tenantId = useSyncExternalStore(
-		subscribeToTenantId,
-		getTenantId,
-		getServerTenantId
-	);
+	const { data: profile } = useCurrentUser();
+	const logout = useLogout();
+
+	const tenantId = profile?.tenantId;
+	const roles = profile?.roles ?? [];
+	const isAdmin = roles.includes("admin");
+
 	const handleCloseModal = () => setActiveModal("");
 
-	const navItems = [
-		{ name: "Dashboard", root: "/dashboard", icon: LayoutDashboard },
-		{ name: "Appointments", root: "/appointments", icon: CalendarCheck },
-		{ name: "Patients", root: "/patients", icon: Users },
-		{ name: "Prescriptions", root: "/prescriptions", icon: PillBottle },
-		{ name: "Invoices", root: "/invoices", icon: CreditCard },
-	];
+	const navItems = NAV_ITEMS.filter((item) =>
+		item.roles.some((role) => roles.includes(role))
+	);
 
 	const handleSignOut = () => {
-		localStorage.removeItem("tenantId");
-		router.push("/login");
+		logout.mutate(undefined, {
+			onSettled: () => router.push("/login"),
+		});
 	};
 
 	return (
@@ -67,8 +104,8 @@ const DashboardNav = () => {
 							<span className="font-heading text-sm font-semibold leading-tight">
 								Ubuntu Health
 							</span>
-							<span className="text-xs text-muted-foreground">
-								Clinic portal
+							<span className="truncate text-xs text-muted-foreground">
+								{profile?.practiceName ?? "Clinic portal"}
 							</span>
 						</div>
 					</div>
@@ -122,8 +159,34 @@ const DashboardNav = () => {
 				<SidebarFooter>
 					<SidebarSeparator className="mb-1" />
 					<SidebarMenu>
+						{isAdmin ? (
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									render={<Link href={`/admin/${tenantId}`} />}
+									isActive={router.pathname.startsWith("/admin")}
+									tooltip="Administration"
+								>
+									<ShieldCheck />
+									<span>Administration</span>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						) : null}
 						<SidebarMenuItem>
-							<SidebarMenuButton onClick={handleSignOut} tooltip="Sign out">
+							<SidebarMenuButton
+								render={<Link href={`/profile/${tenantId}`} />}
+								isActive={router.pathname.startsWith("/profile")}
+								tooltip="Profile"
+							>
+								<UserCog />
+								<span>Profile</span>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								onClick={handleSignOut}
+								disabled={logout.isPending}
+								tooltip="Sign out"
+							>
 								<LogOut />
 								<span>Sign out</span>
 							</SidebarMenuButton>
