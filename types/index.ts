@@ -21,7 +21,17 @@ export interface UserProfile {
 	roles: Role[];
 	practiceName: string | null;
 	subscriptionPlan: string | null;
+	trialEndsAt: string | null;
+	trialDaysRemaining: number;
+	isTrialExpired: boolean;
 	requiresProfessionalDetails: boolean;
+}
+
+export interface Subscription {
+	plan: string;
+	trialEndsAt: string | null;
+	trialDaysRemaining: number;
+	isTrialExpired: boolean;
 }
 
 export interface StaffMember {
@@ -132,6 +142,44 @@ export interface ClinicalNote {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export const TRIAL_LENGTH_DAYS = 30;
+
+export const SUBSCRIPTION_PLANS = [
+	{
+		name: "Basic",
+		price: 749,
+		description: "For solo practitioners getting started.",
+		features: ["Patient management"],
+		popular: false,
+	},
+	{
+		name: "Standard",
+		price: 1349,
+		description: "For growing practices with a full schedule.",
+		features: [
+			"Patient management",
+			"Appointment scheduling",
+			"E-prescriptions",
+		],
+		popular: true,
+	},
+	{
+		name: "Premium",
+		price: 1749,
+		description: "For clinics running the whole cycle in one place.",
+		features: [
+			"Patient management",
+			"Appointment scheduling",
+			"E-prescriptions",
+			"Invoicing",
+			"Secure communication",
+		],
+		popular: false,
+	},
+] as const;
+
+export type SubscriptionPlanName = (typeof SUBSCRIPTION_PLANS)[number]["name"];
 
 export const ROLE_LABELS = {
 	admin: "Administrator",

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
 import { useRegister } from "@/hooks/useAuth";
+import { TRIAL_LENGTH_DAYS } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,8 @@ const MINIMUM_PASSWORD_LENGTH = 12;
 
 const formatSubscriptionPlan = (plan: string) =>
 	plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase();
+
+const isFreeTrial = (plan: string) => plan.toLowerCase() === "free";
 
 const SignUpForm = ({ plan = "basic" }) => {
 	const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +66,11 @@ const SignUpForm = ({ plan = "basic" }) => {
 				{
 					onSuccess: () => {
 						formik.resetForm();
-						toast.success("Practice created! Please sign in.");
+						toast.success(
+							isFreeTrial(values.subscriptionPlan)
+								? `Practice created! Your ${TRIAL_LENGTH_DAYS}-day trial has started, please sign in.`
+								: "Practice created! Please sign in."
+						);
 						router.push("/login");
 					},
 					onError: (error) => {
@@ -102,10 +109,18 @@ const SignUpForm = ({ plan = "basic" }) => {
 							You will be the practice administrator. Invite your team once you
 							are signed in.
 						</CardDescription>
-						<div className="mt-2 flex justify-center">
+						<div className="mt-2 flex flex-col items-center gap-1.5">
 							<Badge variant="secondary">
-								{formatSubscriptionPlan(plan)} plan
+								{isFreeTrial(plan)
+									? `${TRIAL_LENGTH_DAYS}-day free trial`
+									: `${formatSubscriptionPlan(plan)} plan`}
 							</Badge>
+							{isFreeTrial(plan) ? (
+								<span className="text-xs text-muted-foreground">
+									Full access for {TRIAL_LENGTH_DAYS} days. Pick a plan before
+									it ends to keep working.
+								</span>
+							) : null}
 						</div>
 					</CardHeader>
 

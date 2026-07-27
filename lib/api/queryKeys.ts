@@ -6,6 +6,9 @@ export const queryKeys = {
 		all: ["staff"] as const,
 		invitations: ["staff", "invitations"] as const,
 	},
+	subscription: {
+		current: ["subscription"] as const,
+	},
 	invitations: {
 		preview: (token: string) => ["invitations", token] as const,
 	},

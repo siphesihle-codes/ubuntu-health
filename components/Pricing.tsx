@@ -4,41 +4,8 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { SUBSCRIPTION_PLANS } from "@/types";
 import { cn } from "@/lib/utils";
-
-const plans = [
-	{
-		name: "Basic",
-		price: 499,
-		description: "For solo practitioners getting started.",
-		features: ["Patient management"],
-		popular: false,
-	},
-	{
-		name: "Standard",
-		price: 999,
-		description: "For growing practices with a full schedule.",
-		features: [
-			"Patient management",
-			"Appointment scheduling",
-			"E-prescriptions",
-		],
-		popular: true,
-	},
-	{
-		name: "Premium",
-		price: 1499,
-		description: "For clinics running the whole cycle in one place.",
-		features: [
-			"Patient management",
-			"Appointment scheduling",
-			"E-prescriptions",
-			"Invoicing",
-			"Secure communication",
-		],
-		popular: false,
-	},
-];
 
 const Pricing = () => {
 	return (
@@ -56,7 +23,7 @@ const Pricing = () => {
 				</div>
 
 				<div className="mt-14 grid items-start gap-6 md:grid-cols-3">
-					{plans.map((plan) => (
+					{SUBSCRIPTION_PLANS.map((plan) => (
 						<Card
 							key={plan.name}
 							className={cn(

@@ -12,6 +12,7 @@ import {
 	ShieldCheck,
 	UserCog,
 	Users,
+	Wallet,
 } from "lucide-react";
 import {
 	Sidebar,
@@ -160,16 +161,28 @@ const DashboardNav = () => {
 					<SidebarSeparator className="mb-1" />
 					<SidebarMenu>
 						{isAdmin ? (
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									render={<Link href={`/admin/${tenantId}`} />}
-									isActive={router.pathname.startsWith("/admin")}
-									tooltip="Administration"
-								>
-									<ShieldCheck />
-									<span>Administration</span>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
+							<>
+								<SidebarMenuItem>
+									<SidebarMenuButton
+										render={<Link href={`/admin/${tenantId}`} />}
+										isActive={router.pathname.startsWith("/admin")}
+										tooltip="Administration"
+									>
+										<ShieldCheck />
+										<span>Administration</span>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+								<SidebarMenuItem>
+									<SidebarMenuButton
+										render={<Link href={`/billing/${tenantId}`} />}
+										isActive={router.pathname.startsWith("/billing")}
+										tooltip="Billing"
+									>
+										<Wallet />
+										<span>Billing</span>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							</>
 						) : null}
 						<SidebarMenuItem>
 							<SidebarMenuButton

@@ -4,6 +4,8 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator";
 import { useCurrentUser } from "@/hooks/useAuth";
 import DashboardNav from "./DashboardNav";
+import TrialBanner from "./TrialBanner";
+import TrialExpired from "./TrialExpired";
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -19,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({
 	actions,
 }) => {
 	const router = useRouter();
-	const { isError } = useCurrentUser();
+	const { data: profile, isError } = useCurrentUser();
 
 	useEffect(() => {
 		if (isError) router.replace("/login");
@@ -44,11 +46,20 @@ const Layout: React.FC<LayoutProps> = ({
 							</p>
 						) : null}
 					</div>
-					{actions ? (
+					{actions && !profile?.isTrialExpired ? (
 						<div className="flex shrink-0 items-center gap-2">{actions}</div>
 					) : null}
 				</header>
-				<div className="flex-1 p-4 md:p-6">{children}</div>
+				<div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+					{profile?.isTrialExpired ? (
+						<TrialExpired />
+					) : (
+						<>
+							<TrialBanner />
+							{children}
+						</>
+					)}
+				</div>
 			</SidebarInset>
 		</SidebarProvider>
 	);
