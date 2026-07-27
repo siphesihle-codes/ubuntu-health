@@ -1,5 +1,6 @@
-import { Appointment } from "@/types";
+import { Appointment, STATUS_COLORS } from "@/types";
 import React from "react";
+import { Badge } from "@/components/ui/badge";
 
 interface AppointmentsCardProps {
 	appointments: Appointment[];
@@ -14,17 +15,22 @@ const AppointmentsCard = ({ appointments }: AppointmentsCardProps) => {
 	).length;
 
 	return (
-		<div className="space-y-2  ">
-			<p>
-				Todays Appointments: <span className="">{appointments.length}</span>
-			</p>
-			<div className="flex justify-between">
-				<span className="px-2 py-1 rounded bg-yellow-100 text-yellow-800">
+		<div className="flex flex-col gap-3">
+			<div className="flex flex-col gap-1">
+				<span className="text-xs text-muted-foreground">
+					Today&apos;s appointments
+				</span>
+				<span className="font-heading text-2xl font-semibold tracking-tight">
+					{appointments.length}
+				</span>
+			</div>
+			<div className="flex flex-wrap gap-2">
+				<Badge className={STATUS_COLORS.scheduled}>
 					Scheduled: {scheduledCount}
-				</span>
-				<span className="px-2 py-1 rounded bg-blue-100 text-blue-800">
-					In Progress:{inProgressCount}
-				</span>
+				</Badge>
+				<Badge className={STATUS_COLORS.inProgress}>
+					In progress: {inProgressCount}
+				</Badge>
 			</div>
 		</div>
 	);

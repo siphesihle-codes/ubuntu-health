@@ -2,11 +2,42 @@ import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
-import { Calendar, Pill, User } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useCreatePrescription } from "@/hooks/usePrescriptions";
+import Layout from "@/components/Layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+
+const FREQUENCIES = [
+	"Once daily",
+	"Twice daily",
+	"Three times daily",
+	"Four times daily",
+	"As needed",
+];
+
+const SectionHeading = ({ children }: { children: React.ReactNode }) => (
+	<div className="flex flex-col gap-1">
+		<h2 className="text-sm font-medium">{children}</h2>
+		<Separator />
+	</div>
+);
 
 const NewPrescriptionPage = () => {
+	const { tenantId } = useRouter().query as { tenantId: string };
 	const createPrescription = useCreatePrescription();
 	const isSubmitting = createPrescription.isPending;
 
@@ -59,270 +90,195 @@ const NewPrescriptionPage = () => {
 		},
 	});
 
+	const fieldError = (field: keyof typeof formik.values) =>
+		formik.touched[field] && formik.errors[field] ? (
+			<p className="text-xs text-destructive">{formik.errors[field]}</p>
+		) : null;
+
+	const isInvalid = (field: keyof typeof formik.values) =>
+		Boolean(formik.touched[field] && formik.errors[field]) || undefined;
+
 	return (
-		<div className="min-h-screen bg-gray-50 p-6">
-			<div className="max-w-4xl mx-auto">
-				{/* Header */}
-				<div className="flex justify-between items-center mb-8">
-					<div>
-						<h1 className="text-2xl font-bold text-gray-800">
-							New Prescription
-						</h1>
-						<p className="text-gray-600 mt-1">
-							Create a new medication prescription
-						</p>
-					</div>
-					<Link
-						href="/prescriptions"
-						className="px-4 py-2 border border-gray-300 rounded-md text-gray-700
-            hover:bg-gray-50 transition-colors"
-					>
-						Back to Prescriptions
-					</Link>
-				</div>
-
-				{/* Form */}
-				<div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-					<form onSubmit={formik.handleSubmit} className="space-y-6">
-						{/* Patient Information */}
-						<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-							<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-								<User size={18} className="text-gray-500" />
-								Patient Information
-							</h2>
-
-							<div className="grid md:grid-cols-2 gap-6">
-								<div>
-									<label
-										htmlFor="patientId"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Patient ID
-									</label>
-									<input
-										type="text"
+		<Layout
+			title="New prescription"
+			description="Create a new medication prescription"
+			actions={
+				<Button
+					size="sm"
+					variant="outline"
+					render={<Link href={`/prescriptions/${tenantId}`} />}
+				>
+					<ArrowLeft />
+					<span className="hidden sm:inline">Back</span>
+				</Button>
+			}
+		>
+			<div className="mx-auto max-w-3xl">
+				<Card>
+					<CardContent>
+						<form onSubmit={formik.handleSubmit} className="flex flex-col gap-8">
+							<section className="flex flex-col gap-4">
+								<SectionHeading>Patient</SectionHeading>
+								<div className="flex flex-col gap-2 sm:max-w-xs">
+									<Label htmlFor="patientId">Patient ID</Label>
+									<Input
 										id="patientId"
 										name="patientId"
 										value={formik.values.patientId}
 										onChange={formik.handleChange}
 										onBlur={formik.handleBlur}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 										placeholder="PAT-12345"
+										disabled={isSubmitting}
+										aria-invalid={isInvalid("patientId")}
 									/>
-									{formik.touched.patientId && formik.errors.patientId && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.patientId}
-										</p>
-									)}
+									{fieldError("patientId")}
 								</div>
-							</div>
-						</div>
+							</section>
 
-						{/* Medication Details */}
-						<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-							<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-								<Pill size={18} className="text-gray-500" />
-								Medication Details
-							</h2>
+							<section className="flex flex-col gap-4">
+								<SectionHeading>Medication details</SectionHeading>
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="medication">Medication name</Label>
+										<Input
+											id="medication"
+											name="medication"
+											value={formik.values.medication}
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											placeholder="e.g. Amoxicillin"
+											disabled={isSubmitting}
+											aria-invalid={isInvalid("medication")}
+										/>
+										{fieldError("medication")}
+									</div>
 
-							<div className="grid md:grid-cols-2 gap-6">
-								<div>
-									<label
-										htmlFor="medication"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Medication Name
-									</label>
-									<input
-										type="text"
-										id="medication"
-										name="medication"
-										value={formik.values.medication}
-										onChange={formik.handleChange}
-										onBlur={formik.handleBlur}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-										placeholder="e.g., Amoxicillin"
-									/>
-									{formik.touched.medication && formik.errors.medication && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.medication}
-										</p>
-									)}
-								</div>
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="dosage">Dosage</Label>
+										<Input
+											id="dosage"
+											name="dosage"
+											value={formik.values.dosage}
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											placeholder="e.g. 500mg"
+											disabled={isSubmitting}
+											aria-invalid={isInvalid("dosage")}
+										/>
+										{fieldError("dosage")}
+									</div>
 
-								<div>
-									<label
-										htmlFor="dosage"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Dosage
-									</label>
-									<input
-										type="text"
-										id="dosage"
-										name="dosage"
-										value={formik.values.dosage}
-										onChange={formik.handleChange}
-										onBlur={formik.handleBlur}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-										placeholder="e.g., 500mg"
-									/>
-									{formik.touched.dosage && formik.errors.dosage && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.dosage}
-										</p>
-									)}
-								</div>
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="frequency">Frequency</Label>
+										<Select
+											value={formik.values.frequency}
+											onValueChange={(value) =>
+												formik.setFieldValue("frequency", value ?? "")
+											}
+										>
+											<SelectTrigger id="frequency" className="w-full">
+												<SelectValue placeholder="Select frequency" />
+											</SelectTrigger>
+											<SelectContent>
+												{FREQUENCIES.map((frequency) => (
+													<SelectItem key={frequency} value={frequency}>
+														{frequency}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{fieldError("frequency")}
+									</div>
 
-								<div>
-									<label
-										htmlFor="frequency"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Frequency
-									</label>
-									<select
-										id="frequency"
-										name="frequency"
-										value={formik.values.frequency}
-										onChange={formik.handleChange}
-										onBlur={formik.handleBlur}
-										className="w-full p-3 border rounded-md focus:outline-none focus:ring-2
-                    focus:ring-cyan-500/50"
-									>
-										<option value="">Select frequency</option>
-										<option value="Once daily">Once daily</option>
-										<option value="Twice daily">Twice daily</option>
-										<option value="Three times daily">Three times daily</option>
-										<option value="Four times daily">Four times daily</option>
-										<option value="As needed">As needed</option>
-									</select>
-									{formik.touched.frequency && formik.errors.frequency && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.frequency}
-										</p>
-									)}
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="refills">Refills</Label>
+										<Input
+											type="number"
+											id="refills"
+											name="refills"
+											min="0"
+											max="10"
+											value={formik.values.refills}
+											onChange={formik.handleChange}
+											disabled={isSubmitting}
+										/>
+									</div>
 								</div>
 
-								<div>
-									<label
-										htmlFor="refills"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Refills
-									</label>
-									<input
-										type="number"
-										id="refills"
-										name="refills"
-										min="0"
-										max="10"
-										value={formik.values.refills}
+								<div className="flex flex-col gap-2">
+									<Label htmlFor="instructions">Additional instructions</Label>
+									<Textarea
+										id="instructions"
+										name="instructions"
+										rows={3}
+										value={formik.values.instructions}
 										onChange={formik.handleChange}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+										placeholder="Special instructions for the patient..."
+										disabled={isSubmitting}
 									/>
 								</div>
-							</div>
+							</section>
 
-							<div className="mt-6">
-								<label
-									htmlFor="instructions"
-									className="block text-sm font-medium text-gray-700 mb-1"
+							<section className="flex flex-col gap-4">
+								<SectionHeading>Prescription dates</SectionHeading>
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="startDate">Start date</Label>
+										<Input
+											type="date"
+											id="startDate"
+											name="startDate"
+											value={formik.values.startDate}
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											disabled={isSubmitting}
+											aria-invalid={isInvalid("startDate")}
+										/>
+										{fieldError("startDate")}
+									</div>
+
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="endDate">
+											End date{" "}
+											<span className="text-muted-foreground">(optional)</span>
+										</Label>
+										<Input
+											type="date"
+											id="endDate"
+											name="endDate"
+											value={formik.values.endDate}
+											onChange={formik.handleChange}
+											disabled={isSubmitting}
+										/>
+									</div>
+								</div>
+							</section>
+
+							<div className="flex justify-end gap-3">
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => formik.resetForm()}
+									disabled={isSubmitting}
 								>
-									Additional Instructions
-								</label>
-								<textarea
-									id="instructions"
-									name="instructions"
-									rows={3}
-									value={formik.values.instructions}
-									onChange={formik.handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-									placeholder="Special instructions for the patient..."
-								/>
-							</div>
-						</div>
-
-						{/* Dates */}
-						<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-							<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-								<Calendar size={18} className="text-gray-500" />
-								Prescription Dates
-							</h2>
-
-							<div className="grid md:grid-cols-2 gap-6">
-								<div>
-									<label
-										htmlFor="startDate"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										Start Date
-									</label>
-									<input
-										type="date"
-										id="startDate"
-										name="startDate"
-										value={formik.values.startDate}
-										onChange={formik.handleChange}
-										onBlur={formik.handleBlur}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-									/>
-									{formik.touched.startDate && formik.errors.startDate && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.startDate}
-										</p>
+									Reset
+								</Button>
+								<Button type="submit" disabled={isSubmitting}>
+									{isSubmitting ? (
+										<>
+											<Loader2 className="animate-spin" />
+											Creating...
+										</>
+									) : (
+										"Create prescription"
 									)}
-								</div>
-
-								<div>
-									<label
-										htmlFor="endDate"
-										className="block text-sm font-medium text-gray-700 mb-1"
-									>
-										End Date (Optional)
-									</label>
-									<input
-										type="date"
-										id="endDate"
-										name="endDate"
-										value={formik.values.endDate}
-										onChange={formik.handleChange}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md
-                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-									/>
-								</div>
+								</Button>
 							</div>
-						</div>
-
-						{/* Form Actions */}
-						<div className="flex justify-end gap-4 pt-4">
-							<button
-								type="button"
-								onClick={() => formik.resetForm()}
-								className="px-6 py-2 border border-gray-300 rounded-md text-gray-700
-                hover:bg-gray-50 transition-colors"
-							>
-								Reset
-							</button>
-							<button
-								type="submit"
-								disabled={isSubmitting}
-								className="px-6 py-2 bg-blue-600 rounded-md text-white font-medium
-                hover:bg-blue-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-							>
-								{isSubmitting ? "Creating..." : "Create Prescription"}
-							</button>
-						</div>
-					</form>
-				</div>
+						</form>
+					</CardContent>
+				</Card>
 			</div>
-		</div>
+		</Layout>
 	);
 };
 

@@ -9,13 +9,22 @@ interface InvoicesCardProps {
 }
 
 const InvoicesCard = ({ invoices }: InvoicesCardProps) => {
+	const total = invoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+
 	return (
-		<div className="space-y-2">
-			<p className="text-gray-600">Total Invoices: {invoices.length}</p>
-			<p className="text-gray-600">
-				Total Revenue: R
-				{invoices.reduce((sum, inv) => sum + inv.totalAmount, 0)}
-			</p>
+		<div className="flex flex-col gap-3">
+			<div className="flex flex-col gap-1">
+				<span className="text-xs text-muted-foreground">Total invoices</span>
+				<span className="font-heading text-2xl font-semibold tracking-tight">
+					{invoices.length}
+				</span>
+			</div>
+			<div className="flex flex-col gap-1">
+				<span className="text-xs text-muted-foreground">Total revenue</span>
+				<span className="font-heading text-2xl font-semibold tracking-tight text-success">
+					R{total.toLocaleString("en-ZA", { maximumFractionDigits: 0 })}
+				</span>
+			</div>
 		</div>
 	);
 };

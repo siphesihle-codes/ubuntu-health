@@ -16,17 +16,21 @@ const PatientsCard = ({ patients }: PatientsCardProps) => {
 			end: endOfCurrentWeek,
 		})
 	);
-	const patientsLength = patients.length;
-	const patientsThisWeekLength = patientsThisWeek.length;
 
 	return (
-		<div className="space-y-2  ">
-			<p>
-				Total Patients: <span className="">{patientsLength}</span>
-			</p>
-			<p>
-				New This Week: <span className="">{patientsThisWeekLength}</span>
-			</p>
+		<div className="flex flex-col gap-3">
+			<div className="flex flex-col gap-1">
+				<span className="text-xs text-muted-foreground">Total patients</span>
+				<span className="font-heading text-2xl font-semibold tracking-tight">
+					{patients.length}
+				</span>
+			</div>
+			<div className="flex flex-col gap-1">
+				<span className="text-xs text-muted-foreground">New this week</span>
+				<span className="font-heading text-2xl font-semibold tracking-tight text-primary">
+					{patientsThisWeek.length}
+				</span>
+			</div>
 		</div>
 	);
 };
