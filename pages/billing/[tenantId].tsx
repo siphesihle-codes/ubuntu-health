@@ -41,16 +41,17 @@ const BillingBoard = () => {
 					<CardTitle>Current plan</CardTitle>
 					<CardDescription>
 						{isTrial
-							? `Your ${TRIAL_LENGTH_DAYS}-day free trial gives you the full practice workspace.`
+							? `You are on a ${TRIAL_LENGTH_DAYS}-day free trial. Confirm a plan before it ends to keep access.`
 							: "Your practice is on a paid plan."}
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-wrap items-center gap-6">
 					<div className="flex flex-col gap-1">
 						<span className="text-xs text-muted-foreground">Plan</span>
-						<Badge variant="secondary">
-							{isTrial ? "Free trial" : subscription.plan}
-						</Badge>
+						<div className="flex items-center gap-2">
+							<Badge variant="secondary">{subscription.plan}</Badge>
+							{isTrial ? <Badge variant="outline">Free trial</Badge> : null}
+						</div>
 					</div>
 
 					{subscription.trialEndsAt ? (
@@ -75,6 +76,16 @@ const BillingBoard = () => {
 							</div>
 						</>
 					) : null}
+
+					<div className="flex flex-col gap-1">
+						<span className="text-xs text-muted-foreground">
+							Practitioner seats
+						</span>
+						<span className="text-sm font-medium">
+							{subscription.practitionersInUse} of{" "}
+							{subscription.practitionerSeats} used
+						</span>
+					</div>
 				</CardContent>
 			</Card>
 
@@ -84,12 +95,17 @@ const BillingBoard = () => {
 				</h2>
 				<p className="text-sm text-muted-foreground">
 					{isAdmin
-						? "Plans take effect immediately and end your free trial."
+						? "Doctors and practice owners use a practitioner seat. Reception and nursing staff are unlimited on every plan."
 						: "Only practice administrators can change the plan."}
 				</p>
 			</div>
 
-			<UpgradePlans currentPlan={subscription.plan} canUpgrade={isAdmin} />
+			<UpgradePlans
+				currentPlan={subscription.plan}
+				practitionersInUse={subscription.practitionersInUse}
+				isTrial={isTrial}
+				canUpgrade={isAdmin}
+			/>
 		</div>
 	);
 };

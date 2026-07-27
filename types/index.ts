@@ -32,6 +32,8 @@ export interface Subscription {
 	trialEndsAt: string | null;
 	trialDaysRemaining: number;
 	isTrialExpired: boolean;
+	practitionerSeats: number;
+	practitionersInUse: number;
 }
 
 export interface StaffMember {
@@ -147,33 +149,43 @@ export const TRIAL_LENGTH_DAYS = 30;
 
 export const SUBSCRIPTION_PLANS = [
 	{
-		name: "Basic",
-		price: 749,
-		description: "For solo practitioners getting started.",
-		features: ["Patient management"],
+		name: "Solo",
+		price: 699,
+		practitioners: 1,
+		description: "For a practitioner running their own rooms.",
+		features: [
+			"1 practitioner",
+			"Unlimited reception and nursing staff",
+			"Patients, appointments and clinical notes",
+			"E-prescriptions and invoicing",
+			"Email support",
+		],
 		popular: false,
 	},
 	{
-		name: "Standard",
-		price: 1349,
-		description: "For growing practices with a full schedule.",
+		name: "Practice",
+		price: 1899,
+		practitioners: 3,
+		description: "For partnerships and growing practices.",
 		features: [
-			"Patient management",
-			"Appointment scheduling",
-			"E-prescriptions",
+			"Up to 3 practitioners",
+			"Everything in Solo",
+			"Shared diary across practitioners",
+			"Staff roles and permissions",
+			"Priority email support",
 		],
 		popular: true,
 	},
 	{
-		name: "Premium",
-		price: 1749,
-		description: "For clinics running the whole cycle in one place.",
+		name: "Clinic",
+		price: 3499,
+		practitioners: 8,
+		description: "For clinics and groups with a full team.",
 		features: [
-			"Patient management",
-			"Appointment scheduling",
-			"E-prescriptions",
-			"Invoicing",
-			"Secure communication",
+			"Up to 8 practitioners",
+			"Everything in Practice",
+			"Onboarding and data migration",
+			"Priority support",
 		],
 		popular: false,
 	},

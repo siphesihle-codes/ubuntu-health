@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Loader2, MailPlus, ShieldCheck, UserPlus, Users } from "lucide-react";
+import {
+	Loader2,
+	MailPlus,
+	ShieldCheck,
+	Stethoscope,
+	UserPlus,
+	Users,
+} from "lucide-react";
 import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
@@ -12,6 +19,7 @@ import {
 	useUpdateStaffRole,
 	useUpdateStaffStatus,
 } from "@/hooks/useStaff";
+import { useSubscription } from "@/hooks/useSubscription";
 import { ROLE_LABELS } from "@/types";
 import type { Role, StaffMember } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -43,6 +51,7 @@ const AdminBoard = () => {
 	const { data: profile } = useCurrentUser();
 	const { data: staff = [], isPending: staffPending } = useStaff();
 	const { data: invitations = [] } = useInvitations();
+	const { data: subscription } = useSubscription();
 
 	const updateRole = useUpdateStaffRole();
 	const updateStatus = useUpdateStaffStatus();
@@ -110,12 +119,21 @@ const AdminBoard = () => {
 			value: invitations.length.toLocaleString(),
 			icon: MailPlus,
 		},
+		...(subscription
+			? [
+					{
+						label: "Practitioner seats",
+						value: `${subscription.practitionersInUse} of ${subscription.practitionerSeats}`,
+						icon: Stethoscope,
+					},
+				]
+			: []),
 	];
 
 	return (
 		<>
 			<div className="mx-auto flex max-w-7xl flex-col gap-6">
-				<div className="grid gap-4 sm:grid-cols-3">
+				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 					{stats.map((stat) => (
 						<Card key={stat.label} size="sm">
 							<CardContent className="flex items-center justify-between gap-4">

@@ -28,7 +28,7 @@ const formatSubscriptionPlan = (plan: string) =>
 
 const isFreeTrial = (plan: string) => plan.toLowerCase() === "free";
 
-const SignUpForm = ({ plan = "basic" }) => {
+const SignUpForm = ({ plan = "free" }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const router = useRouter();
 	const register = useRegister();
@@ -115,12 +115,10 @@ const SignUpForm = ({ plan = "basic" }) => {
 									? `${TRIAL_LENGTH_DAYS}-day free trial`
 									: `${formatSubscriptionPlan(plan)} plan`}
 							</Badge>
-							{isFreeTrial(plan) ? (
-								<span className="text-xs text-muted-foreground">
-									Full access for {TRIAL_LENGTH_DAYS} days. Pick a plan before
-									it ends to keep working.
-								</span>
-							) : null}
+							<span className="text-xs text-muted-foreground">
+								Full access for {TRIAL_LENGTH_DAYS} days, no card required.
+								Confirm a plan before it ends to keep working.
+							</span>
 						</div>
 					</CardHeader>
 
@@ -324,7 +322,7 @@ interface SignUpPageProps {
 export const getServerSideProps: GetServerSideProps<SignUpPageProps> = async ({
 	query,
 }) => ({
-	props: { plan: typeof query.plan === "string" ? query.plan : "basic" },
+	props: { plan: typeof query.plan === "string" ? query.plan : "free" },
 });
 
 const SignUpPage = ({ plan }: SignUpPageProps) => <SignUpForm plan={plan} />;

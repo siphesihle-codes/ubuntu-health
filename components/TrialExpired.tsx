@@ -1,10 +1,12 @@
 import React from "react";
 import { Lock } from "lucide-react";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import UpgradePlans from "./UpgradePlans";
 
 const TrialExpired = () => {
 	const { data: profile } = useCurrentUser();
+	const { data: subscription } = useSubscription();
 	const isAdmin = profile?.roles.includes("admin") ?? false;
 
 	return (
@@ -24,7 +26,9 @@ const TrialExpired = () => {
 			</div>
 
 			<UpgradePlans
-				currentPlan={profile?.subscriptionPlan}
+				currentPlan={subscription?.plan ?? profile?.subscriptionPlan}
+				practitionersInUse={subscription?.practitionersInUse ?? 0}
+				isTrial
 				canUpgrade={isAdmin}
 			/>
 		</div>

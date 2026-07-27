@@ -4,8 +4,10 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { SUBSCRIPTION_PLANS } from "@/types";
+import { SUBSCRIPTION_PLANS, TRIAL_LENGTH_DAYS } from "@/types";
 import { cn } from "@/lib/utils";
+
+const rand = (amount: number) => `R${amount.toLocaleString("en-ZA")}`;
 
 const Pricing = () => {
 	return (
@@ -17,8 +19,9 @@ const Pricing = () => {
 						Plans that scale with your practice
 					</h2>
 					<p className="mt-5 text-base text-muted-foreground">
-						Flexible pricing tailored to how you work. Change or cancel your plan
-						at any time.
+						Priced per practitioner. Reception and nursing staff are unlimited on
+						every plan, and every plan starts with a {TRIAL_LENGTH_DAYS}-day
+						free trial.
 					</p>
 				</div>
 
@@ -42,10 +45,16 @@ const Pricing = () => {
 								</p>
 								<p className="mt-4 flex items-baseline gap-1">
 									<span className="font-heading text-4xl font-semibold tracking-tight">
-										R{plan.price}
+										{rand(plan.price)}
 									</span>
 									<span className="text-sm text-muted-foreground">/ month</span>
 								</p>
+								{plan.practitioners > 1 ? (
+									<p className="text-xs text-muted-foreground">
+										{rand(Math.round(plan.price / plan.practitioners))} per
+										practitioner
+									</p>
+								) : null}
 							</CardHeader>
 
 							<CardContent>

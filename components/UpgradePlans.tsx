@@ -14,12 +14,21 @@ import { SUBSCRIPTION_PLANS } from "@/types";
 import type { SubscriptionPlanName } from "@/types";
 import { cn } from "@/lib/utils";
 
+const rand = (amount: number) => `R${amount.toLocaleString("en-ZA")}`;
+
 interface UpgradePlansProps {
 	currentPlan: string | null | undefined;
+	practitionersInUse: number;
+	isTrial: boolean;
 	canUpgrade: boolean;
 }
 
-const UpgradePlans = ({ currentPlan, canUpgrade }: UpgradePlansProps) => {
+const UpgradePlans = ({
+	currentPlan,
+	practitionersInUse,
+	isTrial,
+	canUpgrade,
+}: UpgradePlansProps) => {
 	const upgrade = useUpgradeSubscription();
 
 	const handleUpgrade = (plan: SubscriptionPlanName) => {
@@ -32,8 +41,9 @@ const UpgradePlans = ({ currentPlan, canUpgrade }: UpgradePlansProps) => {
 	return (
 		<div className="grid items-start gap-6 md:grid-cols-3">
 			{SUBSCRIPTION_PLANS.map((plan) => {
-				const isCurrentPlan = currentPlan === plan.name;
+				const isCurrentPlan = currentPlan === plan.name && !isTrial;
 				const isUpgrading = upgrade.isPending && upgrade.variables === plan.name;
+				const hasEnoughSeats = plan.practitioners >= practitionersInUse;
 
 				return (
 					<Card
@@ -51,10 +61,16 @@ const UpgradePlans = ({ currentPlan, canUpgrade }: UpgradePlansProps) => {
 							</p>
 							<p className="mt-4 flex items-baseline gap-1">
 								<span className="font-heading text-4xl font-semibold tracking-tight">
-									R{plan.price}
+									{rand(plan.price)}
 								</span>
 								<span className="text-sm text-muted-foreground">/ month</span>
 							</p>
+							{plan.practitioners > 1 ? (
+								<p className="text-xs text-muted-foreground">
+									{rand(Math.round(plan.price / plan.practitioners))} per
+									practitioner
+								</p>
+							) : null}
 						</CardHeader>
 
 						<CardContent>
@@ -74,7 +90,12 @@ const UpgradePlans = ({ currentPlan, canUpgrade }: UpgradePlansProps) => {
 							<Button
 								className="w-full"
 								variant={plan.popular ? "default" : "outline"}
-								disabled={!canUpgrade || isCurrentPlan || upgrade.isPending}
+								disabled={
+									!canUpgrade ||
+									isCurrentPlan ||
+									!hasEnoughSeats ||
+									upgrade.isPending
+								}
 								onClick={() => handleUpgrade(plan.name)}
 							>
 								{isUpgrading ? (
@@ -84,6 +105,8 @@ const UpgradePlans = ({ currentPlan, canUpgrade }: UpgradePlansProps) => {
 									</>
 								) : isCurrentPlan ? (
 									"Current plan"
+								) : !hasEnoughSeats ? (
+									"Too few seats"
 								) : (
 									`Choose ${plan.name}`
 								)}
