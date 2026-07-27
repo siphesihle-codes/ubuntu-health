@@ -21,7 +21,6 @@ export interface RegisterPayload {
 
 export interface AuthResponse {
 	isSuccess: boolean;
-	token: string;
 	refreshToken: string | null;
 	message: string;
 	email: string;
@@ -37,7 +36,6 @@ export function useLogin() {
 				body: JSON.stringify(credentials),
 			}),
 		onSuccess: (data) => {
-			localStorage.setItem("token", data.token);
 			localStorage.setItem("tenantId", data.tenantId);
 		},
 	});

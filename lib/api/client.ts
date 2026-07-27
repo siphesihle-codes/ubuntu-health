@@ -11,9 +11,6 @@ export class ApiError extends Error {
 	}
 }
 
-const getAuthToken = () =>
-	typeof window === "undefined" ? null : localStorage.getItem("token");
-
 const parseBody = async (response: Response): Promise<unknown> => {
 	const text = await response.text();
 	if (!text) return null;
@@ -29,13 +26,11 @@ export async function apiRequest<T>(
 	path: string,
 	options: RequestInit = {}
 ): Promise<T> {
-	const token = getAuthToken();
-
 	const response = await fetch(`${API_BASE_URL}/api/${path}`, {
 		...options,
+		credentials: "include",
 		headers: {
 			"Content-Type": "application/json",
-			...(token ? { Authorization: `Bearer ${token}` } : {}),
 			...options.headers,
 		},
 	});
