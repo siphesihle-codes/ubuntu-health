@@ -114,14 +114,33 @@ export const STATUS_LABELS = {
 };
 
 export const STATUS_COLORS = {
-	scheduled: "bg-blue-100 text-blue-800",
-	confirmed: "bg-green-100 text-green-800",
-	checkedIn: "bg-purple-100 text-purple-800",
-	inProgress: "bg-yellow-100 text-yellow-800",
-	completed: "bg-gray-300 text-gray-800",
-	cancelled: "bg-red-100 text-red-800",
-	noShow: "bg-orange-100 text-orange-800",
-	rescheduled: "bg-indigo-100 text-indigo-800",
+	scheduled: "bg-primary/10 text-primary",
+	confirmed: "bg-success/10 text-success",
+	checkedIn: "bg-chart-3/15 text-chart-5",
+	inProgress: "bg-warning/10 text-warning",
+	completed: "bg-muted text-muted-foreground",
+	cancelled: "bg-destructive/10 text-destructive",
+	noShow: "bg-destructive/10 text-destructive",
+	rescheduled: "bg-accent text-accent-foreground",
+};
+
+export const INVOICE_STATUS_COLORS: Record<string, string> = {
+	draft: "bg-muted text-muted-foreground",
+	pending: "bg-warning/10 text-warning",
+	sent: "bg-primary/10 text-primary",
+	paid: "bg-success/10 text-success",
+	overdue: "bg-destructive/10 text-destructive",
+	cancelled: "bg-muted text-muted-foreground",
+	refunded: "bg-accent text-accent-foreground",
+	partiallyPaid: "bg-warning/10 text-warning",
+};
+
+export const PRESCRIPTION_STATUS_COLORS: Record<string, string> = {
+	active: "bg-success/10 text-success",
+	pending: "bg-warning/10 text-warning",
+	completed: "bg-muted text-muted-foreground",
+	cancelled: "bg-destructive/10 text-destructive",
+	expired: "bg-destructive/10 text-destructive",
 };
 
 export const MEDICATION_TYPES = {

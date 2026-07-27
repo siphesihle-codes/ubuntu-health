@@ -1,16 +1,13 @@
 import React from "react";
 import {
-	Search,
-	FileText,
-	CreditCard,
-	Calendar,
-	User,
-	Pill,
-	Clock,
-	Check,
 	AlertCircle,
-	Plus,
+	Calendar,
 	ChevronRight,
+	CreditCard,
+	Pill,
+	Plus,
+	TrendingUp,
+	Users,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -20,7 +17,27 @@ import { usePatients } from "@/hooks/usePatients";
 import { usePrescriptions } from "@/hooks/usePrescriptions";
 import { useAppointments } from "@/hooks/useAppointments";
 import { useInvoices } from "@/hooks/useInvoices";
-import { STATUS_LABELS } from "@/types";
+import { INVOICE_STATUS_COLORS, STATUS_LABELS } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+
+const currency = (amount: number) =>
+	`R${amount.toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
+
+const initials = (firstName: string, lastName: string) =>
+	`${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase();
+
+const EmptyState = ({ message }: { message: string }) => (
+	<p className="py-8 text-center text-sm text-muted-foreground">{message}</p>
+);
 
 const DashboardPage = () => {
 	const { tenantId } = useRouter().query as { tenantId: string };
@@ -42,327 +59,272 @@ const DashboardPage = () => {
 			.reduce((sum, invoice) => sum + invoice.totalAmount, 0),
 	};
 
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case "paid":
-				return "bg-green-900/30 text-green-400";
-			case "sent":
-				return "bg-blue-900/30 text-blue-400";
-			case "overdue":
-				return "bg-red-900/30 text-red-400";
-			default:
-				return "text-blue-400";
-		}
-	};
+	const summaryCards = [
+		{
+			label: "Total patients",
+			value: stats.patients.toLocaleString(),
+			icon: Users,
+			href: `/patients/${tenantId}`,
+		},
+		{
+			label: "Appointments",
+			value: stats.appointments.toLocaleString(),
+			icon: Calendar,
+			href: `/appointments/${tenantId}`,
+		},
+		{
+			label: "Active prescriptions",
+			value: stats.prescriptions.toLocaleString(),
+			icon: Pill,
+			href: `/prescriptions/${tenantId}`,
+		},
+		{
+			label: "Revenue collected",
+			value: currency(stats.revenue),
+			icon: CreditCard,
+			href: `/invoices/${tenantId}`,
+		},
+	];
 
-	const getStatusIcon = (status: string) => {
-		switch (status) {
-			case "paid":
-				return <Check size={16} />;
-			case "overdue":
-				return <AlertCircle size={16} />;
-			case "sent":
-				return <Clock size={16} />;
-			default:
-				return <FileText size={16} />;
-		}
-	};
+	const financials = [
+		{
+			label: "Total revenue",
+			value: currency(stats.revenue),
+			icon: TrendingUp,
+			tone: "text-success",
+		},
+		{
+			label: "Pending payments",
+			value: currency(stats.pendingPayments),
+			icon: CreditCard,
+			tone: "text-warning",
+		},
+		{
+			label: "Outstanding invoices",
+			value: invoices.filter((invoice) => invoice.status !== "paid").length,
+			icon: AlertCircle,
+			tone: "text-destructive",
+		},
+	];
 
 	return (
-		<Layout>
-			<div className="min-h-screen bg-gray-50 p-6">
-				<div className="max-w-7xl mx-auto">
-					{/* Header */}
-					<div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-						<div>
-							<h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-							<p className="mt-2 text-gray-600">
-								Overview of your medical practice
-							</p>
-						</div>
-					</div>
-
-					{/* Stats Cards */}
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-						{/* Patients Card */}
-						<Link href="/patients">
-							<div
-								className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50
-              transition-colors cursor-pointer shadow-sm"
+		<Layout
+			title="Dashboard"
+			description="Overview of your practice"
+			actions={
+				<Button size="sm" render={<Link href={`/patients/${tenantId}`} />}>
+					<Plus />
+					New patient
+				</Button>
+			}
+		>
+			<div className="mx-auto flex max-w-7xl flex-col gap-6">
+				<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+					{summaryCards.map((card) => (
+						<Link key={card.label} href={card.href} className="group">
+							<Card
+								size="sm"
+								className="transition-shadow group-hover:shadow-lg"
 							>
-								<div className="flex justify-between items-center">
-									<div>
-										<p className="text-sm text-gray-500">Total Patients</p>
-										<p className="text-2xl font-semibold text-gray-800">
-											{stats.patients}
-										</p>
+								<CardContent className="flex items-center justify-between gap-4">
+									<div className="flex min-w-0 flex-col gap-1">
+										<span className="truncate text-xs text-muted-foreground">
+											{card.label}
+										</span>
+										<span className="font-heading text-2xl font-semibold tracking-tight">
+											{card.value}
+										</span>
 									</div>
-									<div className="p-3 rounded-full bg-blue-50 text-blue-600">
-										<User size={20} />
-									</div>
-								</div>
-							</div>
+									<span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+										<card.icon className="size-5" />
+									</span>
+								</CardContent>
+							</Card>
 						</Link>
+					))}
+				</div>
 
-						{/* Appointments Card */}
-						<Link href="/appointments">
-							<div
-								className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50
-              transition-colors cursor-pointer shadow-sm"
-							>
-								<div className="flex justify-between items-center">
-									<div>
-										<p className="text-sm text-gray-500">
-											Today&lsquo;s Appointments
-										</p>
-										<p className="text-2xl font-semibold text-blue-600">
-											{stats.appointments}
-										</p>
-									</div>
-									<div className="p-3 rounded-full bg-blue-50 text-blue-600">
-										<Calendar size={20} />
-									</div>
-								</div>
-							</div>
-						</Link>
-
-						{/* Prescriptions Card */}
-						<Link href="/prescriptions">
-							<div
-								className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50
-              transition-colors cursor-pointer shadow-sm"
-							>
-								<div className="flex justify-between items-center">
-									<div>
-										<p className="text-sm text-gray-500">
-											Active Prescriptions
-										</p>
-										<p className="text-2xl font-semibold text-purple-600">
-											{stats.prescriptions}
-										</p>
-									</div>
-									<div className="p-3 rounded-full bg-purple-50 text-purple-600">
-										<Pill size={20} />
-									</div>
-								</div>
-							</div>
-						</Link>
-
-						{/* Revenue Card */}
-						<Link href="/invoices">
-							<div
-								className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50
-              transition-colors cursor-pointer shadow-sm"
-							>
-								<div className="flex justify-between items-center">
-									<div>
-										<p className="text-sm text-gray-500">Monthly Revenue</p>
-										<p className="text-2xl font-semibold text-green-600">
-											R{stats.revenue.toLocaleString()}
-										</p>
-									</div>
-									<div className="p-3 rounded-full bg-green-50 text-green-600">
-										<CreditCard size={20} />
-									</div>
-								</div>
-							</div>
-						</Link>
-					</div>
-
-					{/* Main Content */}
-					<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-						{/* Recent Patients */}
-						<div
-							className="bg-white border border-gray-200 rounded-lg p-6 max-h-[29em]
-              shadow-sm overflow-auto lg:col-span-1"
-						>
-							<div className="flex justify-between items-center mb-4 bg-white">
-								<h2 className="text-xl font-semibold text-gray-800">
-									Recent Patients
-								</h2>
-								<Link
-									href={`/patients/${tenantId}`}
-									className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+				<div className="grid gap-4 lg:grid-cols-3">
+					<Card className="lg:col-span-1">
+						<CardHeader>
+							<CardTitle>Recent patients</CardTitle>
+							<CardAction>
+								<Button
+									variant="ghost"
+									size="xs"
+									render={<Link href={`/patients/${tenantId}`} />}
 								>
-									View all <ChevronRight size={16} />
-								</Link>
-							</div>
-							<div className="space-y-1">
-								{patients
-									.slice()
-									.reverse()
-									.map((patient) => (
-										<div
-											key={patient.id}
-											className="p-3 hover:bg-gray-50 rounded-lg
-                      transition-colors"
+									View all
+									<ChevronRight data-icon="inline-end" />
+								</Button>
+							</CardAction>
+						</CardHeader>
+						<CardContent className="max-h-96 overflow-y-auto">
+							{patients.length === 0 ? (
+								<EmptyState message="No patients yet" />
+							) : (
+								<ul className="flex flex-col gap-1">
+									{patients
+										.slice()
+										.reverse()
+										.slice(0, 8)
+										.map((patient) => (
+											<li key={patient.id}>
+												<Link
+													href={`/patients/${tenantId}/${patient.id}`}
+													className="flex items-center gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-muted"
+												>
+													<span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium text-secondary-foreground">
+														{initials(patient.firstName, patient.lastName)}
+													</span>
+													<div className="flex min-w-0 flex-col">
+														<span className="truncate text-sm font-medium">
+															{patient.firstName} {patient.lastName}
+														</span>
+														<span className="truncate text-xs text-muted-foreground">
+															{patient.medicalAidName ?? "No medical aid"}
+														</span>
+													</div>
+												</Link>
+											</li>
+										))}
+								</ul>
+							)}
+						</CardContent>
+					</Card>
+
+					<Card className="lg:col-span-1">
+						<CardHeader>
+							<CardTitle>Upcoming appointments</CardTitle>
+							<CardAction>
+								<Button
+									variant="ghost"
+									size="xs"
+									render={<Link href={`/appointments/${tenantId}`} />}
+								>
+									View all
+									<ChevronRight data-icon="inline-end" />
+								</Button>
+							</CardAction>
+						</CardHeader>
+						<CardContent className="max-h-96 overflow-y-auto">
+							{appointments.length === 0 ? (
+								<EmptyState message="No appointments scheduled" />
+							) : (
+								<ul className="flex flex-col gap-1">
+									{appointments.slice(0, 8).map((appointment) => (
+										<li
+											key={appointment.id}
+											className="flex items-start justify-between gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-muted"
 										>
-											<div>
-												<p className="font-medium text-gray-800">
-													{patient.firstName} {patient.lastName}
-												</p>
-												<p className="text-sm text-gray-500 flex justify-between">
-													Medical Aid:
-													<span>{patient.medicalAidName}</span>
-												</p>
-											</div>
-										</div>
-									))}
-							</div>
-						</div>
-
-						{/* Upcoming Appointments */}
-						<div
-							className="bg-white border border-gray-200 rounded-lg p-6 max-h-[29em]
-              shadow-sm overflow-auto lg:col-span-1"
-						>
-							<div className="flex justify-between items-center mb-4 ">
-								<h2 className="text-xl font-semibold text-gray-800">
-									Upcoming Appointments
-								</h2>
-								<Link
-									href={`/appointments/${tenantId}`}
-									className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-								>
-									View all <ChevronRight size={16} />
-								</Link>
-							</div>
-							<div className="space-y-4">
-								{appointments.map((appointment) => (
-									<div
-										key={appointment.id}
-										className="p-3 hover:bg-gray-50 rounded-lg transition-colors"
-									>
-										<div className="flex justify-between items-start">
-											<div>
-												<p className="font-medium text-gray-800">
+											<div className="flex min-w-0 flex-col gap-1">
+												<span className="truncate text-sm font-medium">
 													{appointment.patientFirstName}{" "}
 													{appointment.patientLastName}
-												</p>
-												<p className="text-sm text-gray-500">
-													{STATUS_LABELS[appointment.status].toUpperCase()}
-												</p>
+												</span>
+												<span className="text-xs text-muted-foreground">
+													{STATUS_LABELS[appointment.status]}
+												</span>
 											</div>
-											<div className="text-right">
-												<p className="text-gray-800">
-													<ClientDate
-														dateString={appointment.appointmentDate}
-													/>
-												</p>
-												<p className="text-gray-700">
+											<div className="flex shrink-0 flex-col items-end text-xs">
+												<ClientDate dateString={appointment.appointmentDate} />
+												<span className="text-muted-foreground">
 													<ClientDate
 														dateString={appointment.appointmentDate}
 														format="time"
 													/>
-												</p>
+												</span>
 											</div>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
+										</li>
+									))}
+								</ul>
+							)}
+						</CardContent>
+					</Card>
 
-						{/* Recent Invoices */}
-						<div
-							className="bg-white border border-gray-200 rounded-lg p-6 max-h-[29em]
-              shadow-sm overflow-auto lg:col-span-1"
-						>
-							<div className="flex justify-between items-center mb-4">
-								<h2 className="text-xl font-semibold text-gray-800">
-									Recent Invoices
-								</h2>
-								<Link
-									href={`/invoices/${tenantId}`}
-									className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+					<Card className="lg:col-span-1">
+						<CardHeader>
+							<CardTitle>Recent invoices</CardTitle>
+							<CardAction>
+								<Button
+									variant="ghost"
+									size="xs"
+									render={<Link href={`/invoices/${tenantId}`} />}
 								>
-									View all <ChevronRight size={16} />
-								</Link>
-							</div>
-							<div className="space-y-4">
-								{invoices.map((invoice) => (
-									<div
-										key={invoice.id}
-										className="p-3 hover:bg-gray-50 rounded-lg transition-colors"
-									>
-										<div className="flex justify-between items-center">
-											<div>
-												<p className="font-medium text-gray-800">
-													PATIENT ID: {invoice.patientId}
-												</p>
-												<p className="text-sm text-gray-500">
+									View all
+									<ChevronRight data-icon="inline-end" />
+								</Button>
+							</CardAction>
+						</CardHeader>
+						<CardContent className="max-h-96 overflow-y-auto">
+							{invoices.length === 0 ? (
+								<EmptyState message="No invoices yet" />
+							) : (
+								<ul className="flex flex-col gap-1">
+									{invoices.slice(0, 8).map((invoice) => (
+										<li
+											key={invoice.id}
+											className="flex items-center justify-between gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-muted"
+										>
+											<div className="flex min-w-0 flex-col gap-1">
+												<span className="truncate text-sm font-medium">
+													Invoice #{invoice.id}
+												</span>
+												<span className="text-xs text-muted-foreground">
 													<ClientDate dateString={invoice.createdAt ?? ""} />
-												</p>
+												</span>
 											</div>
-											<div className="text-right">
-												<p className="font-medium text-gray-800">
-													R{invoice.totalAmount}
-												</p>
-												<div className="flex items-center justify-end gap-1">
-													<span
-														className={`p-1 rounded-full ${getStatusColor(
-															invoice.status
-														)}`}
-													>
-														{getStatusIcon(invoice.status)}
-													</span>
-													<span className="text-sm capitalize text-gray-500">
-														{invoice.status}
-													</span>
-												</div>
+											<div className="flex shrink-0 flex-col items-end gap-1">
+												<span className="text-sm font-medium">
+													{currency(invoice.totalAmount)}
+												</span>
+												<Badge
+													className={
+														INVOICE_STATUS_COLORS[invoice.status] ??
+														"bg-muted text-muted-foreground"
+													}
+												>
+													{invoice.status}
+												</Badge>
 											</div>
-										</div>
-									</div>
-								))}
-							</div>
-							<div className="mt-4">
-								<Link
-									href="/invoices/new"
-									className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600
-                  rounded-md text-white text-sm font-medium hover:bg-blue-700 transition-colors"
-								>
-									<Plus size={18} />
-									Create New Invoice
-								</Link>
-							</div>
-						</div>
-					</div>
-
-					{/* Financial Overview */}
-					<div className="bg-white border border-gray-200 rounded-lg p-6 mb-8 shadow-sm">
-						<h2 className="text-xl font-semibold text-gray-800 mb-4">
-							Financial Overview
-						</h2>
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-							<div className="bg-gray-50 p-4 rounded-lg">
-								<div className="flex justify-between items-center mb-2">
-									<p className="text-sm text-gray-500">Total Revenue</p>
-									<CreditCard size={18} className="text-green-600" />
-								</div>
-								<p className="text-2xl font-semibold text-green-600">
-									R{stats.revenue.toLocaleString()}
-								</p>
-							</div>
-							<div className="bg-gray-50 p-4 rounded-lg">
-								<div className="flex justify-between items-center mb-2">
-									<p className="text-sm text-gray-500">Pending Payments</p>
-									<Clock size={18} className="text-yellow-600" />
-								</div>
-								<p className="text-2xl font-semibold text-yellow-600">
-									R{stats.pendingPayments.toLocaleString()}
-								</p>
-							</div>
-							<div className="bg-gray-50 p-4 rounded-lg">
-								<div className="flex justify-between items-center mb-2">
-									<p className="text-sm text-gray-500">Outstanding Invoices</p>
-									<AlertCircle size={18} className="text-red-600" />
-								</div>
-								<p className="text-2xl font-semibold text-red-600">
-									{invoices.filter((i) => i.status !== "paid").length}
-								</p>
-							</div>
-						</div>
-					</div>
+										</li>
+									))}
+								</ul>
+							)}
+						</CardContent>
+					</Card>
 				</div>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>Financial overview</CardTitle>
+						<CardDescription>
+							Billing performance across your practice
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<div className="grid gap-4 md:grid-cols-3">
+							{financials.map((item) => (
+								<div
+									key={item.label}
+									className="flex flex-col gap-2 rounded-3xl bg-muted/50 p-4"
+								>
+									<div className="flex items-center justify-between">
+										<span className="text-xs text-muted-foreground">
+											{item.label}
+										</span>
+										<item.icon className={`size-4 ${item.tone}`} />
+									</div>
+									<span
+										className={`font-heading text-2xl font-semibold tracking-tight ${item.tone}`}
+									>
+										{item.value}
+									</span>
+								</div>
+							))}
+						</div>
+					</CardContent>
+				</Card>
 			</div>
 		</Layout>
 	);
