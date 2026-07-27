@@ -1,19 +1,55 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { User, Lock, Mail, BriefcaseMedical, MapPin } from "lucide-react";
+import { Activity, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
 import { useRegister } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 const PASSWORD_PATTERN =
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
+const MEDICAL_SPECIALTIES = [
+	"family medicine",
+	"pediatrics",
+	"internal medicine",
+	"cardiology",
+	"dermatology",
+	"neurology",
+	"ob/gyn",
+	"ophthalmology",
+	"orthopedics",
+	"psychiatry",
+];
+
+const ROLES = ["admin", "doctor", "nurse", "receptionist"];
+
 const formatSubscriptionPlan = (plan: string) =>
 	plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase();
+
+const toTitleCase = (value: string) =>
+	value.charAt(0).toUpperCase() + value.slice(1);
 
 const SignUpForm = ({ plan = "basic" }) => {
 	const [showPassword, setShowPassword] = useState(false);
@@ -71,375 +107,300 @@ const SignUpForm = ({ plan = "basic" }) => {
 		},
 	});
 
-	const medicalSpecialties = [
-		"family medicine",
-		"pediatrics",
-		"internal medicine",
-		"cardiology",
-		"dermatology",
-		"neurology",
-		"ob/gyn",
-		"ophthalmology",
-		"orthopedics",
-		"psychiatry",
-	];
+	const fieldError = (field: keyof typeof formik.values) =>
+		formik.touched[field] && formik.errors[field] ? (
+			<p className="text-xs text-destructive">{formik.errors[field]}</p>
+		) : null;
 
-	const roles = ["admin", "doctor", "nurse", "receptionist"];
+	const isInvalid = (field: keyof typeof formik.values) =>
+		Boolean(formik.touched[field] && formik.errors[field]) || undefined;
 
 	return (
-		<div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-			<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-3xl w-full">
-				<div className="text-center mb-8">
-					<div
-						className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center
-          justify-center mb-4"
+		<div className="flex min-h-screen items-center justify-center bg-muted/40 p-4 py-10">
+			<div className="w-full max-w-2xl">
+				<div className="mb-8 flex justify-center">
+					<Link
+						href="/"
+						className="flex size-12 items-center justify-center rounded-3xl bg-primary text-primary-foreground"
+						aria-label="Ubuntu Health home"
 					>
-						<BriefcaseMedical className="text-blue-600" size={24} />
-					</div>
-					<h1 className="text-2xl font-semibold text-gray-800">
-						Register for{" "}
-						<span className="font-bold text-blue-600">
-							{plan.toLocaleUpperCase()}
-						</span>{" "}
-						plan
-					</h1>
-					<p className="text-gray-600 mt-2">
-						Register to access the EMR system
-					</p>
+						<Activity className="size-6" />
+					</Link>
 				</div>
 
-				<form
-					onSubmit={formik.handleSubmit}
-					className="grid md:grid-cols-2 gap-6"
-				>
-					{/* Personal Information */}
-					<div className="md:col-span-2">
-						<h2 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-							<User className="mr-2 text-gray-500" size={16} />
-							Personal Information
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							<div>
-								<label
-									htmlFor="firstName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									First Name *
-								</label>
-								<input
-									id="firstName"
-									name="firstName"
-									type="text"
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									value={formik.values.firstName}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800
-                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								{formik.touched.firstName && formik.errors.firstName && (
-									<p className="text-red-600 text-xs mt-1">
-										{formik.errors.firstName}
-									</p>
-								)}
-							</div>
-							<div>
-								<label
-									htmlFor="lastName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Last Name *
-								</label>
-								<input
-									id="lastName"
-									name="lastName"
-									type="text"
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									value={formik.values.lastName}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800
-                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								{formik.touched.lastName && formik.errors.lastName && (
-									<p className="text-red-600 text-xs mt-1">
-										{formik.errors.lastName}
-									</p>
-								)}
-							</div>
+				<Card>
+					<CardHeader className="text-center">
+						<CardTitle className="text-xl">Create your account</CardTitle>
+						<CardDescription>
+							Set up your practice on Ubuntu Health in a couple of minutes
+						</CardDescription>
+						<div className="mt-2 flex justify-center">
+							<Badge variant="secondary">{toTitleCase(plan)} plan</Badge>
 						</div>
-					</div>
+					</CardHeader>
 
-					{/* Credentials */}
-					<div>
-						<label
-							htmlFor="email"
-							className="block text-sm font-medium text-gray-700 mb-1"
-						>
-							Email *
-						</label>
-						<div className="relative">
-							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-								<Mail className="text-gray-400" size={16} />
+					<CardContent>
+						<form onSubmit={formik.handleSubmit} className="flex flex-col gap-8">
+							<section className="flex flex-col gap-4">
+								<div className="flex flex-col gap-1">
+									<h2 className="text-sm font-medium">Personal details</h2>
+									<Separator />
+								</div>
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="firstName">First name</Label>
+										<Input
+											id="firstName"
+											name="firstName"
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											value={formik.values.firstName}
+											disabled={isLoading}
+											aria-invalid={isInvalid("firstName")}
+										/>
+										{fieldError("firstName")}
+									</div>
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="lastName">Last name</Label>
+										<Input
+											id="lastName"
+											name="lastName"
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											value={formik.values.lastName}
+											disabled={isLoading}
+											aria-invalid={isInvalid("lastName")}
+										/>
+										{fieldError("lastName")}
+									</div>
+								</div>
+							</section>
+
+							<section className="flex flex-col gap-4">
+								<div className="flex flex-col gap-1">
+									<h2 className="text-sm font-medium">Account</h2>
+									<Separator />
+								</div>
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="email">Email</Label>
+										<div className="relative">
+											<Mail className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+											<Input
+												id="email"
+												name="email"
+												type="email"
+												autoComplete="email"
+												onChange={formik.handleChange}
+												onBlur={formik.handleBlur}
+												value={formik.values.email}
+												className="pl-10"
+												placeholder="you@clinic.co.za"
+												disabled={isLoading}
+												aria-invalid={isInvalid("email")}
+											/>
+										</div>
+										{fieldError("email")}
+									</div>
+
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="role">Role</Label>
+										<Select
+											value={formik.values.role}
+											onValueChange={(value) =>
+												formik.setFieldValue("role", value)
+											}
+										>
+											<SelectTrigger id="role" className="w-full">
+												<SelectValue placeholder="Select your role" />
+											</SelectTrigger>
+											<SelectContent>
+												{ROLES.map((role) => (
+													<SelectItem key={role} value={role}>
+														{toTitleCase(role)}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{fieldError("role")}
+									</div>
+
+									<div className="flex flex-col gap-2 sm:col-span-2">
+										<Label htmlFor="password">Password</Label>
+										<div className="relative">
+											<Lock className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+											<Input
+												id="password"
+												name="password"
+												type={showPassword ? "text" : "password"}
+												autoComplete="new-password"
+												onChange={formik.handleChange}
+												onBlur={formik.handleBlur}
+												value={formik.values.password}
+												className="px-10"
+												placeholder="••••••••"
+												disabled={isLoading}
+												aria-invalid={isInvalid("password")}
+											/>
+											<button
+												type="button"
+												className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+												onClick={() => setShowPassword(!showPassword)}
+												disabled={isLoading}
+												aria-label={
+													showPassword ? "Hide password" : "Show password"
+												}
+											>
+												{showPassword ? (
+													<EyeOff className="size-4" />
+												) : (
+													<Eye className="size-4" />
+												)}
+											</button>
+										</div>
+										{fieldError("password") ?? (
+											<p className="text-xs text-muted-foreground">
+												At least 8 characters with upper and lowercase letters,
+												a digit, and one of @$!%*?&
+											</p>
+										)}
+									</div>
+								</div>
+							</section>
+
+							<section className="flex flex-col gap-4">
+								<div className="flex flex-col gap-1">
+									<h2 className="text-sm font-medium">Professional details</h2>
+									<Separator />
+								</div>
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="licenseNumber">Medical license number</Label>
+										<Input
+											id="licenseNumber"
+											name="licenseNumber"
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											value={formik.values.licenseNumber}
+											disabled={isLoading}
+											aria-invalid={isInvalid("licenseNumber")}
+										/>
+										{fieldError("licenseNumber")}
+									</div>
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="specialty">Specialty</Label>
+										<Select
+											value={formik.values.specialty}
+											onValueChange={(value) =>
+												formik.setFieldValue("specialty", value)
+											}
+										>
+											<SelectTrigger id="specialty" className="w-full">
+												<SelectValue placeholder="Select your specialty" />
+											</SelectTrigger>
+											<SelectContent>
+												{MEDICAL_SPECIALTIES.map((specialty) => (
+													<SelectItem key={specialty} value={specialty}>
+														{toTitleCase(specialty)}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{fieldError("specialty")}
+									</div>
+								</div>
+							</section>
+
+							<section className="flex flex-col gap-4">
+								<div className="flex flex-col gap-1">
+									<h2 className="text-sm font-medium">Practice</h2>
+									<Separator />
+								</div>
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="practiceName">
+											Practice name{" "}
+											<span className="text-muted-foreground">(optional)</span>
+										</Label>
+										<Input
+											id="practiceName"
+											name="practiceName"
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											value={formik.values.practiceName}
+											disabled={isLoading}
+										/>
+									</div>
+									<div className="flex flex-col gap-2">
+										<Label htmlFor="practicePhone">
+											Phone{" "}
+											<span className="text-muted-foreground">(optional)</span>
+										</Label>
+										<Input
+											id="practicePhone"
+											name="practicePhone"
+											type="tel"
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											value={formik.values.practicePhone}
+											disabled={isLoading}
+										/>
+									</div>
+								</div>
+							</section>
+
+							<div className="flex items-start gap-3">
+								<input
+									id="terms"
+									name="terms"
+									type="checkbox"
+									required
+									className="mt-0.5 size-4 shrink-0 rounded-sm accent-primary"
+								/>
+								<Label
+									htmlFor="terms"
+									className="text-sm font-normal text-muted-foreground"
+								>
+									I agree to the{" "}
+									<Link
+										href="/terms"
+										className="text-foreground underline-offset-4 hover:underline"
+									>
+										Terms of Service
+									</Link>{" "}
+									and{" "}
+									<Link
+										href="/policy"
+										className="text-foreground underline-offset-4 hover:underline"
+									>
+										Privacy Policy
+									</Link>
+								</Label>
 							</div>
-							<input
-								id="email"
-								name="email"
-								type="email"
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.email}
-								className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md
-                text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500
-                focus:border-blue-500"
-							/>
-						</div>
-						{formik.touched.email && formik.errors.email && (
-							<p className="text-red-600 text-xs mt-1">
-								{formik.errors.email}
-							</p>
-						)}
-					</div>
 
-					<div>
-						<label
-							htmlFor="role"
-							className="block text-sm font-medium text-gray-700 mb-1"
-						>
-							Role
-						</label>
-						<select
-							id="role"
-							name="role"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.role}
-							className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800
-              focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-						>
-							<option value="">Select your role</option>
-							{roles.map((role) => (
-								<option key={role} value={role}>
-									{role.toUpperCase()}
-								</option>
-							))}
-						</select>
-						{formik.touched.role && formik.errors.role && (
-							<p className="text-red-600 text-xs mt-1">
-								{formik.errors.role}
-							</p>
-						)}
-					</div>
-
-					<div>
-						<label
-							htmlFor="password"
-							className="block text-sm font-medium text-gray-700 mb-1"
-						>
-							Password *
-						</label>
-						<div className="relative">
-							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-								<Lock className="text-gray-400" size={16} />
-							</div>
-							<input
-								id="password"
-								name="password"
-								type={showPassword ? "text" : "password"}
-								autoComplete="current-password"
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.password}
-								className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md
-                text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500
-                focus:border-blue-500"
-								placeholder="••••••••••••••••"
-								disabled={isLoading}
-							/>
-							<button
-								type="button"
-								className="absolute inset-y-0 right-0 pr-3 flex items-center"
-								onClick={() => setShowPassword(!showPassword)}
-								disabled={isLoading}
-							>
-								{showPassword ? (
-									<Eye
-										className="text-gray-400 hover:text-gray-500"
-										size={16}
-									/>
+							<Button type="submit" disabled={isLoading} className="w-full">
+								{isLoading ? (
+									<>
+										<Loader2 className="animate-spin" />
+										Creating account...
+									</>
 								) : (
-									<EyeOff
-										className="text-gray-400 hover:text-gray-500"
-										size={16}
-									/>
+									"Create account"
 								)}
-							</button>
-						</div>
-						{formik.touched.password && formik.errors.password && (
-							<p className="text-red-600 text-xs mt-1">
-								{formik.errors.password}
-							</p>
-						)}
-					</div>
+							</Button>
+						</form>
+					</CardContent>
+				</Card>
 
-					{/* Professional Information */}
-					<div className="md:col-span-2">
-						<h2 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-							<BriefcaseMedical className="mr-2 text-gray-500" size={16} />
-							Professional Information
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							<div>
-								<label
-									htmlFor="licenseNumber"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Medical License Number *
-								</label>
-								<input
-									id="licenseNumber"
-									name="licenseNumber"
-									type="text"
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									value={formik.values.licenseNumber}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800
-                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								{formik.touched.licenseNumber &&
-									formik.errors.licenseNumber && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.licenseNumber}
-										</p>
-									)}
-							</div>
-							<div>
-								<label
-									htmlFor="specialty"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Specialty *
-								</label>
-								<select
-									id="specialty"
-									name="specialty"
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									value={formik.values.specialty}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800
-                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								>
-									<option value="">Select your specialty</option>
-									{medicalSpecialties.map((specialty) => (
-										<option key={specialty} value={specialty}>
-											{specialty.toUpperCase()}
-										</option>
-									))}
-								</select>
-								{formik.touched.specialty && formik.errors.specialty && (
-									<p className="text-red-600 text-xs mt-1">
-										{formik.errors.specialty}
-									</p>
-								)}
-							</div>
-						</div>
-					</div>
-
-					{/* Practice Information */}
-					<div className="md:col-span-2">
-						<h2 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-							<MapPin className="mr-2 text-gray-500" size={16} />
-							Practice Information
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							<div>
-								<label
-									htmlFor="practiceName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Practice/Hospital Name
-								</label>
-								<input
-									id="practiceName"
-									name="practiceName"
-									type="text"
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									value={formik.values.practiceName}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800
-                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-							</div>
-							<div>
-								<label
-									htmlFor="practicePhone"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Phone Number
-								</label>
-								<input
-									id="practicePhone"
-									name="practicePhone"
-									type="text"
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									value={formik.values.practicePhone}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800
-                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								<input
-									type="hidden"
-									name="subscriptionPlan"
-									value={plan || ""}
-								/>
-							</div>
-						</div>
-					</div>
-
-					{/* Terms and Submit */}
-					<div className="md:col-span-2 flex items-start">
-						<div className="flex items-center h-5">
-							<input
-								id="terms"
-								name="terms"
-								type="checkbox"
-								className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-								required
-							/>
-						</div>
-						<div className="ml-3 text-sm">
-							<label htmlFor="terms" className="text-gray-700">
-								I agree to the{" "}
-								<Link href="/terms" className="text-blue-600 hover:underline">
-									Terms of Service
-								</Link>{" "}
-								and{" "}
-								<Link href="/policy" className="text-blue-600 hover:underline">
-									Privacy Policy
-								</Link>
-							</label>
-						</div>
-					</div>
-
-					<div className="md:col-span-2">
-						<button
-							type="submit"
-							disabled={isLoading}
-							className={`w-full text-white py-2 px-4 border border-transparent rounded-md
-              shadow-sm text-sm font-medium  bg-blue-600 hover:bg-blue-700 focus:outline-none
-              focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-								isLoading ? "opacity-70 cursor-not-allowed" : ""
-							}`}
-						>
-							{isLoading ? "Registering..." : "Register Account"}
-						</button>
-					</div>
-
-					<div className="md:col-span-2 text-center text-sm text-gray-600">
-						Already have an account?{" "}
-						<Link href="/login" className="text-blue-600 hover:underline">
-							Sign in
-						</Link>
-					</div>
-				</form>
+				<p className="mt-6 text-center text-sm text-muted-foreground">
+					Already have an account?{" "}
+					<Link
+						href="/login"
+						className="text-foreground underline-offset-4 hover:underline"
+					>
+						Sign in
+					</Link>
+				</p>
 			</div>
 		</div>
 	);

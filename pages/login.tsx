@@ -1,11 +1,21 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Activity, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { useLogin } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 const LoginPage = () => {
 	const [showPassword, setShowPassword] = React.useState(false);
@@ -40,165 +50,129 @@ const LoginPage = () => {
 	});
 
 	return (
-		<div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-			<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full">
-				<div className="text-center mb-8">
-					<div
-						className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center
-          justify-center mb-4"
+		<div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+			<div className="w-full max-w-sm">
+				<div className="mb-8 flex justify-center">
+					<Link
+						href="/"
+						className="flex size-12 items-center justify-center rounded-3xl bg-primary text-primary-foreground"
+						aria-label="Ubuntu Health home"
 					>
-						<Lock className="text-blue-600" size={24} />
-					</div>
-					<h1 className="text-2xl font-semibold text-gray-800">
-						Medical Portal Login
-					</h1>
-					<p className="text-gray-600 mt-2">Access your EMR system</p>
+						<Activity className="size-6" />
+					</Link>
 				</div>
 
-				<form onSubmit={formik.handleSubmit} className="space-y-6">
-					{/* Email Field */}
-					<div>
-						<label
-							htmlFor="email"
-							className="block text-sm font-medium text-gray-700 mb-1"
-						>
-							Email Address *
-						</label>
-						<div className="relative">
-							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-								<Mail className="text-gray-400" size={16} />
-							</div>
-							<input
-								id="email"
-								name="email"
-								type="email"
-								autoComplete="email"
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.email}
-								className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md
-                text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500
-                focus:border-blue-500"
-								placeholder="your@email.com"
-								disabled={isLoading}
-							/>
-						</div>
-						{formik.touched.email && formik.errors.email ? (
-							<p className="text-red-600 text-xs mt-1">{formik.errors.email}</p>
-						) : null}
-					</div>
+				<Card>
+					<CardHeader className="text-center">
+						<CardTitle className="text-xl">Welcome back</CardTitle>
+						<CardDescription>
+							Sign in to your clinic portal to continue
+						</CardDescription>
+					</CardHeader>
 
-					{/* Password Field */}
-					<div>
-						<label
-							htmlFor="password"
-							className="block text-sm font-medium text-gray-700 mb-1"
-						>
-							Password *
-						</label>
-						<div className="relative">
-							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-								<Lock className="text-gray-400" size={16} />
-							</div>
-							<input
-								id="password"
-								name="password"
-								type={showPassword ? "text" : "password"}
-								autoComplete="current-password"
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.password}
-								className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md
-                text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500
-                focus:border-blue-500"
-								placeholder="••••••••••••••••"
-								disabled={isLoading}
-							/>
-							<button
-								type="button"
-								className="absolute inset-y-0 right-0 pr-3 flex items-center"
-								onClick={() => setShowPassword(!showPassword)}
-								disabled={isLoading}
-							>
-								{showPassword ? (
-									<Eye
-										className="text-gray-400 hover:text-gray-500"
-										size={16}
+					<CardContent>
+						<form onSubmit={formik.handleSubmit} className="flex flex-col gap-5">
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="email">Email address</Label>
+								<div className="relative">
+									<Mail className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+									<Input
+										id="email"
+										name="email"
+										type="email"
+										autoComplete="email"
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										value={formik.values.email}
+										className="pl-10"
+										placeholder="you@clinic.co.za"
+										disabled={isLoading}
+										aria-invalid={
+											Boolean(formik.touched.email && formik.errors.email) ||
+											undefined
+										}
 									/>
+								</div>
+								{formik.touched.email && formik.errors.email ? (
+									<p className="text-xs text-destructive">
+										{formik.errors.email}
+									</p>
+								) : null}
+							</div>
+
+							<div className="flex flex-col gap-2">
+								<div className="flex items-center justify-between">
+									<Label htmlFor="password">Password</Label>
+									<Link
+										href="/forgot-password"
+										className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+									>
+										Forgot password?
+									</Link>
+								</div>
+								<div className="relative">
+									<Lock className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+									<Input
+										id="password"
+										name="password"
+										type={showPassword ? "text" : "password"}
+										autoComplete="current-password"
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										value={formik.values.password}
+										className="px-10"
+										placeholder="••••••••"
+										disabled={isLoading}
+										aria-invalid={
+											Boolean(
+												formik.touched.password && formik.errors.password
+											) || undefined
+										}
+									/>
+									<button
+										type="button"
+										className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+										onClick={() => setShowPassword(!showPassword)}
+										disabled={isLoading}
+										aria-label={showPassword ? "Hide password" : "Show password"}
+									>
+										{showPassword ? (
+											<EyeOff className="size-4" />
+										) : (
+											<Eye className="size-4" />
+										)}
+									</button>
+								</div>
+								{formik.touched.password && formik.errors.password ? (
+									<p className="text-xs text-destructive">
+										{formik.errors.password}
+									</p>
+								) : null}
+							</div>
+
+							<Button type="submit" disabled={isLoading} className="w-full">
+								{isLoading ? (
+									<>
+										<Loader2 className="animate-spin" />
+										Signing in...
+									</>
 								) : (
-									<EyeOff
-										className="text-gray-400 hover:text-gray-500"
-										size={16}
-									/>
+									"Sign in"
 								)}
-							</button>
-						</div>
-						{formik.touched.password && formik.errors.password ? (
-							<p className="text-red-600 text-xs mt-1">
-								{formik.errors.password}
-							</p>
-						) : null}
-					</div>
+							</Button>
+						</form>
+					</CardContent>
+				</Card>
 
-					{/* Forgot Password */}
-					<div className="flex justify-end">
-						<Link
-							href="/forgot-password"
-							className="text-sm text-blue-600 hover:underline"
-						>
-							Forgot password?
-						</Link>
-					</div>
-
-					{/* Submit Button */}
-					<button
-						type="submit"
-						disabled={isLoading}
-						className={`w-full text-white py-2 px-4 border border-transparent rounded-md
-              shadow-sm text-sm font-medium  bg-blue-600 hover:bg-blue-700 focus:outline-none
-              focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-								isLoading ? "opacity-70 cursor-not-allowed" : ""
-							}`}
+				<p className="mt-6 text-center text-sm text-muted-foreground">
+					Don&apos;t have an account?{" "}
+					<Link
+						href="/signup"
+						className="text-foreground underline-offset-4 hover:underline"
 					>
-						{isLoading ? (
-							<span className="flex items-center justify-center">
-								<svg
-									className="animate-spin -ml-1 mr-3 h-4 w-4 "
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-								>
-									<title>Loading</title>
-									<circle
-										className="opacity-25"
-										cx="12"
-										cy="12"
-										r="10"
-										stroke="currentColor"
-										strokeWidth="4"
-									></circle>
-									<path
-										className="opacity-75"
-										fill="currentColor"
-										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0
-                    3.042 1.135 5.824 3 7.938l3-2.647z"
-									></path>
-								</svg>
-								Signing in...
-							</span>
-						) : (
-							"Sign In"
-						)}
-					</button>
-
-					{/* Sign Up Link */}
-					<div className="text-center text-sm text-gray-600">
-						Don&lsquo;t have an account?{" "}
-						<Link href="/signup" className="text-blue-600 hover:underline">
-							Register now
-						</Link>
-					</div>
-				</form>
+						Register now
+					</Link>
+				</p>
 			</div>
 		</div>
 	);
