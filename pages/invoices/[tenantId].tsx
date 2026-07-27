@@ -4,14 +4,18 @@ import {
 	CheckCircle,
 	Clock,
 	FileText,
+	Pencil,
 	Plus,
 	Search,
+	Trash2,
 } from "lucide-react";
-import Link from "next/link";
+import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
-import { useInvoices } from "@/hooks/useInvoices";
-import { INVOICE_STATUS_COLORS } from "@/types";
+import InvoiceForm from "@/components/Forms/InvoiceForm";
+import { useDeleteInvoice, useInvoices } from "@/hooks/useInvoices";
+import { INVOICE_STATUS, INVOICE_STATUS_COLORS } from "@/types";
+import type { Invoice } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +32,7 @@ import {
 const FILTERS = [
 	{ value: "all", label: "All" },
 	{ value: "draft", label: "Drafts" },
-	{ value: "sent", label: "Sent" },
+	{ value: "pending", label: "Pending" },
 	{ value: "paid", label: "Paid" },
 	{ value: "overdue", label: "Overdue" },
 ] as const;
@@ -38,11 +42,19 @@ type Filter = (typeof FILTERS)[number]["value"];
 const currency = (amount: number) =>
 	`R${amount.toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
 
+const patientName = (invoice: Invoice) =>
+	[invoice.patientFirstName, invoice.patientLastName]
+		.filter(Boolean)
+		.join(" ") || `Patient #${invoice.patientId}`;
+
 const InvoicePage = () => {
 	const [filter, setFilter] = useState<Filter>("all");
 	const [searchQuery, setSearchQuery] = useState("");
+	const [isCreating, setIsCreating] = useState(false);
+	const [editing, setEditing] = useState<Invoice | null>(null);
 
 	const { data: invoices = [] } = useInvoices();
+	const deleteInvoice = useDeleteInvoice();
 
 	const term = searchQuery.trim().toLowerCase();
 
@@ -52,10 +64,17 @@ const InvoicePage = () => {
 		const matchesSearch =
 			term === "" ||
 			invoice.id.toString().includes(term) ||
-			invoice.patientId.toString().includes(term);
+			patientName(invoice).toLowerCase().includes(term);
 
 		return matchesFilter && matchesSearch;
 	});
+
+	const handleDelete = (invoice: Invoice) => {
+		deleteInvoice.mutate(invoice.id, {
+			onSuccess: () => toast.success(`Invoice ${invoice.id} deleted`),
+			onError: (error) => toast.error(error.message),
+		});
+	};
 
 	const stats = [
 		{
@@ -99,7 +118,7 @@ const InvoicePage = () => {
 			title="Invoices"
 			description="Manage and track patient invoices"
 			actions={
-				<Button size="sm" render={<Link href="/invoices/new" />}>
+				<Button size="sm" onClick={() => setIsCreating(true)}>
 					<Plus />
 					<span className="hidden sm:inline">New invoice</span>
 				</Button>
@@ -174,11 +193,12 @@ const InvoicePage = () => {
 									<TableHeader className="sticky top-0 z-10 bg-card">
 										<TableRow>
 											<TableHead className="px-6">Invoice #</TableHead>
-											<TableHead className="px-6">Patient ID</TableHead>
+											<TableHead className="px-6">Patient</TableHead>
 											<TableHead className="px-6">Amount</TableHead>
 											<TableHead className="px-6">Status</TableHead>
+											<TableHead className="px-6">Due</TableHead>
 											<TableHead className="px-6">Created</TableHead>
-											<TableHead className="px-6">Updated</TableHead>
+											<TableHead className="px-6 text-right">Actions</TableHead>
 										</TableRow>
 									</TableHeader>
 									<TableBody>
@@ -187,8 +207,8 @@ const InvoicePage = () => {
 												<TableCell className="px-6 py-3 font-medium tabular-nums">
 													{invoice.id}
 												</TableCell>
-												<TableCell className="px-6 py-3 tabular-nums">
-													{invoice.patientId}
+												<TableCell className="px-6 py-3">
+													{patientName(invoice)}
 												</TableCell>
 												<TableCell className="px-6 py-3 font-medium tabular-nums">
 													{currency(invoice.totalAmount)}
@@ -200,14 +220,38 @@ const InvoicePage = () => {
 															"bg-muted text-muted-foreground"
 														}
 													>
-														{invoice.status}
+														{INVOICE_STATUS[
+															invoice.status as keyof typeof INVOICE_STATUS
+														] ?? invoice.status}
 													</Badge>
+												</TableCell>
+												<TableCell className="px-6 py-3 text-muted-foreground">
+													{invoice.dueDate || "Not set"}
 												</TableCell>
 												<TableCell className="px-6 py-3 text-muted-foreground">
 													<ClientDate dateString={invoice.createdAt} />
 												</TableCell>
-												<TableCell className="px-6 py-3 text-muted-foreground">
-													<ClientDate dateString={invoice.updatedAt} />
+												<TableCell className="px-6 py-3 text-right">
+													<div className="flex items-center justify-end gap-1">
+														<Button
+															size="icon-sm"
+															variant="ghost"
+															onClick={() => setEditing(invoice)}
+															aria-label={`Edit invoice ${invoice.id}`}
+														>
+															<Pencil />
+														</Button>
+														<Button
+															size="icon-sm"
+															variant="ghost"
+															onClick={() => handleDelete(invoice)}
+															disabled={deleteInvoice.isPending}
+															className="text-destructive hover:text-destructive"
+															aria-label={`Delete invoice ${invoice.id}`}
+														>
+															<Trash2 />
+														</Button>
+													</div>
 												</TableCell>
 											</TableRow>
 										))}
@@ -225,6 +269,12 @@ const InvoicePage = () => {
 					)}
 				</Card>
 			</div>
+
+			{isCreating ? <InvoiceForm onClose={() => setIsCreating(false)} /> : null}
+
+			{editing ? (
+				<InvoiceForm invoice={editing} onClose={() => setEditing(null)} />
+			) : null}
 		</Layout>
 	);
 };

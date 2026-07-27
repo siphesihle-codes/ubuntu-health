@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { PRESCRIPTION_STATUS } from "@/types";
 import { useCreatePrescription } from "@/hooks/usePrescriptions";
+import { usePatients } from "@/hooks/usePatients";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,7 @@ import {
 } from "@/components/ui/select";
 
 interface PrescriptionFormProps {
+	patientId?: number;
 	onClose: () => void;
 }
 
@@ -45,17 +47,19 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
 	</div>
 );
 
-export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
+export default function PrescriptionForm({
+	patientId,
+	onClose,
+}: PrescriptionFormProps) {
 	const medicationIdPrefix = useId();
 	const medicationCount = useRef(0);
+	const { data: patients = [] } = usePatients();
 	const createPrescription = useCreatePrescription();
 	const isLoading = createPrescription.isPending;
 
 	const formik = useFormik({
 		initialValues: {
-			patientId: "",
-			practitionerId: "1",
-			issueDate: new Date().toISOString().split("T")[0],
+			patientId: patientId ? String(patientId) : "",
 			endDate: "",
 			frequency: "",
 			refills: 0,
@@ -71,7 +75,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 			instructions: "",
 		},
 		validationSchema: Yup.object({
-			patientId: Yup.string().required("Patient ID is required"),
+			patientId: Yup.string().required("Choose a patient"),
 			medications: Yup.array().of(
 				Yup.object().shape({
 					name: Yup.string().required("Medication name is required"),
@@ -79,19 +83,32 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 				})
 			),
 			frequency: Yup.string().required("Frequency is required"),
-			issueDate: Yup.date().required("Issue date is required"),
 		}),
 		onSubmit: (values) => {
-			createPrescription.mutate(values, {
-				onSuccess: () => {
-					toast.success("Prescription created!");
-					formik.resetForm();
-					setTimeout(onClose, 1000);
+			createPrescription.mutate(
+				{
+					patientId: Number(values.patientId),
+					endDate: values.endDate,
+					frequency: values.frequency,
+					refills: Number(values.refills),
+					status: values.status,
+					instructions: values.instructions,
+					medications: values.medications.map((medication) => ({
+						name: medication.name,
+						dosage: medication.dosage,
+						instructions: medication.instructions,
+					})),
 				},
-				onError: (error) => {
-					toast.error(error.message);
-				},
-			});
+				{
+					onSuccess: () => {
+						toast.success("Prescription created!");
+						onClose();
+					},
+					onError: (error) => {
+						toast.error(error.message);
+					},
+				}
+			);
 		},
 	});
 
@@ -124,12 +141,10 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 		if (!error || typeof error !== "object") return null;
 
 		const message = (error as Record<string, string>)[field];
-		return message ? (
-			<p className="text-xs text-destructive">{message}</p>
-		) : null;
+		return message ? <p className="text-xs text-destructive">{message}</p> : null;
 	};
 
-	const fieldError = (field: "patientId" | "frequency" | "issueDate") =>
+	const fieldError = (field: "patientId" | "frequency") =>
 		formik.touched[field] && formik.errors[field] ? (
 			<p className="text-xs text-destructive">{formik.errors[field]}</p>
 		) : null;
@@ -145,7 +160,8 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 				<DialogHeader>
 					<DialogTitle>New prescription</DialogTitle>
 					<DialogDescription>
-						Add medications, dosage and dispensing instructions.
+						Add medications, dosage and dispensing instructions. We do not check
+						for interactions or allergies.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -153,21 +169,24 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 					<section className="flex flex-col gap-4">
 						<SectionHeading>Patient</SectionHeading>
 						<div className="flex flex-col gap-2 sm:max-w-xs">
-							<Label htmlFor="patientId">Patient ID</Label>
-							<Input
-								id="patientId"
-								name="patientId"
+							<Label htmlFor="patientId">Patient</Label>
+							<Select
 								value={formik.values.patientId}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								placeholder="PAT-12345"
-								disabled={isLoading}
-								aria-invalid={
-									Boolean(
-										formik.touched.patientId && formik.errors.patientId
-									) || undefined
+								onValueChange={(value) =>
+									formik.setFieldValue("patientId", value ?? "")
 								}
-							/>
+							>
+								<SelectTrigger id="patientId" className="w-full">
+									<SelectValue placeholder="Select a patient" />
+								</SelectTrigger>
+								<SelectContent>
+									{patients.map((patient) => (
+										<SelectItem key={patient.id} value={String(patient.id)}>
+											{patient.firstName} {patient.lastName}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 							{fieldError("patientId")}
 						</div>
 					</section>
@@ -283,7 +302,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 							</div>
 
 							<div className="flex flex-col gap-2">
-								<Label htmlFor="refills">Refills</Label>
+								<Label htmlFor="refills">Repeats</Label>
 								<Input
 									type="number"
 									id="refills"
@@ -300,7 +319,9 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 								<Label htmlFor="status">Status</Label>
 								<Select
 									value={formik.values.status}
-									onValueChange={(value) => formik.setFieldValue("status", value ?? "")}
+									onValueChange={(value) =>
+										formik.setFieldValue("status", value ?? "")
+									}
 								>
 									<SelectTrigger id="status" className="w-full">
 										<SelectValue placeholder="Select status" />
@@ -316,22 +337,8 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 							</div>
 
 							<div className="flex flex-col gap-2">
-								<Label htmlFor="issueDate">Issue date</Label>
-								<Input
-									type="date"
-									id="issueDate"
-									name="issueDate"
-									value={formik.values.issueDate}
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									disabled={isLoading}
-								/>
-								{fieldError("issueDate")}
-							</div>
-
-							<div className="flex flex-col gap-2">
 								<Label htmlFor="endDate">
-									End date{" "}
+									Valid until{" "}
 									<span className="text-muted-foreground">(optional)</span>
 								</Label>
 								<Input

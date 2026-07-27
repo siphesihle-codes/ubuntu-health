@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCreatePrescription } from "@/hooks/usePrescriptions";
+import { usePatients } from "@/hooks/usePatients";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +39,7 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
 
 const NewPrescriptionPage = () => {
 	const { tenantId } = useRouter().query as { tenantId: string };
+	const { data: patients = [] } = usePatients();
 	const createPrescription = useCreatePrescription();
 	const isSubmitting = createPrescription.isPending;
 
@@ -53,7 +55,7 @@ const NewPrescriptionPage = () => {
 			refills: 0,
 		},
 		validationSchema: Yup.object({
-			patientId: Yup.string().required("Patient ID is required"),
+			patientId: Yup.string().required("Choose a patient"),
 			medication: Yup.string().required("Medication is required"),
 			dosage: Yup.string().required("Dosage is required"),
 			frequency: Yup.string().required("Frequency is required"),
@@ -62,8 +64,7 @@ const NewPrescriptionPage = () => {
 		onSubmit: (values) => {
 			createPrescription.mutate(
 				{
-					patientId: values.patientId,
-					practitionerId: "1",
+					patientId: Number(values.patientId),
 					endDate: values.endDate,
 					frequency: values.frequency,
 					refills: values.refills,
@@ -120,17 +121,24 @@ const NewPrescriptionPage = () => {
 							<section className="flex flex-col gap-4">
 								<SectionHeading>Patient</SectionHeading>
 								<div className="flex flex-col gap-2 sm:max-w-xs">
-									<Label htmlFor="patientId">Patient ID</Label>
-									<Input
-										id="patientId"
-										name="patientId"
+									<Label htmlFor="patientId">Patient</Label>
+									<Select
 										value={formik.values.patientId}
-										onChange={formik.handleChange}
-										onBlur={formik.handleBlur}
-										placeholder="PAT-12345"
-										disabled={isSubmitting}
-										aria-invalid={isInvalid("patientId")}
-									/>
+										onValueChange={(value) =>
+											formik.setFieldValue("patientId", value ?? "")
+										}
+									>
+										<SelectTrigger id="patientId" className="w-full">
+											<SelectValue placeholder="Select a patient" />
+										</SelectTrigger>
+										<SelectContent>
+											{patients.map((patient) => (
+												<SelectItem key={patient.id} value={String(patient.id)}>
+													{patient.firstName} {patient.lastName}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 									{fieldError("patientId")}
 								</div>
 							</section>

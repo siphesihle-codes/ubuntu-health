@@ -18,8 +18,10 @@ const AppointmentsTable = ({ searchTerm = "" }: AppointmentsTableProps) => {
 
 		return appointments.filter((appointment) =>
 			`${appointment.patientFirstName} ${appointment.patientLastName} ${
-				APPOINTMENT_TYPES[appointment.appointmentType] ?? ""
-			} ${STATUS_LABELS[appointment.status] ?? ""}`
+				appointment.practitionerName ?? ""
+			} ${APPOINTMENT_TYPES[appointment.appointmentType] ?? ""} ${
+				STATUS_LABELS[appointment.status] ?? ""
+			}`
 				.toLowerCase()
 				.includes(query)
 		);

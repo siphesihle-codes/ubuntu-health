@@ -80,6 +80,7 @@ const AppointmentsTableCard = ({
 					<TableHeader className="sticky top-0 z-10 bg-card">
 						<TableRow>
 							<TableHead className="px-6">Patient</TableHead>
+							<TableHead className="px-6">Practitioner</TableHead>
 							<TableHead className="px-6">Date</TableHead>
 							<TableHead className="px-6">Time</TableHead>
 							<TableHead className="px-6">Type</TableHead>
@@ -91,7 +92,7 @@ const AppointmentsTableCard = ({
 						{appointments.length === 0 ? (
 							<TableRow>
 								<TableCell
-									colSpan={6}
+									colSpan={7}
 									className="px-6 py-12 text-center text-muted-foreground"
 								>
 									No appointments found
@@ -102,6 +103,9 @@ const AppointmentsTableCard = ({
 								<TableRow key={appointment.id}>
 									<TableCell className="px-6 py-3 font-medium">
 										{appointment.patientFirstName} {appointment.patientLastName}
+									</TableCell>
+									<TableCell className="px-6 py-3 text-muted-foreground">
+										{appointment.practitionerName || "Unassigned"}
 									</TableCell>
 									<TableCell className="px-6 py-3 text-muted-foreground">
 										<ClientDate dateString={appointment.appointmentDate} />

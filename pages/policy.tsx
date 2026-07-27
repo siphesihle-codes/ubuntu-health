@@ -86,7 +86,7 @@ const PolicyPage = () => (
 					"To enforce plan limits, such as the number of practitioner seats in use.",
 					"To provide support when you ask for it.",
 					"To protect the service, including investigating suspicious access and faults.",
-					"To bill your practice and send service notices, such as changes to these documents.",
+					"To bill your practice.",
 				]}
 			/>
 			<p>
@@ -128,9 +128,9 @@ const PolicyPage = () => (
 			<p>
 				These providers act as our operators, under agreements that limit them
 				to processing data on our instruction. We add no other recipients. In
-				particular, the service sends no email at all: staff invitations are
-				links that your administrator shares directly, and we never contact your
-				patients.
+				particular, the service sends no email at all: staff invitations and
+				password reset links are links that your administrator shares directly,
+				and we never contact your patients.
 			</p>
 			<p>
 				We will also disclose information where the law compels it, for example
@@ -159,6 +159,7 @@ const PolicyPage = () => (
 					"Every request is scoped to the practice identifier carried in the session, so one practice cannot read another practice's records.",
 					"Role permissions limit what each user can reach: reception cannot open clinical notes, and only administrators can manage staff or billing.",
 					"A deactivated user is rejected when their session is validated, even if they still hold a token.",
+					"Password reset links can be used once and expire after 24 hours.",
 					"Access to the production database is limited to the people who need it to operate the service.",
 				]}
 			/>
@@ -252,17 +253,17 @@ const PolicyPage = () => (
 
 		<LegalSection heading="15. Marketing">
 			<p>
-				We send service messages, such as billing notices and changes to these
-				documents. We do not send unsolicited marketing to your patients, and we
-				never use patient contact details for our own marketing.
+				The service sends no email, so it sends no marketing either. We do not
+				contact your patients, and we never use patient contact details for our
+				own marketing.
 			</p>
 		</LegalSection>
 
 		<LegalSection heading="16. Changes to this policy">
 			<p>
 				We may update this policy. The new version appears on this page with a
-				new last updated date, and we notify practice administrators of material
-				changes.
+				new last updated date, and we tell practice administrators about material
+				changes in the application.
 			</p>
 		</LegalSection>
 

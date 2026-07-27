@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
 import UpgradePlans from "@/components/UpgradePlans";
+import PracticeImport from "@/components/PracticeImport";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useExportPractice } from "@/hooks/useExport";
@@ -140,6 +141,8 @@ const BillingBoard = () => {
 				isTrial={isTrial}
 				canUpgrade={isAdmin}
 			/>
+
+			{isAdmin ? <PracticeImport /> : null}
 
 			<p className="text-sm text-muted-foreground">
 				Larger practice?{" "}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Appointment, APPOINTMENT_TYPES, STATUS_LABELS } from "@/types";
+import { usePractitioners } from "@/hooks/useStaff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +32,19 @@ const EditAppointmentModal = ({
 	onClose,
 }: EditAppointmentModalProps) => {
 	const [formData, setFormData] = useState<Appointment>({ ...appointment });
+	const { data: practitioners = [] } = usePractitioners();
+
+	const handlePractitionerChange = (practitionerId: string | null) => {
+		const practitioner = practitioners.find(
+			(entry) => entry.id === practitionerId
+		);
+
+		setFormData((prev) => ({
+			...prev,
+			practitionerId: practitioner?.id ?? null,
+			practitionerName: practitioner?.name ?? null,
+		}));
+	};
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.target;
@@ -83,6 +97,25 @@ const EditAppointmentModal = ({
 								value={formData.patientLastName}
 								onChange={handleChange}
 							/>
+						</div>
+
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="practitionerId">Practitioner</Label>
+							<Select
+								value={formData.practitionerId ?? ""}
+								onValueChange={handlePractitionerChange}
+							>
+								<SelectTrigger id="practitionerId" className="w-full">
+									<SelectValue placeholder="Select a practitioner" />
+								</SelectTrigger>
+								<SelectContent>
+									{practitioners.map((practitioner) => (
+										<SelectItem key={practitioner.id} value={practitioner.id}>
+											{practitioner.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 						</div>
 
 						<div className="flex flex-col gap-2">

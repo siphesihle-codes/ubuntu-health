@@ -11,14 +11,17 @@ import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
 import InviteStaffForm from "@/components/Forms/InviteStaffForm";
+import PasswordResetLink from "@/components/Modals/PasswordResetLink";
 import { useCurrentUser } from "@/hooks/useAuth";
 import {
+	useCreatePasswordReset,
 	useInvitations,
 	useRevokeInvitation,
 	useStaff,
 	useUpdateStaffRole,
 	useUpdateStaffStatus,
 } from "@/hooks/useStaff";
+import type { PasswordResetLink as ResetLink } from "@/hooks/useStaff";
 import { useSubscription } from "@/hooks/useSubscription";
 import { ROLE_LABELS } from "@/types";
 import type { Role, StaffMember } from "@/types";
@@ -47,6 +50,7 @@ const fullName = (staffMember: StaffMember) =>
 
 const AdminBoard = () => {
 	const [isInviting, setIsInviting] = useState(false);
+	const [resetLink, setResetLink] = useState<ResetLink | null>(null);
 
 	const { data: profile } = useCurrentUser();
 	const { data: staff = [], isPending: staffPending } = useStaff();
@@ -56,6 +60,7 @@ const AdminBoard = () => {
 	const updateRole = useUpdateStaffRole();
 	const updateStatus = useUpdateStaffStatus();
 	const revokeInvitation = useRevokeInvitation();
+	const createPasswordReset = useCreatePasswordReset();
 
 	const isOwner = Boolean(profile?.isOwner);
 
@@ -94,6 +99,20 @@ const AdminBoard = () => {
 				onError: (error) => toast.error(error.message),
 			}
 		);
+	};
+
+	const canResetPassword = (staffMember: StaffMember) => {
+		if (staffMember.id === profile?.id) return false;
+		if (!staffMember.isActive) return false;
+		if (staffMember.roles.includes("admin") && !isOwner) return false;
+		return true;
+	};
+
+	const handlePasswordReset = (staffMember: StaffMember) => {
+		createPasswordReset.mutate(staffMember.id, {
+			onSuccess: (reset) => setResetLink(reset),
+			onError: (error) => toast.error(error.message),
+		});
 	};
 
 	const handleRevoke = (id: number, email: string) => {
@@ -236,26 +255,39 @@ const AdminBoard = () => {
 													</Badge>
 												</TableCell>
 												<TableCell className="px-6 py-3 text-right">
-													{canManage(staffMember) ? (
-														<Button
-															size="sm"
-															variant="outline"
-															onClick={() => handleStatusChange(staffMember)}
-															disabled={updateStatus.isPending}
-														>
-															{staffMember.isActive
-																? "Deactivate"
-																: "Reactivate"}
-														</Button>
-													) : (
-														<span className="text-xs text-muted-foreground">
-															{staffMember.isOwner
-																? "Practice owner"
-																: staffMember.id === profile?.id
-																	? "Your account"
-																	: "Owner only"}
-														</span>
-													)}
+													<div className="flex items-center justify-end gap-2">
+														{canResetPassword(staffMember) ? (
+															<Button
+																size="sm"
+																variant="outline"
+																onClick={() => handlePasswordReset(staffMember)}
+																disabled={createPasswordReset.isPending}
+															>
+																Reset password
+															</Button>
+														) : null}
+
+														{canManage(staffMember) ? (
+															<Button
+																size="sm"
+																variant="outline"
+																onClick={() => handleStatusChange(staffMember)}
+																disabled={updateStatus.isPending}
+															>
+																{staffMember.isActive
+																	? "Deactivate"
+																	: "Reactivate"}
+															</Button>
+														) : (
+															<span className="text-xs text-muted-foreground">
+																{staffMember.isOwner
+																	? "Practice owner"
+																	: staffMember.id === profile?.id
+																		? "Your account"
+																		: "Owner only"}
+															</span>
+														)}
+													</div>
 												</TableCell>
 											</TableRow>
 										))}
@@ -341,6 +373,13 @@ const AdminBoard = () => {
 				<InviteStaffForm
 					canInviteAdmins={isOwner}
 					onClose={() => setIsInviting(false)}
+				/>
+			) : null}
+
+			{resetLink ? (
+				<PasswordResetLink
+					reset={resetLink}
+					onClose={() => setResetLink(null)}
 				/>
 			) : null}
 		</>

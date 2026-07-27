@@ -71,7 +71,7 @@ const TermsPage = () => (
 			<LegalList
 				items={[
 					"Giving accurate registration details, including the HPCSA registration number of each practitioner.",
-					"Keeping passwords and invitation links confidential. An invitation link grants access to patient records, so treat it as a credential.",
+					"Keeping passwords, invitation links and password reset links confidential. Each of those links grants access to patient records, so treat them as credentials.",
 					"Everything done under your practice's accounts.",
 					"Deactivating staff who leave the practice, promptly.",
 				]}

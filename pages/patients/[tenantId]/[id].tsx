@@ -1,12 +1,15 @@
-import Link from "next/link";
+import React, { useState } from "react";
 import PatientOverview from "@/components/Modals/PatientOverview";
 import VisitsOverview from "@/components/Modals/Visits";
 import PrescriptionsOverview from "@/components/Modals/PrescriptionsOverview";
+import ClinicalNoteForm from "@/components/Forms/ClinicalNoteForm";
+import PrescriptionForm from "@/components/Forms/PrescriptionForm";
 import Layout from "@/components/Layout";
 import { PlusCircle } from "lucide-react";
 import InvoicesOverview from "@/components/Modals/InvoicesOverview";
 import { useRouter } from "next/router";
 import { usePatient } from "@/hooks/usePatients";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { usePatientClinicalNotes } from "@/hooks/useClinicalNotes";
 import { usePatientPrescriptions } from "@/hooks/usePrescriptions";
 import { Button } from "@/components/ui/button";
@@ -20,20 +23,25 @@ import {
 } from "@/components/ui/tabs";
 
 const PatientPage = () => {
-	const { id, tenantId } = useRouter().query as {
-		id?: string;
-		tenantId?: string;
-	};
+	const { id } = useRouter().query as { id?: string };
 	const patientId = Number(id);
+	const [activeModal, setActiveModal] = useState("");
 
+	const { data: profile } = useCurrentUser();
 	const { data: patient, isLoading, error } = usePatient(id);
 	const { data: clinicalNotes = [] } = usePatientClinicalNotes(patientId);
 	const { data: prescriptions = [] } = usePatientPrescriptions(patientId);
 
+	const roles = profile?.roles ?? [];
+	const canWriteNotes = roles.some((role) =>
+		["admin", "doctor", "nurse"].includes(role)
+	);
+	const canPrescribe = roles.some((role) => ["admin", "doctor"].includes(role));
+
 	if (isLoading) {
 		return (
 			<Layout title="Patient">
-				<div className="flex max-w-7xl flex-col gap-4">
+				<div className="mx-auto flex max-w-7xl flex-col gap-4">
 					<Skeleton className="h-9 w-64" />
 					<Card className="gap-3">
 						{Array.from({ length: 5 }).map((_, index) => (
@@ -62,17 +70,12 @@ const PatientPage = () => {
 			title={`${patient?.firstName ?? ""} ${patient?.lastName ?? ""}`.trim()}
 			description={`Patient ID: ${patient?.id ?? ""}`}
 			actions={
-				<Button
-					size="sm"
-					render={
-						<Link
-							href={`/patients/${tenantId}/${patient?.id}/consultation/new`}
-						/>
-					}
-				>
-					<PlusCircle />
-					<span className="hidden sm:inline">New consultation</span>
-				</Button>
+				canWriteNotes ? (
+					<Button size="sm" onClick={() => setActiveModal("consultation")}>
+						<PlusCircle />
+						<span className="hidden sm:inline">New consultation</span>
+					</Button>
+				) : null
 			}
 		>
 			<div className="mx-auto max-w-7xl">
@@ -89,11 +92,28 @@ const PatientPage = () => {
 					</TabsContent>
 
 					<TabsContent value="visits">
-						<VisitsOverview clinicalNotes={clinicalNotes} />
+						<VisitsOverview
+							patientId={patientId}
+							clinicalNotes={clinicalNotes}
+							canEdit={canWriteNotes}
+						/>
 					</TabsContent>
 
 					<TabsContent value="prescriptions">
-						<PrescriptionsOverview prescriptions={prescriptions} />
+						<div className="flex flex-col gap-4">
+							{canPrescribe ? (
+								<div className="flex justify-end">
+									<Button
+										size="sm"
+										onClick={() => setActiveModal("prescription")}
+									>
+										<PlusCircle />
+										New prescription
+									</Button>
+								</div>
+							) : null}
+							<PrescriptionsOverview prescriptions={prescriptions} />
+						</div>
 					</TabsContent>
 
 					<TabsContent value="invoices">
@@ -101,6 +121,20 @@ const PatientPage = () => {
 					</TabsContent>
 				</Tabs>
 			</div>
+
+			{activeModal === "consultation" ? (
+				<ClinicalNoteForm
+					patientId={patientId}
+					onClose={() => setActiveModal("")}
+				/>
+			) : null}
+
+			{activeModal === "prescription" ? (
+				<PrescriptionForm
+					patientId={patientId}
+					onClose={() => setActiveModal("")}
+				/>
+			) : null}
 		</Layout>
 	);
 };
