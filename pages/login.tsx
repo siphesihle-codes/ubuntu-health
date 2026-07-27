@@ -16,6 +16,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const LoginPage = () => {
 	const [showPassword, setShowPassword] = React.useState(false);
@@ -51,6 +52,7 @@ const LoginPage = () => {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+			<ThemeToggle className="fixed right-4 top-4 z-50" />
 			<div className="w-full max-w-sm">
 				<div className="mb-8 flex justify-center">
 					<Link

@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator";
 import { useCurrentUser } from "@/hooks/useAuth";
 import DashboardNav from "./DashboardNav";
+import ThemeToggle from "./ThemeToggle";
 import TrialBanner from "./TrialBanner";
 import TrialExpired from "./TrialExpired";
 
@@ -49,6 +50,7 @@ const Layout: React.FC<LayoutProps> = ({
 					{actions && !profile?.isTrialExpired ? (
 						<div className="flex shrink-0 items-center gap-2">{actions}</div>
 					) : null}
+					<ThemeToggle />
 				</header>
 				<div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
 					{profile?.isTrialExpired ? <TrialExpired /> : <TrialBanner />}

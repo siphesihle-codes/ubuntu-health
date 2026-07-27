@@ -11,6 +11,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const ForgotPasswordPage = () => (
 	<>
@@ -23,6 +24,7 @@ const ForgotPasswordPage = () => (
 		</Head>
 
 		<div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+			<ThemeToggle className="fixed right-4 top-4 z-50" />
 			<div className="w-full max-w-sm">
 				<div className="mb-8 flex justify-center">
 					<Link

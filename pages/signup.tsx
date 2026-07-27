@@ -20,6 +20,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const MINIMUM_PASSWORD_LENGTH = 12;
 
@@ -91,6 +92,7 @@ const SignUpForm = ({ plan = "free" }) => {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-muted/40 p-4 py-10">
+			<ThemeToggle className="fixed right-4 top-4 z-50" />
 			<div className="w-full max-w-xl">
 				<div className="mb-8 flex justify-center">
 					<Link

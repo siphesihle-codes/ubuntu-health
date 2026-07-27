@@ -2,6 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Activity, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
 	{ href: "/#about", label: "About" },
@@ -42,6 +43,7 @@ const Navbar = () => {
 				</nav>
 
 				<div className="hidden items-center gap-2 md:flex">
+					<ThemeToggle />
 					<Button variant="ghost" size="sm" render={<Link href="/login" />}>
 						Sign in
 					</Button>
@@ -55,16 +57,18 @@ const Navbar = () => {
 					</Button>
 				</div>
 
-				<Button
-					variant="ghost"
-					size="icon"
-					className="md:hidden"
-					onClick={() => setIsMenuOpen(!isMenuOpen)}
-					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-					aria-expanded={isMenuOpen}
-				>
-					{isMenuOpen ? <X /> : <Menu />}
-				</Button>
+				<div className="flex items-center gap-1 md:hidden">
+					<ThemeToggle />
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => setIsMenuOpen(!isMenuOpen)}
+						aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+						aria-expanded={isMenuOpen}
+					>
+						{isMenuOpen ? <X /> : <Menu />}
+					</Button>
+				</div>
 			</div>
 
 			{isMenuOpen ? (
