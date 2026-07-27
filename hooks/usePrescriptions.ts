@@ -10,8 +10,7 @@ export interface PrescriptionMedicationPayload {
 }
 
 export interface PrescriptionPayload {
-	patientId: string;
-	practitionerId: string;
+	patientId: number;
 	endDate: string;
 	frequency: string;
 	refills: number;
@@ -44,10 +43,21 @@ export function useCreatePrescription() {
 
 	return useMutation({
 		mutationFn: (prescription: PrescriptionPayload) =>
-			apiRequest<void>("Prescriptions", {
+			apiRequest<Prescription>("Prescriptions", {
 				method: "POST",
 				body: JSON.stringify(prescription),
 			}),
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: queryKeys.prescriptions.all }),
+	});
+}
+
+export function useDeletePrescription() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (id: number) =>
+			apiRequest<void>(`Prescriptions/${id}`, { method: "DELETE" }),
 		onSuccess: () =>
 			queryClient.invalidateQueries({ queryKey: queryKeys.prescriptions.all }),
 	});

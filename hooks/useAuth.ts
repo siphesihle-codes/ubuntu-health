@@ -32,6 +32,12 @@ export interface AcceptInvitationPayload {
 	password: string;
 }
 
+export interface ResetPasswordPayload {
+	userId: string;
+	token: string;
+	password: string;
+}
+
 export interface AuthResponse {
 	isSuccess: boolean;
 	refreshToken: string | null;
@@ -75,6 +81,16 @@ export function useRegister() {
 			apiRequest<AuthResponse>("auth/register", {
 				method: "POST",
 				body: JSON.stringify(registration),
+			}),
+	});
+}
+
+export function useResetPassword() {
+	return useMutation({
+		mutationFn: (reset: ResetPasswordPayload) =>
+			apiRequest<AuthResponse>("auth/reset-password", {
+				method: "POST",
+				body: JSON.stringify(reset),
 			}),
 	});
 }

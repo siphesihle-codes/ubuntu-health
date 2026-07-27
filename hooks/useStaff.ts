@@ -1,11 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/api/client";
 import { queryKeys } from "@/lib/api/queryKeys";
-import type { Invitation, Role, StaffMember } from "@/types";
+import type { Invitation, Practitioner, Role, StaffMember } from "@/types";
 
 export interface InvitationPayload {
 	email: string;
 	role: Role;
+}
+
+export interface PasswordResetLink {
+	userId: string;
+	email: string;
+	token: string;
+	expiresAt: string;
 }
 
 export interface CreatedInvitation {
@@ -20,6 +27,22 @@ export function useStaff() {
 	return useQuery({
 		queryKey: queryKeys.staff.all,
 		queryFn: () => apiRequest<StaffMember[]>("Staff"),
+	});
+}
+
+export function usePractitioners() {
+	return useQuery({
+		queryKey: queryKeys.staff.practitioners,
+		queryFn: () => apiRequest<Practitioner[]>("Staff/practitioners"),
+	});
+}
+
+export function useCreatePasswordReset() {
+	return useMutation({
+		mutationFn: (id: string) =>
+			apiRequest<PasswordResetLink>(`Staff/${id}/password-reset`, {
+				method: "POST",
+			}),
 	});
 }
 

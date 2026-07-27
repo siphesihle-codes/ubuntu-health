@@ -5,6 +5,7 @@ export const queryKeys = {
 	staff: {
 		all: ["staff"] as const,
 		invitations: ["staff", "invitations"] as const,
+		practitioners: ["staff", "practitioners"] as const,
 	},
 	subscription: {
 		current: ["subscription"] as const,
@@ -20,6 +21,8 @@ export const queryKeys = {
 		all: ["appointments"] as const,
 		list: (page: number, pageSize: number) =>
 			["appointments", "list", page, pageSize] as const,
+		diary: (from: string, to: string) =>
+			["appointments", "diary", from, to] as const,
 	},
 	prescriptions: {
 		all: ["prescriptions"] as const,

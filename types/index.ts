@@ -92,12 +92,20 @@ export interface Patient {
 	updatedAt: string;
 }
 
+export interface Practitioner {
+	id: string;
+	name: string;
+	specialty: string | null;
+}
+
 export interface Appointment {
 	id: number;
 	tenantId: string;
 	patientId: number;
 	patientFirstName: string;
 	patientLastName: string;
+	practitionerId: string | null;
+	practitionerName: string | null;
 	appointmentDate: string;
 	appointmentTime: string;
 	appointmentType: keyof typeof APPOINTMENT_TYPES;
@@ -111,26 +119,48 @@ export interface Invoice {
 	id: number;
 	tenantId: string;
 	patientId: number;
-	appointmentId: number;
+	patientFirstName: string | null;
+	patientLastName: string | null;
+	appointmentId: number | null;
 	totalAmount: number;
 	status: string;
 	notes: string;
+	dueDate: string;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface PrescriptionMedication {
+	name: string;
+	dosage: string;
+	instructions: string | null;
 }
 
 export interface Prescription {
 	id: number;
 	tenantId: string;
 	patientId: number;
-	practitionerId: number;
+	prescriberId: string | null;
+	prescriberName: string | null;
+	prescriberLicenseNumber: string | null;
 	endDate: string;
 	frequency: string;
 	refills: number;
 	status: keyof typeof PRESCRIPTION_STATUS;
 	instructions: string;
+	medications: PrescriptionMedication[];
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface ImportSummary {
+	patientsCreated: number;
+	patientsMatched: number;
+	appointmentsCreated: number;
+	clinicalNotesCreated: number;
+	prescriptionsCreated: number;
+	invoicesCreated: number;
+	skipped: string[];
 }
 
 export interface ClinicalNote {
@@ -171,8 +201,7 @@ export const SUBSCRIPTION_PLANS = [
 			"1 practitioner",
 			"Unlimited reception and nursing staff",
 			"Patients, appointments and clinical notes",
-			"E-prescriptions and invoicing",
-			"Email support",
+			"Prescriptions, printable scripts and invoicing",
 		],
 		popular: false,
 	},
@@ -186,7 +215,6 @@ export const SUBSCRIPTION_PLANS = [
 			"Everything in Solo",
 			"Shared diary across practitioners",
 			"Staff roles and permissions",
-			"Priority email support",
 		],
 		popular: true,
 	},
@@ -199,7 +227,6 @@ export const SUBSCRIPTION_PLANS = [
 			"Up to 8 practitioners",
 			"Everything in Practice",
 			"Onboarding and data migration",
-			"Priority support",
 		],
 		popular: false,
 	},

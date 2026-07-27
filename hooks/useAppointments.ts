@@ -6,9 +6,11 @@ import type { Appointment, PagedResult } from "@/types";
 export const DEFAULT_PAGE_SIZE = 100;
 
 export interface AppointmentPayload {
-	patientId?: number;
+	patientId: number;
 	patientFirstName: string;
 	patientLastName: string;
+	practitionerId: string;
+	practitionerName: string;
 	appointmentDate: string;
 	appointmentTime: string;
 	appointmentType: string;
@@ -39,12 +41,20 @@ export function usePatientAppointments(patientId: number) {
 	});
 }
 
+export function useDiary(from: string, to: string) {
+	return useQuery({
+		queryKey: queryKeys.appointments.diary(from, to),
+		queryFn: () =>
+			apiRequest<Appointment[]>(`Appointments/diary?from=${from}&to=${to}`),
+	});
+}
+
 export function useCreateAppointment() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: (appointment: AppointmentPayload) =>
-			apiRequest<void>("Appointments", {
+			apiRequest<Appointment>("Appointments", {
 				method: "POST",
 				body: JSON.stringify(appointment),
 			}),
@@ -58,12 +68,14 @@ export function useUpdateAppointment() {
 
 	return useMutation({
 		mutationFn: (appointment: Appointment) =>
-			apiRequest<void>(`Appointments/${appointment.id}`, {
+			apiRequest<Appointment>(`Appointments/${appointment.id}`, {
 				method: "PUT",
 				body: JSON.stringify({
 					patientId: appointment.patientId,
 					patientFirstName: appointment.patientFirstName,
 					patientLastName: appointment.patientLastName,
+					practitionerId: appointment.practitionerId,
+					practitionerName: appointment.practitionerName,
 					appointmentDate: appointment.appointmentDate,
 					appointmentTime: appointment.appointmentTime,
 					appointmentType: appointment.appointmentType,
