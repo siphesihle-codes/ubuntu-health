@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { SUBSCRIPTION_PLANS, TRIAL_LENGTH_DAYS } from "@/types";
+import { SALES_EMAIL, SUBSCRIPTION_PLANS, TRIAL_LENGTH_DAYS } from "@/types";
 import { cn } from "@/lib/utils";
 
 const rand = (amount: number) => `R${amount.toLocaleString("en-ZA")}`;
@@ -89,6 +89,17 @@ const Pricing = () => {
 						</Card>
 					))}
 				</div>
+
+				<p className="mt-10 text-center text-sm text-muted-foreground">
+					Larger practice?{" "}
+					<a
+						href={`mailto:${SALES_EMAIL}`}
+						className="text-foreground underline-offset-4 hover:underline"
+					>
+						Talk to us
+					</a>{" "}
+					about a plan sized for your team.
+				</p>
 			</div>
 		</section>
 	);

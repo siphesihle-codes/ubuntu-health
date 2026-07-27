@@ -118,7 +118,7 @@ const DashboardPage = () => {
 				</Button>
 			}
 		>
-			<div className="mx-auto flex max-w-7xl flex-col gap-6">
+			<div className="flex max-w-7xl flex-col gap-6">
 				<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 					{summaryCards.map((card) => (
 						<Link key={card.label} href={card.href} className="group">

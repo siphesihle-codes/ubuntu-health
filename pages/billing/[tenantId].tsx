@@ -1,14 +1,18 @@
 import React from "react";
-import { Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
 import UpgradePlans from "@/components/UpgradePlans";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { TRIAL_LENGTH_DAYS } from "@/types";
+import { useExportPractice } from "@/hooks/useExport";
+import { SALES_EMAIL, TRIAL_LENGTH_DAYS } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
+	CardAction,
 	CardContent,
 	CardDescription,
 	CardHeader,
@@ -18,8 +22,16 @@ import {
 const BillingBoard = () => {
 	const { data: profile } = useCurrentUser();
 	const { data: subscription, isPending } = useSubscription();
+	const exportPractice = useExportPractice();
 
 	const isAdmin = profile?.roles.includes("admin") ?? false;
+
+	const handleExport = () => {
+		exportPractice.mutate(undefined, {
+			onSuccess: () => toast.success("Your practice records have been exported"),
+			onError: (error) => toast.error(error.message),
+		});
+	};
 
 	if (isPending || !subscription) {
 		return (
@@ -39,6 +51,28 @@ const BillingBoard = () => {
 			<Card>
 				<CardHeader>
 					<CardTitle>Current plan</CardTitle>
+					{isAdmin ? (
+						<CardAction>
+							<Button
+								size="xs"
+								variant="outline"
+								onClick={handleExport}
+								disabled={exportPractice.isPending}
+							>
+								{exportPractice.isPending ? (
+									<>
+										<Loader2 className="animate-spin" />
+										Exporting...
+									</>
+								) : (
+									<>
+										<Download />
+										Export records
+									</>
+								)}
+							</Button>
+						</CardAction>
+					) : null}
 					<CardDescription>
 						{isTrial
 							? `You are on a ${TRIAL_LENGTH_DAYS}-day free trial. Confirm a plan before it ends to keep access.`
@@ -106,6 +140,17 @@ const BillingBoard = () => {
 				isTrial={isTrial}
 				canUpgrade={isAdmin}
 			/>
+
+			<p className="text-sm text-muted-foreground">
+				Larger practice?{" "}
+				<a
+					href={`mailto:${SALES_EMAIL}`}
+					className="text-foreground underline-offset-4 hover:underline"
+				>
+					Talk to us
+				</a>{" "}
+				about a plan sized for your team.
+			</p>
 		</div>
 	);
 };

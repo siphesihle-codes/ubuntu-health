@@ -1,36 +1,65 @@
 import React from "react";
-import { Lock } from "lucide-react";
+import Link from "next/link";
+import { Download, Loader2, Lock } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
-import UpgradePlans from "./UpgradePlans";
+import { useExportPractice } from "@/hooks/useExport";
 
 const TrialExpired = () => {
 	const { data: profile } = useCurrentUser();
-	const { data: subscription } = useSubscription();
+	const exportPractice = useExportPractice();
+
 	const isAdmin = profile?.roles.includes("admin") ?? false;
 
+	const handleExport = () => {
+		exportPractice.mutate(undefined, {
+			onSuccess: () => toast.success("Your practice records have been exported"),
+			onError: (error) => toast.error(error.message),
+		});
+	};
+
 	return (
-		<div className="mx-auto flex w-full max-w-6xl flex-col gap-10 py-6">
-			<div className="flex flex-col items-center text-center">
-				<span className="flex size-12 items-center justify-center rounded-3xl bg-destructive/10 text-destructive">
-					<Lock className="size-5" />
+		<div className="mx-auto flex w-full max-w-7xl flex-col gap-3 rounded-3xl border border-destructive/30 bg-destructive/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+			<div className="flex items-center gap-2.5">
+				<span className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-destructive/15 text-destructive">
+					<Lock className="size-4" />
 				</span>
-				<h2 className="mt-4 font-heading text-2xl font-semibold tracking-tight">
-					Your free trial has ended
-				</h2>
-				<p className="mt-2 max-w-lg text-sm text-muted-foreground">
-					{isAdmin
-						? "Choose a plan to restore access to patients, appointments, prescriptions and billing. Your practice data is safe and waiting for you."
-						: "Ask your practice administrator to choose a plan. Your practice data is safe and waiting."}
-				</p>
+				<div className="flex flex-col">
+					<span className="text-sm font-medium">Your free trial has ended</span>
+					<span className="text-xs text-muted-foreground">
+						{isAdmin
+							? "Your records stay readable and exportable. Choose a plan to start capturing again."
+							: "Your records stay readable. Ask your practice administrator to choose a plan."}
+					</span>
+				</div>
 			</div>
 
-			<UpgradePlans
-				currentPlan={subscription?.plan ?? profile?.subscriptionPlan}
-				practitionersInUse={subscription?.practitionersInUse ?? 0}
-				isTrial
-				canUpgrade={isAdmin}
-			/>
+			{isAdmin ? (
+				<div className="flex shrink-0 items-center gap-2">
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={handleExport}
+						disabled={exportPractice.isPending}
+					>
+						{exportPractice.isPending ? (
+							<>
+								<Loader2 className="animate-spin" />
+								Exporting...
+							</>
+						) : (
+							<>
+								<Download />
+								Export records
+							</>
+						)}
+					</Button>
+					<Button size="sm" render={<Link href={`/billing/${profile?.tenantId}`} />}>
+						Choose a plan
+					</Button>
+				</div>
+			) : null}
 		</div>
 	);
 };

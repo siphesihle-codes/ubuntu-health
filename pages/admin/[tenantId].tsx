@@ -132,7 +132,7 @@ const AdminBoard = () => {
 
 	return (
 		<>
-			<div className="mx-auto flex max-w-7xl flex-col gap-6">
+			<div className="flex max-w-7xl flex-col gap-6">
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 					{stats.map((stat) => (
 						<Card key={stat.label} size="sm">

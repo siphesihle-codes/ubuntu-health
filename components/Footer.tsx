@@ -40,6 +40,21 @@ const Footer = () => {
 							Ubuntu Health
 						</span>
 					</div>
+					<nav className="flex items-center gap-5">
+						<Link
+							href="/terms"
+							className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+						>
+							Terms of Service
+						</Link>
+						<Link
+							href="/policy"
+							className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+						>
+							Privacy Policy
+						</Link>
+					</nav>
+
 					<p className="text-xs text-muted-foreground">
 						&copy; {new Date().getFullYear()} Ubuntu Health. All rights
 						reserved.

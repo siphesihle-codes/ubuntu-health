@@ -147,6 +147,20 @@ export interface ClinicalNote {
 
 export const TRIAL_LENGTH_DAYS = 30;
 
+export const SALES_EMAIL = "sales@ubuntuhealth.co.za";
+
+export const SUPPORT_EMAIL = "support@ubuntuhealth.co.za";
+
+export const PRIVACY_EMAIL = "privacy@ubuntuhealth.co.za";
+
+export const LEGAL = {
+	entity: "Ubuntu Health (Pty) Ltd",
+	registrationNumber: "0000/000000/07",
+	address: "Cape Town, South Africa",
+	lastUpdated: "27 July 2026",
+	retentionDays: 90,
+} as const;
+
 export const SUBSCRIPTION_PLANS = [
 	{
 		name: "Solo",

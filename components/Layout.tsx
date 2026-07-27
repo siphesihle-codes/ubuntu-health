@@ -51,14 +51,8 @@ const Layout: React.FC<LayoutProps> = ({
 					) : null}
 				</header>
 				<div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
-					{profile?.isTrialExpired ? (
-						<TrialExpired />
-					) : (
-						<>
-							<TrialBanner />
-							{children}
-						</>
-					)}
+					{profile?.isTrialExpired ? <TrialExpired /> : <TrialBanner />}
+					{children}
 				</div>
 			</SidebarInset>
 		</SidebarProvider>

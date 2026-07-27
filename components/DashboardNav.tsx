@@ -133,28 +133,30 @@ const DashboardNav = () => {
 						</SidebarGroupContent>
 					</SidebarGroup>
 
-					<SidebarGroup className="group-data-[collapsible=icon]:hidden">
-						<SidebarGroupLabel>Quick actions</SidebarGroupLabel>
-						<SidebarGroupContent className="flex flex-col gap-2 px-2 pt-1">
-							<Button
-								size="sm"
-								className="w-full justify-start"
-								onClick={() => setActiveModal("addPatient")}
-							>
-								<Plus />
-								New patient
-							</Button>
-							<Button
-								size="sm"
-								variant="outline"
-								className="w-full justify-start"
-								onClick={() => setActiveModal("scheduleAppointment")}
-							>
-								<CalendarCheck />
-								Schedule visit
-							</Button>
-						</SidebarGroupContent>
-					</SidebarGroup>
+					{profile?.isTrialExpired ? null : (
+						<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+							<SidebarGroupLabel>Quick actions</SidebarGroupLabel>
+							<SidebarGroupContent className="flex flex-col gap-2 px-2 pt-1">
+								<Button
+									size="sm"
+									className="w-full justify-start"
+									onClick={() => setActiveModal("addPatient")}
+								>
+									<Plus />
+									New patient
+								</Button>
+								<Button
+									size="sm"
+									variant="outline"
+									className="w-full justify-start"
+									onClick={() => setActiveModal("scheduleAppointment")}
+								>
+									<CalendarCheck />
+									Schedule visit
+								</Button>
+							</SidebarGroupContent>
+						</SidebarGroup>
+					)}
 				</SidebarContent>
 
 				<SidebarFooter>
