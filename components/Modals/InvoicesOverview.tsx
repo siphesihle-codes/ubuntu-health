@@ -1,7 +1,6 @@
 import React from "react";
-import { Invoice } from "@/types";
 import { useRouter } from "next/router";
-import useInvoiceData from "@/hooks/useInvoiceData";
+import { usePatientInvoices } from "@/hooks/useInvoices";
 import {
 	AlertCircle,
 	Check,
@@ -12,18 +11,17 @@ import {
 } from "lucide-react";
 import ClientDate from "../ClientDate";
 
-interface InvoicesOverviewProps {
-	invoices: Invoice[];
-}
-
-const InvoicesOverview = ({ invoices }: InvoicesOverviewProps) => {
+const InvoicesOverview = () => {
 	const { id: patientIdparam } = useRouter().query as { id: string };
 	const patientId = parseInt(patientIdparam, 10);
 
-	const { filteredInvoices, invoicesLoading, invoicesError } =
-		useInvoiceData(patientId);
+	const {
+		data: invoices = [],
+		isLoading,
+		error,
+	} = usePatientInvoices(patientId);
 
-	if (invoicesLoading) {
+	if (isLoading) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				Loading invoices data...
@@ -31,7 +29,7 @@ const InvoicesOverview = ({ invoices }: InvoicesOverviewProps) => {
 		);
 	}
 
-	if (invoicesError) {
+	if (error) {
 		return (
 			<div className="min-h-screen flex items-center justify-center text-red-600 ">
 				Error loading invoices data.
@@ -93,7 +91,7 @@ const InvoicesOverview = ({ invoices }: InvoicesOverviewProps) => {
 					</tr>
 				</thead>
 				<tbody className="divide-y divide-cyan-800/30">
-					{filteredInvoices.map((invoice) => (
+					{invoices.map((invoice) => (
 						<tr key={invoice.id} className="hover:bg-gray-50 transition-colors">
 							<td className="px-6 py-4 font-mono">{invoice.id}</td>
 							<td className="px-6 py-4">{invoice.patientId}</td>

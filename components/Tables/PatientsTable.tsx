@@ -1,21 +1,13 @@
 import React, { useMemo } from "react";
 import PatientsTableCard from "../Cards/PatientsTableCard";
-import useApiData from "@/hooks/useApiData";
-import { Patient } from "@/types";
+import { usePatients } from "@/hooks/usePatients";
 
 interface PatientsTableProps {
 	searchTerm?: string;
 }
 
 const PatientsTable = ({ searchTerm = "" }: PatientsTableProps) => {
-	const {
-		data: patients,
-		isLoading: patientsLoading,
-		error: patientsError,
-	} = useApiData<Patient>("Patients");
-
-	const isLoading = patientsLoading;
-	const error = patientsError;
+	const { data: patients = [], isLoading, error } = usePatients();
 
 	const filteredPatients = useMemo(() => {
 		const query = searchTerm.trim().toLowerCase();

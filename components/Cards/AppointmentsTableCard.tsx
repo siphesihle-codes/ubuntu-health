@@ -9,7 +9,10 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditAppointmentModal from "../Modals/EditAppointmentModal";
-import { API_BASE_URL } from "@/lib/api/config";
+import {
+	useDeleteAppointment,
+	useUpdateAppointment,
+} from "@/hooks/useAppointments";
 
 interface AppointmentsCardProps {
 	appointments: Appointment[];
@@ -26,35 +29,19 @@ const AppointmentsTableCard = ({
 	const [editingAppointment, setEditingAppointment] =
 		useState<Appointment | null>(null);
 
-	const token = localStorage.getItem("token");
+	const deleteAppointment = useDeleteAppointment();
+	const updateAppointment = useUpdateAppointment();
 
-	const handleDelete = async (id: string) => {
-		try {
-			const response = await fetch(
-				`${API_BASE_URL}/api/Appointments/${id}`,
-				{
-					method: "DELETE",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
-			if (!response.ok) {
-				toast.error("Failed to delete appointment");
-				throw new Error("Failed to delete appointment");
-			}
-
-			if (onDelete) {
-				onDelete(id);
-			}
-
-			toast.success("Appointment deleted successfully");
-		} catch (error) {
-			toast.error("Error deleting appointment");
-			console.error("Error deleting appointment:", error);
-		}
+	const handleDelete = (id: string) => {
+		deleteAppointment.mutate(id, {
+			onSuccess: () => {
+				onDelete?.(id);
+				toast.success("Appointment deleted successfully");
+			},
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		});
 	};
 
 	const handleEditClick = (appointment: Appointment) => {
@@ -62,44 +49,17 @@ const AppointmentsTableCard = ({
 		setIsEditModalOpen(true);
 	};
 
-	const handleSave = async (updatedAppointment: Appointment) => {
-		try {
-			const appointmentUpdateDto = {
-				patientFirstName: updatedAppointment.patientFirstName,
-				patientLastName: updatedAppointment.patientLastName,
-				appointmentDate: updatedAppointment.appointmentDate,
-				appointmentTime: updatedAppointment.appointmentTime,
-				appointmentType: updatedAppointment.appointmentType,
-				status: updatedAppointment.status,
-				notes: updatedAppointment.notes || "",
-			};
-
-			const response = await fetch(
-				`${API_BASE_URL}/api/Appointments/${updatedAppointment.id}`,
-				{
-					method: "PUT",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-					body: JSON.stringify(appointmentUpdateDto),
-				}
-			);
-
-			if (!response.ok) {
-				const errorData = await response.text();
-				console.error("API error response:", errorData);
-				throw new Error("Failed to update appointment");
-			}
-
-			if (onEdit) onEdit(String(updatedAppointment.id));
-
-			setIsEditModalOpen(false);
-			toast.success("Appointment updated successfully");
-		} catch (error) {
-			console.error("Error updating appointment:", error);
-			toast.error("Failed to update appointment");
-		}
+	const handleSave = (updatedAppointment: Appointment) => {
+		updateAppointment.mutate(updatedAppointment, {
+			onSuccess: () => {
+				onEdit?.(String(updatedAppointment.id));
+				setIsEditModalOpen(false);
+				toast.success("Appointment updated successfully");
+			},
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		});
 	};
 
 	return (
@@ -168,7 +128,9 @@ const AppointmentsTableCard = ({
 										<button
 											type="button"
 											onClick={() => handleDelete(String(appointment.id))}
-											className="text-red-600 hover:text-red-800 transition-colors"
+											disabled={deleteAppointment.isPending}
+											className="text-red-600 hover:text-red-800 transition-colors
+                      disabled:opacity-50"
 											title="Delete Appointment"
 										>
 											<Trash2 size={18} />

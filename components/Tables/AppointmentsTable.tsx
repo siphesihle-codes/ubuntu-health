@@ -1,17 +1,9 @@
 import React from "react";
 import AppointmentsTableCard from "../Cards/AppointmentsTableCard";
-import useApiData from "@/hooks/useApiData";
-import { Appointment } from "@/types";
+import { useAppointments } from "@/hooks/useAppointments";
 
 const AppointmentsTable = () => {
-	const {
-		data: appointments,
-		isLoading: appointmentsLoading,
-		error: appointmentsError,
-	} = useApiData<Appointment>("Appointments");
-
-	const isLoading = appointmentsLoading;
-	const error = appointmentsError;
+	const { data: appointments = [], isLoading, error } = useAppointments();
 
 	if (isLoading) {
 		return (

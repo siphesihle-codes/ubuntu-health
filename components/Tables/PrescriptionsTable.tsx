@@ -1,21 +1,13 @@
 import React from "react";
-import { Prescription } from "@/types";
 import PrescriptionsTableCard from "../Cards/PrescriptionsTableCard";
-import useApiData from "@/hooks/useApiData";
+import { usePrescriptions } from "@/hooks/usePrescriptions";
 
 interface PrescriptionTableProps {
 	searchQuery: string;
 }
 
 const PrescriptionsTable = ({ searchQuery }: PrescriptionTableProps) => {
-	const {
-		data: prescriptions,
-		isLoading: prescriptionsLoading,
-		error: prescriptionsError,
-	} = useApiData<Prescription>("Prescriptions");
-
-	const isLoading = prescriptionsLoading;
-	const error = prescriptionsError;
+	const { data: prescriptions = [], isLoading, error } = usePrescriptions();
 
 	if (isLoading) {
 		return (

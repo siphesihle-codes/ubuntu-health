@@ -11,7 +11,7 @@ import {
 	UserRoundPen,
 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
-import { API_BASE_URL } from "@/lib/api/config";
+import { useCreatePatient } from "@/hooks/usePatients";
 
 interface PatientFormProps {
 	onClose: () => void;
@@ -20,6 +20,7 @@ interface PatientFormProps {
 export default function PatientForm({ onClose }: PatientFormProps) {
 	const [sex, setSex] = useState("");
 	const [currentMeds, setCurrentMeds] = useState("");
+	const createPatient = useCreatePatient();
 
 	const formik = useFormik({
 		initialValues: {
@@ -55,33 +56,17 @@ export default function PatientForm({ onClose }: PatientFormProps) {
 				.email("Invalid email address.")
 				.required("E-Mail is required."),
 		}),
-		onSubmit: async (values) => {
-			try {
-				const token = localStorage.getItem("token");
-
-				console.log("======= VALUES =======");
-				console.log(JSON.stringify(values, null, 2));
-
-				const response = await fetch(`${API_BASE_URL}/api/Patients`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-					body: JSON.stringify(values),
-				});
-
-				if (!response.ok) {
-					throw new Error("Failed to register patient");
-				}
-
-				toast.success("Patient Registered!");
-				formik.resetForm();
-				setTimeout(onClose, 1000);
-			} catch (err) {
-				console.error(`Error submitting form: ${err}.`);
-				toast.error(`${err}.`);
-			}
+		onSubmit: (values) => {
+			createPatient.mutate(values, {
+				onSuccess: () => {
+					toast.success("Patient Registered!");
+					formik.resetForm();
+					setTimeout(onClose, 1000);
+				},
+				onError: (error) => {
+					toast.error(error.message);
+				},
+			});
 		},
 	});
 

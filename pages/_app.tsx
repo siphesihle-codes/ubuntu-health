@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import { ApiError } from "next/dist/server/api-utils";
+import { ApiError } from "@/lib/api/client";
 
 const poppins = Poppins({
 	subsets: ["latin"],
@@ -14,16 +14,24 @@ const poppins = Poppins({
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
-	const [queryClient] = useState(() => new QueryClient({
-		defaultOptions: {
-			queries: {
-				staleTime: 1000 * 60 * 5,
-				retry: (failureCount, error) =>
-					error instanceof ApiError && error.statusCode < 500 ? false : failureCount < 3, // Retry up to 3 times for server errors (5xx), but not for client errors (4xx)
-				refetchOnWindowFocus: false,
-			},
-		},
-	}));
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						staleTime: 1000 * 60 * 5,
+						retry: (failureCount, error) =>
+							error instanceof ApiError && error.status < 500
+								? false
+								: failureCount < 3,
+						refetchOnWindowFocus: false,
+					},
+					mutations: {
+						retry: false,
+					},
+				},
+			})
+	);
 
 	return (
 		<QueryClientProvider client={queryClient}>

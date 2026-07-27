@@ -4,7 +4,7 @@ import { Patient } from "@/types/index";
 import { toast } from "react-toastify";
 import EditPatientModal from "../Modals/EditPatientModal";
 import { useRouter } from "next/router";
-import { API_BASE_URL } from "@/lib/api/config";
+import { useDeletePatient, useUpdatePatient } from "@/hooks/usePatients";
 
 interface PatientsTableProps {
 	patients: Patient[];
@@ -22,31 +22,19 @@ const PatientsTableCard = ({
 	const router = useRouter();
 	const { tenantId } = router.query as { tenantId: string };
 
-	const token = localStorage.getItem("token");
-	const handleDelete = async (id: string) => {
-		try {
-			const response = await fetch(`${API_BASE_URL}/api/Patients/${id}`, {
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			});
+	const deletePatient = useDeletePatient();
+	const updatePatient = useUpdatePatient();
 
-			if (!response.ok) {
-				toast.error("Failed to delete patient");
-				throw new Error("Failed to delete patient");
-			}
-
-			if (onDelete) {
-				onDelete(id);
-			}
-
-			toast.success("Patient deleted successfully");
-		} catch (error) {
-			toast.error("Error deleting patient");
-			console.error("Error deleting patient:", error);
-		}
+	const handleDelete = (id: string) => {
+		deletePatient.mutate(id, {
+			onSuccess: () => {
+				onDelete?.(id);
+				toast.success("Patient deleted successfully");
+			},
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		});
 	};
 
 	const handleEditClick = (patient: Patient) => {
@@ -54,35 +42,17 @@ const PatientsTableCard = ({
 		setIsEditModalOpen(true);
 	};
 
-	const handleSave = async (updatedPatient: Patient) => {
-		try {
-			const response = await fetch(
-				`${API_BASE_URL}/api/Patients/${updatedPatient.id}`,
-				{
-					method: "PUT",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-					body: JSON.stringify(updatedPatient),
-				}
-			);
-
-			if (!response.ok) {
-				console.error("Failed to update patient", response.status);
-
-				toast.error("Failed to update patient");
-				throw new Error("Failed to update patient");
-			}
-
-			if (onEdit) onEdit(String(updatedPatient.id));
-
-			setIsEditModalOpen(false);
-			toast.success("Patient updated successfully");
-		} catch (e) {
-			console.error("Error updating patient:", e);
-			throw new Error(e instanceof Error ? e.message : String(e));
-		}
+	const handleSave = (updatedPatient: Patient) => {
+		updatePatient.mutate(updatedPatient, {
+			onSuccess: () => {
+				onEdit?.(String(updatedPatient.id));
+				setIsEditModalOpen(false);
+				toast.success("Patient updated successfully");
+			},
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		});
 	};
 
 	const handleRowClick = (patientId: string) => {
@@ -188,7 +158,9 @@ const PatientsTableCard = ({
 									<button
 										type="button"
 										onClick={() => handleDelete(String(patient.id))}
-										className="text-red-600 hover:text-red-800 transition-colors"
+										disabled={deletePatient.isPending}
+										className="text-red-600 hover:text-red-800 transition-colors
+                    disabled:opacity-50"
 										title="Delete Patient"
 									>
 										<Trash2 size={18} />

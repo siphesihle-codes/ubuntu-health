@@ -1,169 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import PatientOverview from "@/components/Modals/PatientOverview";
-import type {
-	Prescription,
-	Appointment,
-	Patient,
-	Invoice,
-	ClinicalNote,
-} from "@/types";
 import VisitsOverview from "@/components/Modals/Visits";
 import PrescriptionsOverview from "@/components/Modals/PrescriptionsOverview";
 import Layout from "@/components/Layout";
 import { PlusCircle } from "lucide-react";
 import InvoicesOverview from "@/components/Modals/InvoicesOverview";
-import { toast } from "react-toastify";
-import { API_BASE_URL } from "@/lib/api/config";
 import { useRouter } from "next/router";
+import { usePatient } from "@/hooks/usePatients";
+import { usePatientClinicalNotes } from "@/hooks/useClinicalNotes";
+import { usePatientPrescriptions } from "@/hooks/usePrescriptions";
 
 const PatientPage = () => {
 	const { id } = useRouter().query as { id?: string };
 	const [activeTab, setActiveTab] = useState<string>("overview");
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [patient, setPatient] = useState<Patient>();
-	const [clinicalNotes, setClinicalNotes] = useState<ClinicalNote[]>([]);
-	const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
-	const [invoices, setInvoices] = useState<Invoice[]>([]);
-	const [appointments, setAppointments] = useState<Appointment[]>([]);
-	useEffect(() => {
-		if (!id) return;
+	const patientId = Number(id);
 
-		const token = localStorage.getItem("token");
-
-		// Fetch Patient Data
-		const fetchPatientData = async () => {
-			try {
-				const response = await fetch(
-					`${API_BASE_URL}/api/Patients/${id}`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error(`API error: ${response.status}`);
-				}
-
-				const result = await response.json();
-				setPatient(result);
-				setIsLoading(false);
-			} catch (error) {
-				toast.error("Failed to fetch patient data");
-				throw new Error(String(error));
-			}
-		};
-
-		// Fetch ClinicalNotes
-		const fetchClinicalNotes = async () => {
-			try {
-				const response = await fetch(
-					`${API_BASE_URL}/api/ClinicalNotes/${id}`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error(`API error: ${response.status}`);
-				}
-
-				const result = await response.json();
-				setClinicalNotes(Array.isArray(result) ? result : [result]);
-				setIsLoading(false);
-			} catch (error) {
-				toast.error("Failed to fetch clinicalnotes data");
-				throw new Error(String(error));
-			}
-		};
-
-		// Fetch Prescriptions
-		const fetchPrescriptions = async () => {
-			try {
-				const response = await fetch(
-					`${API_BASE_URL}/api/Prescriptions/${id}`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error(`API error: ${response.status}`);
-				}
-
-				const result = await response.json();
-				setPrescriptions(Array.isArray(result) ? result : [result]);
-				setIsLoading(false);
-			} catch (error) {
-				toast.error("Failed to fetch prescription data");
-				throw new Error(String(error));
-			}
-		};
-
-		// Fetch Invoices
-		const fetchInvoices = async () => {
-			try {
-				const response = await fetch(`${API_BASE_URL}/api/Invoices/`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
-
-				if (!response.ok) {
-					throw new Error(`API error: ${response.status}`);
-				}
-
-				const result = await response.json();
-				setInvoices(Array.isArray(result) ? result : [result]);
-				setIsLoading(false);
-			} catch (error) {
-				toast.error("Failed to fetch invoices data");
-				throw new Error(String(error));
-			}
-		};
-
-		// Fetch Appointmentrs
-		const fetchAppointments = async () => {
-			try {
-				const response = await fetch(
-					`${API_BASE_URL}/api/Appointments/`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error(`API error: ${response.status}`);
-				}
-
-				const result = await response.json();
-				setAppointments(Array.isArray(result) ? result : [result]);
-				setIsLoading(false);
-			} catch (error) {
-				toast.error("Failed to fetch appointment data");
-				throw new Error(String(error));
-			}
-		};
-
-		fetchPatientData();
-		fetchAppointments();
-		fetchClinicalNotes();
-		fetchPrescriptions();
-		fetchInvoices();
-	}, [id]);
+	const { data: patient, isLoading, error } = usePatient(id);
+	const { data: clinicalNotes = [] } = usePatientClinicalNotes(patientId);
+	const { data: prescriptions = [] } = usePatientPrescriptions(patientId);
 
 	if (isLoading) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<div className=" ">Loading patient data...</div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="min-h-screen flex items-center justify-center text-red-600">
+				Error loading patient data. Please try again later.
 			</div>
 		);
 	}
@@ -269,9 +137,7 @@ const PatientPage = () => {
 							<PrescriptionsOverview prescriptions={prescriptions} />
 						)}
 
-						{activeTab === "invoices" && (
-							<InvoicesOverview invoices={invoices} />
-						)}
+						{activeTab === "invoices" && <InvoicesOverview />}
 					</div>
 				</main>
 			</div>

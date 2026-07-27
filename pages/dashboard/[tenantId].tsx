@@ -16,41 +16,19 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
-import useApiData from "@/hooks/useApiData";
-import {
-	Appointment,
-	Invoice,
-	Patient,
-	Prescription,
-	STATUS_LABELS,
-} from "@/types";
+import { usePatients } from "@/hooks/usePatients";
+import { usePrescriptions } from "@/hooks/usePrescriptions";
+import { useAppointments } from "@/hooks/useAppointments";
+import { useInvoices } from "@/hooks/useInvoices";
+import { STATUS_LABELS } from "@/types";
 
 const DashboardPage = () => {
 	const { tenantId } = useRouter().query as { tenantId: string };
 
-	const {
-		data: patients,
-		isLoading: patientsLoading,
-		error: patientsError,
-	} = useApiData<Patient>("Patients");
-
-	const {
-		data: prescriptions,
-		isLoading: prescriptionsLoading,
-		error: prescriptionsError,
-	} = useApiData<Prescription>("Prescriptions");
-
-	const {
-		data: appointments,
-		isLoading: appointmentsLoading,
-		error: appointmentsError,
-	} = useApiData<Appointment>("Appointments");
-
-	const {
-		data: invoices,
-		isLoading: invoicesLoading,
-		error: invoicesError,
-	} = useApiData<Invoice>("Invoices");
+	const { data: patients = [] } = usePatients();
+	const { data: prescriptions = [] } = usePrescriptions();
+	const { data: appointments = [] } = useAppointments();
+	const { data: invoices = [] } = useInvoices();
 
 	const stats = {
 		patients: patients.length,
@@ -210,23 +188,26 @@ const DashboardPage = () => {
 								</Link>
 							</div>
 							<div className="space-y-1">
-								{patients.reverse().map((patient) => (
-									<div
-										key={patient.id}
-										className="p-3 hover:bg-gray-50 rounded-lg
-                    transition-colors"
-									>
-										<div>
-											<p className="font-medium text-gray-800">
-												{patient.firstName} {patient.lastName}
-											</p>
-											<p className="text-sm text-gray-500 flex justify-between">
-												Medical Aid:
-												<span>{patient.medicalAidName}</span>
-											</p>
+								{patients
+									.slice()
+									.reverse()
+									.map((patient) => (
+										<div
+											key={patient.id}
+											className="p-3 hover:bg-gray-50 rounded-lg
+                      transition-colors"
+										>
+											<div>
+												<p className="font-medium text-gray-800">
+													{patient.firstName} {patient.lastName}
+												</p>
+												<p className="text-sm text-gray-500 flex justify-between">
+													Medical Aid:
+													<span>{patient.medicalAidName}</span>
+												</p>
+											</div>
 										</div>
-									</div>
-								))}
+									))}
 							</div>
 						</div>
 

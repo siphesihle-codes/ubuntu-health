@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { Calendar, Pill, User } from "lucide-react";
 import Link from "next/link";
-import { API_BASE_URL } from "@/lib/api/config";
+import { useCreatePrescription } from "@/hooks/usePrescriptions";
 
 const NewPrescriptionPage = () => {
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const createPrescription = useCreatePrescription();
+	const isSubmitting = createPrescription.isPending;
 
 	const formik = useFormik({
 		initialValues: {
@@ -27,32 +28,34 @@ const NewPrescriptionPage = () => {
 			frequency: Yup.string().required("Frequency is required"),
 			startDate: Yup.date().required("Start date is required"),
 		}),
-		onSubmit: async (values) => {
-			setIsSubmitting(true);
-			try {
-				const response = await fetch(
-					`${API_BASE_URL}/api/Prescriptions`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
+		onSubmit: (values) => {
+			createPrescription.mutate(
+				{
+					patientId: values.patientId,
+					practitionerId: "1",
+					endDate: values.endDate,
+					frequency: values.frequency,
+					refills: values.refills,
+					status: "active",
+					instructions: values.instructions,
+					medications: [
+						{
+							name: values.medication,
+							dosage: values.dosage,
+							instructions: values.instructions,
 						},
-						body: JSON.stringify(values),
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error("Failed to create prescription");
+					],
+				},
+				{
+					onSuccess: () => {
+						toast.success("Prescription created successfully!");
+						formik.resetForm();
+					},
+					onError: (error) => {
+						toast.error(error.message);
+					},
 				}
-
-				toast.success("Prescription created successfully!");
-				formik.resetForm();
-			} catch (err) {
-				console.error("Error creating prescription:", err);
-				toast.error("Failed to create prescription");
-			} finally {
-				setIsSubmitting(false);
-			}
+			);
 		},
 	});
 

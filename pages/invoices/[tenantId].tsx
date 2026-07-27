@@ -13,8 +13,7 @@ import {
 import Link from "next/link";
 import Layout from "@/components/Layout";
 import ClientDate from "@/components/ClientDate";
-import useApiData from "@/hooks/useApiData";
-import type { Invoice } from "@/types";
+import { useInvoices } from "@/hooks/useInvoices";
 
 const InvoicePage = () => {
 	const [filter, setFilter] = useState<
@@ -22,11 +21,7 @@ const InvoicePage = () => {
 	>("all");
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const {
-		data: invoices,
-		isLoading: isLoading,
-		error: isError,
-	} = useApiData<Invoice>("Invoices");
+	const { data: invoices = [] } = useInvoices();
 
 	const term = searchQuery.trim().toLowerCase();
 

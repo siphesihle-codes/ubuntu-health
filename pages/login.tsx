@@ -5,13 +5,13 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { API_BASE_URL } from "@/lib/api/config";
-import { getApiErrorMessage } from "@/lib/api/errors";
+import { useLogin } from "@/hooks/useAuth";
 
 const LoginPage = () => {
 	const [showPassword, setShowPassword] = React.useState(false);
-	const [isLoading, setIsLoading] = React.useState(false);
 	const router = useRouter();
+	const login = useLogin();
+	const isLoading = login.isPending;
 
 	const formik = useFormik({
 		initialValues: {
@@ -26,35 +26,16 @@ const LoginPage = () => {
 				.min(8, "Password must be at least 8 characters")
 				.required("Password is required"),
 		}),
-		onSubmit: async (values) => {
-			setIsLoading(true);
-			try {
-				const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(values),
-				});
-
-				const data = await response.json();
-
-				if (!response.ok) {
-					toast.error(getApiErrorMessage(data, "Login failed"));
-					return;
-				}
-
-				localStorage.setItem("token", data.token);
-				localStorage.setItem("tenantId", data.tenantId);
-
-				toast.success("Login successful!");
-				router.push(`/dashboard/${data.tenantId}`);
-			} catch (err) {
-				console.error(`Error logging in: ${err}`);
-				toast.error("An unexpected error occurred");
-			} finally {
-				setIsLoading(false);
-			}
+		onSubmit: (values) => {
+			login.mutate(values, {
+				onSuccess: (data) => {
+					toast.success("Login successful!");
+					router.push(`/dashboard/${data.tenantId}`);
+				},
+				onError: (error) => {
+					toast.error(error.message);
+				},
+			});
 		},
 	});
 

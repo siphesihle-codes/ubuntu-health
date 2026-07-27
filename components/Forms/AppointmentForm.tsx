@@ -11,7 +11,7 @@ import {
 	FileText,
 	CalendarCheck,
 } from "lucide-react";
-import { API_BASE_URL } from "@/lib/api/config";
+import { useCreateAppointment } from "@/hooks/useAppointments";
 
 interface AppointmentFormProps {
 	onClose: () => void;
@@ -20,6 +20,7 @@ interface AppointmentFormProps {
 const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
 	const [appointmentType, setAppointmentType] = useState("");
 	const [status, setStatus] = useState("");
+	const createAppointment = useCreateAppointment();
 
 	const formik = useFormik({
 		initialValues: {
@@ -39,33 +40,17 @@ const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
 			appointmentType: Yup.string().required("Appointment type is required"),
 			status: Yup.string().required("Appointment status is required"),
 		}),
-		onSubmit: async (values) => {
-			try {
-				const token = localStorage.getItem("token");
-
-				console.log("======= APPOINTMENT =======");
-				console.log(JSON.stringify(values, null, 2));
-
-				const response = await fetch(`${API_BASE_URL}/api/Appointments`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-					body: JSON.stringify(values),
-				});
-
-				if (!response.ok) {
-					throw new Error("Failed to schedule appointment");
-				}
-
-				toast.success("Appointment scheduled!");
-				formik.resetForm();
-				setTimeout(onClose, 1000);
-			} catch (err) {
-				console.error(`Error scheduling appointment: ${err}`);
-				toast.error(`${err}.`);
-			}
+		onSubmit: (values) => {
+			createAppointment.mutate(values, {
+				onSuccess: () => {
+					toast.success("Appointment scheduled!");
+					formik.resetForm();
+					setTimeout(onClose, 1000);
+				},
+				onError: (error) => {
+					toast.error(error.message);
+				},
+			});
 		},
 	});
 

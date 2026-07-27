@@ -12,7 +12,7 @@ import {
 	FileText,
 } from "lucide-react";
 import { PRESCRIPTION_STATUS } from "@/types";
-import { API_BASE_URL } from "@/lib/api/config";
+import { useCreatePrescription } from "@/hooks/usePrescriptions";
 
 interface PrescriptionFormProps {
 	onClose: () => void;
@@ -22,6 +22,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 	const [status, setStatus] = useState("active");
 	const medicationIdPrefix = useId();
 	const medicationCount = useRef(0);
+	const createPrescription = useCreatePrescription();
 
 	const formik = useFormik({
 		initialValues: {
@@ -53,36 +54,17 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 			frequency: Yup.string().required("Frequency is required"),
 			issueDate: Yup.date().required("Issue date is required"),
 		}),
-		onSubmit: async (values) => {
-			try {
-				const token = localStorage.getItem("token");
-
-				console.log("======= PRESCRIPTION =======");
-				console.log(JSON.stringify(values, null, 2));
-
-				const response = await fetch(
-					`${API_BASE_URL}/api/Prescriptions`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${token}`,
-						},
-						body: JSON.stringify(values),
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error("Failed to create prescription");
-				}
-
-				toast.success("Prescription created!");
-				formik.resetForm();
-				setTimeout(onClose, 1000);
-			} catch (err) {
-				console.error(`Error creating prescription: ${err}`);
-				toast.error(`${err}`);
-			}
+		onSubmit: (values) => {
+			createPrescription.mutate(values, {
+				onSuccess: () => {
+					toast.success("Prescription created!");
+					formik.resetForm();
+					setTimeout(onClose, 1000);
+				},
+				onError: (error) => {
+					toast.error(error.message);
+				},
+			});
 		},
 	});
 

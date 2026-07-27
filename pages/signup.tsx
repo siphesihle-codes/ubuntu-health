@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
-import { API_BASE_URL } from "@/lib/api/config";
-import { getApiErrorMessage } from "@/lib/api/errors";
+import { useRegister } from "@/hooks/useAuth";
 
 const PASSWORD_PATTERN =
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
@@ -18,8 +17,9 @@ const formatSubscriptionPlan = (plan: string) =>
 
 const SignUpForm = ({ plan = "basic" }) => {
 	const [showPassword, setShowPassword] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
+	const register = useRegister();
+	const isLoading = register.isPending;
 
 	const formik = useFormik({
 		initialValues: {
@@ -49,41 +49,25 @@ const SignUpForm = ({ plan = "basic" }) => {
 			specialty: Yup.string().required("Specialty required"),
 			role: Yup.string().required("Role required"),
 		}),
-		onSubmit: async (values) => {
-			setIsLoading(true);
-			try {
-				const response = await fetch(
-					`${API_BASE_URL}/api/auth/register`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							...values,
-							subscriptionPlan: formatSubscriptionPlan(values.subscriptionPlan),
-							practiceName: values.practiceName || undefined,
-							practicePhone: values.practicePhone || undefined,
-						}),
-					}
-				);
-
-				const data = await response.json();
-
-				if (!response.ok) {
-					toast.error(getApiErrorMessage(data, "Registration failed"));
-					return;
+		onSubmit: (values) => {
+			register.mutate(
+				{
+					...values,
+					subscriptionPlan: formatSubscriptionPlan(values.subscriptionPlan),
+					practiceName: values.practiceName || undefined,
+					practicePhone: values.practicePhone || undefined,
+				},
+				{
+					onSuccess: () => {
+						formik.resetForm();
+						toast.success("Registration successful! Please sign in.");
+						router.push("/login");
+					},
+					onError: (error) => {
+						toast.error(error.message);
+					},
 				}
-
-				formik.resetForm();
-				toast.success("Registration successful! Please sign in.");
-				router.push("/login");
-			} catch (err) {
-				console.error(`Error registering user: ${err}`);
-				toast.error("An unexpected error occurred");
-			} finally {
-				setIsLoading(false);
-			}
+			);
 		},
 	});
 
