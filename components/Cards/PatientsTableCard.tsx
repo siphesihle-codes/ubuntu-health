@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Pencil, Trash2, User } from "lucide-react";
 import { Patient } from "@/types/index";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import EditPatientModal from "../Modals/EditPatientModal";
 import { useRouter } from "next/router";
 import { useDeletePatient, useUpdatePatient } from "@/hooks/usePatients";

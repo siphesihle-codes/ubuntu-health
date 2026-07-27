@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import {
 	User,
 	MapPin,
@@ -10,7 +10,6 @@ import {
 	ClipboardList,
 	UserRoundPen,
 } from "lucide-react";
-import "react-toastify/dist/ReactToastify.css";
 import { useCreatePatient } from "@/hooks/usePatients";
 
 interface PatientFormProps {

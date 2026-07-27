@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { APPOINTMENT_TYPES, STATUS_LABELS } from "@/types";
 import {
 	Calendar,

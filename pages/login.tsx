@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useLogin } from "@/hooks/useAuth";
 
 const LoginPage = () => {

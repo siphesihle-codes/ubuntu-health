@@ -6,8 +6,7 @@ import {
 	STATUS_COLORS,
 	STATUS_LABELS,
 } from "@/types";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 import EditAppointmentModal from "../Modals/EditAppointmentModal";
 import {
 	useDeleteAppointment,

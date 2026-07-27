@@ -1,14 +1,30 @@
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
-	LayoutDashboard,
+	Activity,
 	CalendarCheck,
-	Users,
-	PillBottle,
 	CreditCard,
-	Menu,
-	X,
+	LayoutDashboard,
+	LogOut,
+	PillBottle,
+	Plus,
+	Users,
 } from "lucide-react";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarSeparator,
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import PatientForm from "./Forms/PatientForm";
 import AppointmentForm from "./Forms/AppointmentForm";
 
@@ -17,8 +33,8 @@ const getTenantId = () => localStorage.getItem("tenantId");
 const getServerTenantId = () => null;
 
 const DashboardNav = () => {
-	const [isOpen, setIsOpen] = useState(false);
 	const [activeModal, setActiveModal] = useState("");
+	const router = useRouter();
 	const tenantId = useSyncExternalStore(
 		subscribeToTenantId,
 		getTenantId,
@@ -27,113 +43,100 @@ const DashboardNav = () => {
 	const handleCloseModal = () => setActiveModal("");
 
 	const navItems = [
-		{
-			name: "Dashboard",
-			href: `/dashboard/${tenantId}`,
-			icon: LayoutDashboard,
-		},
-		{
-			name: "Appointments",
-			href: `/appointments/${tenantId}`,
-			icon: CalendarCheck,
-		},
-		{
-			name: "Patients",
-			href: `/patients/${tenantId}`,
-			icon: Users,
-		},
-		{
-			name: "Prescriptions",
-			href: `/prescriptions/${tenantId}`,
-			icon: PillBottle,
-		},
-		{
-			name: "Invoices",
-			href: `/invoices/${tenantId}`,
-			icon: CreditCard,
-		},
+		{ name: "Dashboard", root: "/dashboard", icon: LayoutDashboard },
+		{ name: "Appointments", root: "/appointments", icon: CalendarCheck },
+		{ name: "Patients", root: "/patients", icon: Users },
+		{ name: "Prescriptions", root: "/prescriptions", icon: PillBottle },
+		{ name: "Invoices", root: "/invoices", icon: CreditCard },
 	];
+
+	const handleSignOut = () => {
+		localStorage.removeItem("tenantId");
+		router.push("/login");
+	};
 
 	return (
 		<>
-			<button
-				type="button"
-				className="md:hidden mb-auto fixed top-4 left-4 z-50 p-2 border border-cyan-400/20
-        rounded-full shadow-lg  "
-				onClick={() => setIsOpen(!isOpen)}
-			>
-				{isOpen ? <X className="" /> : <Menu className="" />}
-			</button>
-
-			<nav
-				className={`bg-inherit text-inherit
-                fixed top-0 left-0 h-screen w-64 border-r transform transition-transform
-                duration-300 ease-in-out md:relative md:translate-x-0 md:w-full md:max-w-xs 
-                ${isOpen ? "translate-x-0 pt-16" : "-translate-x-full"}
-                z-40`}
-			>
-				<div className="flex flex-col h-full">
-					<div className="p-6 hidden md:block border-b text-blue-600">
-						<h2 className="text-2xl font-semibold">MediSys</h2>
-						<p className="text-xs  tracking-wider">CLINIC PORTAL</p>
+			<Sidebar collapsible="icon">
+				<SidebarHeader>
+					<div className="flex items-center gap-2.5 px-2 py-1.5">
+						<div className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+							<Activity className="size-4.5" />
+						</div>
+						<div className="flex flex-col group-data-[collapsible=icon]:hidden">
+							<span className="font-heading text-sm font-semibold leading-tight">
+								Ubuntu Health
+							</span>
+							<span className="text-xs text-muted-foreground">
+								Clinic portal
+							</span>
+						</div>
 					</div>
+				</SidebarHeader>
 
-					<ul className="py-4 flex-grow overflow-y-auto">
-						{navItems.map((item, index) => {
-							const Icon = item.icon;
-							return (
-								<li key={index} className="group">
-									<Link
-										href={item.href}
-										className="flex items-center px-6 py-3 hover:bg-blue-200 hover:text-blue-600
-                    transition-colors duration-300 rounded-lg mx-2"
-									>
-										<Icon className="mr-4" size={20} />
-										<span className="font-medium">{item.name}</span>
-									</Link>
-								</li>
-							);
-						})}
-					</ul>
-					<div className="p-4 border-t text-white">
-						<button
-							type="button"
-							onClick={() => setActiveModal("addPatient")}
-							className="w-full bg-blue-600 py-2 rounded-md hover:bg-blue-700 shadow-lg
-              transition-all mb-3 font-medium"
-						>
-							Add New Patient
-						</button>
+				<SidebarContent>
+					<SidebarGroup>
+						<SidebarGroupLabel>Practice</SidebarGroupLabel>
+						<SidebarGroupContent>
+							<SidebarMenu>
+								{navItems.map((item) => (
+									<SidebarMenuItem key={item.root}>
+										<SidebarMenuButton
+											render={<Link href={`${item.root}/${tenantId}`} />}
+											isActive={router.pathname.startsWith(item.root)}
+											tooltip={item.name}
+										>
+											<item.icon />
+											<span>{item.name}</span>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								))}
+							</SidebarMenu>
+						</SidebarGroupContent>
+					</SidebarGroup>
 
-						<button
-							type="button"
-							onClick={() => setActiveModal("scheduleAppointment")}
-							className="w-full bg-blue-600 py-2 rounded-md hover:bg-blue-700 shadow-lg
-              transition-all font-medium"
-						>
-							Schedule Appointment
-						</button>
-					</div>
-				</div>
-			</nav>
-			{isOpen && (
-				<button
-					type="button"
-					className="fixed inset-0 backdrop-blur-sm z-30 md:hidden"
-					onClick={() => setIsOpen(false)}
-				/>
+					<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+						<SidebarGroupLabel>Quick actions</SidebarGroupLabel>
+						<SidebarGroupContent className="flex flex-col gap-2 px-2 pt-1">
+							<Button
+								size="sm"
+								className="w-full justify-start"
+								onClick={() => setActiveModal("addPatient")}
+							>
+								<Plus />
+								New patient
+							</Button>
+							<Button
+								size="sm"
+								variant="outline"
+								className="w-full justify-start"
+								onClick={() => setActiveModal("scheduleAppointment")}
+							>
+								<CalendarCheck />
+								Schedule visit
+							</Button>
+						</SidebarGroupContent>
+					</SidebarGroup>
+				</SidebarContent>
+
+				<SidebarFooter>
+					<SidebarSeparator className="mb-1" />
+					<SidebarMenu>
+						<SidebarMenuItem>
+							<SidebarMenuButton onClick={handleSignOut} tooltip="Sign out">
+								<LogOut />
+								<span>Sign out</span>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarMenu>
+				</SidebarFooter>
+			</Sidebar>
+
+			{activeModal === "addPatient" && (
+				<PatientForm onClose={handleCloseModal} />
 			)}
-
-			{/* Modal Overlay */}
-			{activeModal && (
-				<div>
-					{activeModal === "addPatient" && (
-						<PatientForm onClose={handleCloseModal} />
-					)}
-					{activeModal === "scheduleAppointment" && (
-						<AppointmentForm onClose={handleCloseModal} />
-					)}
-				</div>
+			{activeModal === "scheduleAppointment" && (
+				<AppointmentForm onClose={handleCloseModal} />
 			)}
 		</>
 	);

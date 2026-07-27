@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Calendar, Pill, User } from "lucide-react";
 import Link from "next/link";
 import { useCreatePrescription } from "@/hooks/usePrescriptions";

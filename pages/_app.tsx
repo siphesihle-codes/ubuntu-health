@@ -1,16 +1,16 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { Poppins } from "next/font/google";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "@/styles/globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Inter } from "next/font/google";
 import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ApiError } from "@/lib/api/client";
+import "@/styles/globals.css";
 
-const poppins = Poppins({
+const inter = Inter({
 	subsets: ["latin"],
-	weight: "400",
+	variable: "--font-inter",
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
@@ -35,31 +35,23 @@ const App = ({ Component, pageProps }: AppProps) => {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<div className={poppins.className}>
-					<Head>
-						<title>Ubuntu Health</title>
-						<meta
+			<TooltipProvider delay={200}>
+				<Head>
+					<title>Ubuntu Health</title>
+					<meta
 						name="description"
 						content={`Ubuntu Health is an intuitive Electronic Health Records (EHR) platform designed to simplify
 					patient care and practice management for family doctors and small clinics. It offers features
 					such as patient management, appointment scheduling, e-prescriptions, billing, and secure
 					communication. We aim to optimize workflow efficiency and enhance patient satisfaction.`}
 					/>
+					<meta name="viewport" content="width=device-width, initial-scale=1" />
 				</Head>
-				<Component {...pageProps} />
-				<ToastContainer
-					position="top-right"
-					autoClose={5000}
-					hideProgressBar={false}
-					newestOnTop={false}
-					closeOnClick
-					rtl={false}
-					pauseOnFocusLoss
-					draggable
-					pauseOnHover
-					theme="light"
-				/>
-			</div>
+				<div className={`${inter.variable} font-sans`}>
+					<Component {...pageProps} />
+				</div>
+				<Toaster position="top-right" richColors closeButton />
+			</TooltipProvider>
 		</QueryClientProvider>
 	);
 };

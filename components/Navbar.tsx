@@ -1,132 +1,106 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Activity, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const navItems = [
+	{ href: "/#about", label: "About" },
+	{ href: "/#services", label: "Services" },
+	{ href: "/#pricing", label: "Pricing" },
+];
 
 const Navbar = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const navRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				navRef.current &&
-				!navRef.current.contains(event.target as Node) &&
-				window.innerWidth < 768
-			) {
-				setIsMenuOpen(false);
-			}
-		};
-
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, []);
-
-	useEffect(() => {
-		const handleResize = () => {
-			if (window.innerWidth >= 768) {
-				setIsMenuOpen(false);
-			}
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const handleMenuToggle = () => {
-		setIsMenuOpen(!isMenuOpen);
-	};
-
-	const handleMenuClose = () => {
-		setIsMenuOpen(false);
-	};
-
-	const navItems = [
-		{ href: "/", label: "Home" },
-		{ href: "/#about", label: "About" },
-		{ href: "/#services", label: "Services" },
-		{ href: "/#pricing", label: "Pricing" },
-	];
+	const handleMenuClose = () => setIsMenuOpen(false);
 
 	return (
-		<header className="bg-white shadow-sm sticky top-0 z-50">
-			<div className="container mx-auto px-4 py-4 flex justify-between items-center">
-				<div className="flex items-center space-x-2">
-					<div
-						className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center
-          text-white font-bold"
-					>
-						UH
-					</div>
-					<Link
-						href="/"
-						className="text-xl font-semibold text-gray-800"
-						aria-label="Ubuntu Health Home"
-					>
+		<header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
+			<div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+				<Link
+					href="/"
+					className="flex items-center gap-2.5"
+					aria-label="Ubuntu Health home"
+				>
+					<span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+						<Activity className="size-4.5" />
+					</span>
+					<span className="font-heading text-base font-semibold">
 						Ubuntu Health
-					</Link>
+					</span>
+				</Link>
+
+				<nav className="hidden items-center gap-1 md:flex">
+					{navItems.map((item) => (
+						<Link
+							key={item.href}
+							href={item.href}
+							className="rounded-4xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+						>
+							{item.label}
+						</Link>
+					))}
+				</nav>
+
+				<div className="hidden items-center gap-2 md:flex">
+					<Button variant="ghost" size="sm" render={<Link href="/login" />}>
+						Sign in
+					</Button>
+					<Button
+						size="sm"
+						render={
+							<Link href={{ pathname: "/signup", query: { plan: "free" } }} />
+						}
+					>
+						Start free trial
+					</Button>
 				</div>
 
-				<button
-					type="button"
-					className="md:hidden z-50"
-					onClick={handleMenuToggle}
-					aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
+				<Button
+					variant="ghost"
+					size="icon"
+					className="md:hidden"
+					onClick={() => setIsMenuOpen(!isMenuOpen)}
+					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
 					aria-expanded={isMenuOpen}
 				>
-					{isMenuOpen ? (
-						<X className="text-blue-600" size={24} />
-					) : (
-						<Menu className="text-blue-600" size={24} />
-					)}
-				</button>
+					{isMenuOpen ? <X /> : <Menu />}
+				</Button>
+			</div>
 
-				<nav
-					ref={navRef}
-					className={`
-          fixed top-0 left-0 w-full bg-white h-screen flex flex-col items-center
-          justify-center space-y-6 z-40 transition-all duration-500 ease-in-out md:static
-          md:h-auto md:w-auto md:flex-row md:translate-y-0 md:opacity-100 
-          md:pointer-events-auto
-          ${
-						isMenuOpen
-							? "translate-y-0 opacity-100"
-							: "-translate-y-full opacity-0 pointer-events-none"
-					}`}
-				>
-					<div className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-4">
-						{navItems.map((item, index) => (
+			{isMenuOpen ? (
+				<div className="border-t bg-background px-4 py-4 md:hidden">
+					<nav className="flex flex-col gap-1">
+						{navItems.map((item) => (
 							<Link
 								key={item.href}
 								href={item.href}
-								className="text-2xl md:text-sm px-4 py-2 rounded-md text-gray-800
-                hover:bg-blue-600 hover:text-white transition-colors duration-500 transform
-                hover:scale-105"
 								onClick={handleMenuClose}
+								className="rounded-2xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 							>
 								{item.label}
 							</Link>
 						))}
-
-						<Link
-							href="/login"
-							className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md
-              hover:bg-blue-600 hover:text-white"
+					</nav>
+					<div className="mt-4 flex flex-col gap-2">
+						<Button
+							variant="outline"
+							render={<Link href="/login" onClick={handleMenuClose} />}
 						>
-							Login
-						</Link>
+							Sign in
+						</Button>
+						<Button
+							render={
+								<Link
+									href={{ pathname: "/signup", query: { plan: "free" } }}
+									onClick={handleMenuClose}
+								/>
+							}
+						>
+							Start free trial
+						</Button>
 					</div>
-				</nav>
-
-				{isMenuOpen && (
-					<button
-						type="button"
-						className="fixed inset bg-black bg-opacity-50 z-30 md:hidden"
-						onClick={handleMenuClose}
-					/>
-				)}
-			</div>
+				</div>
+			) : null}
 		</header>
 	);
 };

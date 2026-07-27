@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { User, Lock, Mail, BriefcaseMedical, MapPin } from "lucide-react";
 import Link from "next/link";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";

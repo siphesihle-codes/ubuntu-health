@@ -1,15 +1,47 @@
 import React from "react";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import DashboardNav from "./DashboardNav";
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
+interface LayoutProps {
+	children: React.ReactNode;
+	title?: string;
+	description?: string;
+	actions?: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({
+	children,
+	title,
+	description,
+	actions,
+}) => {
 	return (
-		<div className="flex h-screen bg-gray-50 text-gray-800">
-			<div className="w-1/6 h-full">
-				<DashboardNav />
-			</div>
-			<div className="w-5/6 h-h-full overflow-y-auto bg-inherit text-inherit">
-				{children}
-			</div>
-		</div>
+		<SidebarProvider>
+			<DashboardNav />
+			<SidebarInset className="min-w-0">
+				<header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-3 border-b bg-background/85 px-4 backdrop-blur-sm md:px-6">
+					<SidebarTrigger className="-ml-1" />
+					<Separator orientation="vertical" className="h-5" />
+					<div className="flex min-w-0 flex-1 flex-col justify-center">
+						{title ? (
+							<h1 className="truncate text-base font-semibold leading-tight">
+								{title}
+							</h1>
+						) : null}
+						{description ? (
+							<p className="truncate text-xs text-muted-foreground">
+								{description}
+							</p>
+						) : null}
+					</div>
+					{actions ? (
+						<div className="flex shrink-0 items-center gap-2">{actions}</div>
+					) : null}
+				</header>
+				<div className="flex-1 p-4 md:p-6">{children}</div>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 };
 

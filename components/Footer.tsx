@@ -1,32 +1,52 @@
 import Link from "next/link";
 import React from "react";
+import { Activity, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Footer = () => {
 	return (
-		<section className="py-16 bg-blue-600 text-white">
-			<div className="container mx-auto px-4 text-center">
-				<h2 className="text-3xl font-bold mb-6">
-					Ready to Transform Your Practice?
-				</h2>
-				<p className="text-xl mb-8 max-w-2xl mx-auto">
-					Transform your practice with an intuitive, affordable EHR solution
-					that saves time and improves patient care.
-				</p>
-				<div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-					<Link
-						href={{
-							pathname: "/signup",
-							query: { plan: "free" },
-						}}
-						className="px-4 py-2 bg-white text-blue-600 border border-blue-600 rounded-md
-            hover:bg-white hover:text-blue-600 hover:scale-105 hover:font-medium flex
-            items-center transition-transform duration-300"
-					>
-						Start Free Trial!
-					</Link>
+		<footer className="border-t bg-muted/40">
+			<div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+				<div className="mx-auto max-w-2xl text-center">
+					<h2 className="text-3xl font-semibold sm:text-4xl">
+						Ready to transform your practice?
+					</h2>
+					<p className="mt-4 text-base text-muted-foreground">
+						An intuitive, affordable EHR that saves time and improves patient
+						care. No card required to start.
+					</p>
+					<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+						<Button
+							size="lg"
+							render={
+								<Link href={{ pathname: "/signup", query: { plan: "free" } }} />
+							}
+						>
+							Start free trial
+							<ArrowRight data-icon="inline-end" />
+						</Button>
+						<Button size="lg" variant="outline" render={<Link href="/login" />}>
+							Sign in
+						</Button>
+					</div>
+				</div>
+
+				<div className="mt-16 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row">
+					<div className="flex items-center gap-2.5">
+						<span className="flex size-8 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+							<Activity className="size-4" />
+						</span>
+						<span className="font-heading text-sm font-semibold">
+							Ubuntu Health
+						</span>
+					</div>
+					<p className="text-xs text-muted-foreground">
+						&copy; {new Date().getFullYear()} Ubuntu Health. All rights
+						reserved.
+					</p>
 				</div>
 			</div>
-		</section>
+		</footer>
 	);
 };
 
