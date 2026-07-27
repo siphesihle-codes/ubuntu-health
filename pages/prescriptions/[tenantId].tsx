@@ -1,74 +1,46 @@
 import { useState } from "react";
-import { Search, PlusCircle } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import Layout from "@/components/Layout";
 import PrescriptionsTable from "@/components/Tables/PrescriptionsTable";
 import PrescriptionForm from "@/components/Forms/PrescriptionForm";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const Page = () => {
-	const [isOpen, setIsOpen] = useState(false);
 	const [activeModal, setActiveModal] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const handleCloseModal = () => setActiveModal("");
 
 	return (
-		<Layout>
-			<div className="min-h-screen p-6">
-				<div className="max-w-7xl mx-auto">
-					{/* Header */}
-					<div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-						<div>
-							<h1 className="text-3xl font-bold">Prescriptions Registry</h1>
-							<p className="mt-2">
-								Manage all patient prescriptions and medications
-							</p>
-						</div>
-						<div className="flex gap-4 mt-4 md:mt-0">
-							<div className="relative">
-								<Search
-									className="absolute left-3 top-1/2 -translate-y-1/2"
-									size={18}
-								/>
-								<input
-									type="text"
-									placeholder="Search ..."
-									className="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2
-                  focus:ring-cyan-500/50"
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-								/>
-							</div>
-							<button
-								type="button"
-								onClick={() => setActiveModal("addPrescription")}
-								className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-md
-                text-white text-sm font-medium hover:bg-blue-700 transition-colors"
-							>
-								<PlusCircle size={18} />
-								Add Prescription
-							</button>
-						</div>
-					</div>
-
-					<PrescriptionsTable searchQuery={searchQuery} />
+		<Layout
+			title="Prescriptions"
+			description="Manage all patient prescriptions and medications"
+			actions={
+				<Button size="sm" onClick={() => setActiveModal("addPrescription")}>
+					<Plus />
+					<span className="hidden sm:inline">New prescription</span>
+				</Button>
+			}
+		>
+			<div className="mx-auto flex max-w-7xl flex-col gap-4">
+				<div className="relative max-w-sm">
+					<Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+					<Input
+						type="search"
+						placeholder="Search prescriptions..."
+						value={searchQuery}
+						onChange={(event) => setSearchQuery(event.target.value)}
+						className="pl-10"
+					/>
 				</div>
+
+				<PrescriptionsTable searchQuery={searchQuery} />
 			</div>
 
-			{isOpen && (
-				<button
-					type="button"
-					className="fixed inset-0 backdrop-blur-sm z-30 md:hidden"
-					onClick={() => setIsOpen(false)}
-				/>
-			)}
-
-			{activeModal && (
-				<div>
-					{activeModal === "addPrescription" && (
-						<PrescriptionForm onClose={handleCloseModal} />
-					)}
-				</div>
-			)}
+			{activeModal === "addPrescription" ? (
+				<PrescriptionForm onClose={handleCloseModal} />
+			) : null}
 		</Layout>
 	);
 };

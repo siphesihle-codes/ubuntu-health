@@ -1,16 +1,30 @@
 import React, { useState } from "react";
-import { Pencil, Trash2, User } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Patient } from "@/types/index";
 import { toast } from "sonner";
 import EditPatientModal from "../Modals/EditPatientModal";
 import { useRouter } from "next/router";
 import { useDeletePatient, useUpdatePatient } from "@/hooks/usePatients";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 interface PatientsTableProps {
 	patients: Patient[];
 	onDelete?: (id: string) => void;
 	onEdit?: (id: string) => void;
 }
+
+const initials = (firstName: string, lastName: string) =>
+	`${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase();
 
 const PatientsTableCard = ({
 	patients,
@@ -60,149 +74,118 @@ const PatientsTableCard = ({
 	};
 
 	return (
-		<div className="relative max-h-[80vh] overflow-y-auto bg-white border border-gray-200 rounded-xl shadow-sm">
-			<table className="w-full text-sm table-auto text-left">
-				<thead>
-					<tr>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Patient
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Contact
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Medical Info
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Status
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Actions
-						</th>
-					</tr>
-				</thead>
-				<tbody className="divide-y divide-gray-200">
-					{patients.map((patient) => (
-						<tr
-							key={patient.id}
-							className="hover:bg-gray-50 transition-colors cursor-pointer"
-						>
-							<td
-								onKeyPress={() => handleRowClick(String(patient.id))}
-								onClick={() => handleRowClick(String(patient.id))}
-								className="px-6 py-4"
-							>
-								<div className="flex items-center gap-4">
-									<div
-										className="flex items-center justify-center w-10 h-10 rounded-full
-                    bg-blue-50 text-blue-600"
-									>
-										<User size={18} />
-									</div>
-									<div>
-										<div className="font-medium text-gray-900">
-											{patient.firstName} {patient.lastName}
+		<Card className="p-0 [--card-spacing:0px]">
+			<div className="max-h-[70vh] overflow-auto">
+				<Table>
+					<TableHeader className="sticky top-0 z-10 bg-card">
+						<TableRow>
+							<TableHead className="px-6">Patient</TableHead>
+							<TableHead className="px-6">Contact</TableHead>
+							<TableHead className="px-6">Allergies</TableHead>
+							<TableHead className="px-6">Cover</TableHead>
+							<TableHead className="px-6 text-right">Actions</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{patients.length === 0 ? (
+							<TableRow>
+								<TableCell
+									colSpan={5}
+									className="px-6 py-12 text-center text-muted-foreground"
+								>
+									No patients found
+								</TableCell>
+							</TableRow>
+						) : (
+							patients.map((patient) => (
+								<TableRow
+									key={patient.id}
+									onClick={() => handleRowClick(String(patient.id))}
+									className="cursor-pointer"
+								>
+									<TableCell className="px-6 py-3">
+										<div className="flex items-center gap-3">
+											<span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium text-secondary-foreground">
+												{initials(patient.firstName, patient.lastName)}
+											</span>
+											<div className="flex flex-col">
+												<span className="font-medium">
+													{patient.firstName} {patient.lastName}
+												</span>
+												<span className="text-xs text-muted-foreground">
+													ID: {patient.id}
+												</span>
+											</div>
 										</div>
-										<div className="text-xs text-gray-500">
-											ID: {patient.id}
+									</TableCell>
+									<TableCell className="px-6 py-3">
+										<div className="flex flex-col">
+											<span>{patient.phone || "Not provided"}</span>
+											<span className="text-xs text-muted-foreground">
+												{patient.email || "Not provided"}
+											</span>
 										</div>
-									</div>
-								</div>
-							</td>
-							<td className="px-6 py-4">
-								<div className="space-y-1">
-									<div className="text-gray-900">
-										{patient.phone || "Not provided"}
-									</div>
-									<div className="text-gray-500 text-sm">
-										{patient.email || "Not provided"}
-									</div>
-								</div>
-							</td>
-							<td className="px-6 py-4">
-								<div className="space-y-1">
-									<div className="text-xs text-gray-500">
-										{patient.allergies?.length || 0} allergies
-									</div>
-								</div>
-							</td>
-							<td className="px-6 py-4">
-								<div className="flex items-center gap-2">
-									{patient.medicalAidName ? (
-										<span
-											className="text-xs px-2 py-1 rounded-full bg-green-100
-                      text-green-800"
-										>
-											Medical Aid: {patient.medicalAidName}
-										</span>
-									) : (
-										<span
-											className="text-xs px-2 py-1 rounded-full bg-yellow-100
-                      text-yellow-800"
-										>
-											Private Pay
-										</span>
-									)}
-								</div>
-							</td>
-							<td className="px-6 py-4">
-								<div className="flex gap-4">
-									<button
-										type="button"
-										onClick={() => handleEditClick(patient)}
-										className="text-blue-600 hover:text-blue-800 transition-colors"
-										title="Edit Patient"
+									</TableCell>
+									<TableCell className="px-6 py-3 text-muted-foreground">
+										{patient.allergies?.length || 0}
+									</TableCell>
+									<TableCell className="px-6 py-3">
+										{patient.medicalAidName ? (
+											<Badge className="bg-success/10 text-success">
+												{patient.medicalAidName}
+											</Badge>
+										) : (
+											<Badge className="bg-warning/10 text-warning">
+												Private pay
+											</Badge>
+										)}
+									</TableCell>
+									<TableCell
+										className="px-6 py-3 text-right"
+										onClick={(event) => event.stopPropagation()}
 									>
-										<Pencil size={18} />
-									</button>
-									<button
-										type="button"
-										onClick={() => handleDelete(String(patient.id))}
-										disabled={deletePatient.isPending}
-										className="text-red-600 hover:text-red-800 transition-colors
-                    disabled:opacity-50"
-										title="Delete Patient"
-									>
-										<Trash2 size={18} />
-									</button>
-								</div>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
+										<div className="flex justify-end gap-1">
+											<Button
+												variant="ghost"
+												size="icon-sm"
+												onClick={() => handleEditClick(patient)}
+												aria-label={`Edit ${patient.firstName} ${patient.lastName}`}
+											>
+												<Pencil />
+											</Button>
+											<Button
+												variant="ghost"
+												size="icon-sm"
+												onClick={() => handleDelete(String(patient.id))}
+												disabled={deletePatient.isPending}
+												className="text-destructive hover:text-destructive"
+												aria-label={`Delete ${patient.firstName} ${patient.lastName}`}
+											>
+												<Trash2 />
+											</Button>
+										</div>
+									</TableCell>
+								</TableRow>
+							))
+						)}
+					</TableBody>
+				</Table>
+			</div>
 
-			{isEditModalOpen && editingPatient && (
+			<div className="flex items-center justify-between border-t px-6 py-3 text-sm text-muted-foreground">
+				<span>
+					{patients.length} patient{patients.length === 1 ? "" : "s"}
+				</span>
+			</div>
+
+			{isEditModalOpen && editingPatient ? (
 				<EditPatientModal
 					patient={editingPatient}
 					onSave={handleSave}
 					onClose={() => setIsEditModalOpen(false)}
 				/>
-			)}
-
-			{/* Pagination */}
-			<div className="flex justify-between items-center m-3 text-sm text-gray-600">
-				<div>
-					Showing 1-{patients.length} of {patients.length} patients
-				</div>
-				<div className="flex gap-2">
-					<button
-						type="button"
-						className="px-3 py-1 rounded border border-gray-300 bg-white
-          hover:bg-gray-50 transition-colors"
-					>
-						Previous
-					</button>
-					<button
-						type="button"
-						className="px-3 py-1 rounded border border-gray-300 bg-white
-          hover:bg-gray-50 transition-colors"
-					>
-						Next
-					</button>
-				</div>
-			</div>
-		</div>
+			) : null}
+		</Card>
 	);
 };
 

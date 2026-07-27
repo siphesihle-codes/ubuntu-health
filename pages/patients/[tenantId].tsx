@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import Layout from "@/components/Layout";
 import PatientsTable from "@/components/Tables/PatientsTable";
 import PatientForm from "@/components/Forms/PatientForm";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const PatientsPage = () => {
 	const [activeModal, setActiveModal] = useState("");
@@ -10,50 +12,34 @@ const PatientsPage = () => {
 	const handleCloseModal = () => setActiveModal("");
 
 	return (
-		<Layout>
-			<div className="min-h-screen   p-6">
-				<div className="max-w-7xl mx-auto">
-					{/* Header */}
-					<div
-						className="flex flex-col md:flex-row justify-between items-start md:items-center
-          mb-8"
-					>
-						<div>
-							<h1 className="text-3xl font-bold  ">Patient Registry</h1>
-							<p className="  mt-2">
-								Manage all patient records and information
-							</p>
-						</div>
-						<div className="flex gap-4 mt-4 md:mt-0">
-							<div className="flex items-center relative">
-								<Search
-									className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-									size={18}
-								/>
-								<input
-									type="text"
-									placeholder="Search patients..."
-									value={searchTerm}
-									onChange={(event) => setSearchTerm(event.target.value)}
-									className="pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white
-                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-							</div>
-						</div>
-					</div>
-
-					{/* Patients Table */}
-					<PatientsTable searchTerm={searchTerm} />
+		<Layout
+			title="Patient registry"
+			description="Manage all patient records and information"
+			actions={
+				<Button size="sm" onClick={() => setActiveModal("addPatient")}>
+					<Plus />
+					<span className="hidden sm:inline">New patient</span>
+				</Button>
+			}
+		>
+			<div className="mx-auto flex max-w-7xl flex-col gap-4">
+				<div className="relative max-w-sm">
+					<Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+					<Input
+						type="search"
+						placeholder="Search patients..."
+						value={searchTerm}
+						onChange={(event) => setSearchTerm(event.target.value)}
+						className="pl-10"
+					/>
 				</div>
+
+				<PatientsTable searchTerm={searchTerm} />
 			</div>
 
-			{activeModal && (
-				<div>
-					{activeModal === "addPatient" && (
-						<PatientForm onClose={handleCloseModal} />
-					)}
-				</div>
-			)}
+			{activeModal === "addPatient" ? (
+				<PatientForm onClose={handleCloseModal} />
+			) : null}
 		</Layout>
 	);
 };
