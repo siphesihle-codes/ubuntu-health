@@ -1,41 +1,65 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const Landing = () => {
 	return (
-		<section className="bg-gradient-to-r from-blue-200 to-gray-50 py-16">
-			<div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
-				<div className="md:w-1/2 mb-10 md:mb-0">
-					<h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-						Modern EMR Designed for{" "}
-						<span className="text-blue-600">Independent</span> Practitioners
+		<section className="relative overflow-hidden border-b bg-muted/30">
+			<div
+				aria-hidden
+				className="pointer-events-none absolute -top-32 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl"
+			/>
+
+			<div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-28">
+				<div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+					<Badge variant="secondary" className="mb-6 gap-1.5">
+						<ShieldCheck />
+						POPIA-conscious records
+					</Badge>
+
+					<h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+						Modern EMR built for{" "}
+						<span className="text-primary">independent</span> practitioners
 					</h1>
-					<p className="text-lg text-gray-700 mb-8">
-						Streamline your practice with an intuitive, affordable EHR solution
-						that saves time and improves patient care.
+
+					<p className="mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
+						Ubuntu Health brings patients, appointments, prescriptions and
+						billing into one calm workspace, so you spend less time on admin and
+						more with the people in front of you.
 					</p>
-					<div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-						<Link
-							href={{
-								pathname: "/signup",
-								query: { plan: "free" },
-							}}
-							className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700
-              font-medium flex items-center"
+
+					<div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
+						<Button
+							size="lg"
+							render={
+								<Link href={{ pathname: "/signup", query: { plan: "free" } }} />
+							}
 						>
-							Start 30-Day Free Trial <ArrowRight className="ml-2 h-4 w-4" />
-						</Link>
+							Start 30-day free trial
+							<ArrowRight data-icon="inline-end" />
+						</Button>
+						<Button size="lg" variant="outline" render={<Link href="/login" />}>
+							Sign in
+						</Button>
 					</div>
+
+					<p className="mt-4 text-xs text-muted-foreground">
+						No credit card required. Cancel anytime.
+					</p>
 				</div>
-				<div className="md:w-1/2 flex justify-center">
-					<div className="relative w-full max-w-lg h-80 md:h-96">
+
+				<div className="mt-16 lg:mt-20">
+					<div className="relative mx-auto aspect-16/10 w-full max-w-4xl overflow-hidden rounded-4xl bg-card shadow-xl ring-1 ring-foreground/10">
 						<Image
 							src="/dashboard.png"
-							alt="Ubuntu Health EMR Dashboard"
-							layout="fill"
-							objectFit="contain"
+							alt="Ubuntu Health EMR dashboard"
+							fill
+							priority
+							className="object-cover object-top"
+							sizes="(max-width: 1024px) 100vw, 896px"
 						/>
 					</div>
 				</div>

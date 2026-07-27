@@ -1,24 +1,39 @@
 import React from "react";
 
+const stats = [
+	{ value: "5 min", label: "Average setup time" },
+	{ value: "100%", label: "Your data, your practice" },
+	{ value: "24/7", label: "Access from any device" },
+];
+
 const Mission = () => {
 	return (
-		<div id="about">
-			<div className="pt-20 flex flex-wrap">
-				<div className="w-full">
-					<div className="text-center mx-auto mb-[60px] lg:mb-20 max-w-[70vw]">
-						<h2 className="font-bold text-3xl sm:text-4xl md:text-5xl text-dark mb-4 py-6">
-							Our Mission
-						</h2>
-						<p className="text-base text-body-color">
-							Our mission is to empower family doctors, general practitioners,
-							and small clinics with intuitive and secure EHR software, enabling
-							them to deliver exceptional healthcare services while maximizing
-							productivity and patient satisfaction.
-						</p>
-					</div>
+		<section id="about" className="border-b">
+			<div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+				<div className="mx-auto max-w-2xl text-center">
+					<p className="text-sm font-medium text-primary">Our mission</p>
+					<h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
+						Healthcare software that stays out of the way
+					</h2>
+					<p className="mt-5 text-base text-muted-foreground">
+						We empower family doctors, general practitioners and small clinics
+						with intuitive, secure record keeping, so they can deliver
+						exceptional care without fighting their tools.
+					</p>
 				</div>
+
+				<dl className="mx-auto mt-14 grid max-w-3xl gap-8 sm:grid-cols-3">
+					{stats.map((stat) => (
+						<div key={stat.label} className="flex flex-col items-center gap-1">
+							<dt className="font-heading text-3xl font-semibold tracking-tight">
+								{stat.value}
+							</dt>
+							<dd className="text-sm text-muted-foreground">{stat.label}</dd>
+						</div>
+					))}
+				</dl>
 			</div>
-		</div>
+		</section>
 	);
 };
 

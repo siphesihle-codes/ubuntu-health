@@ -1,104 +1,71 @@
 import React from "react";
-import { Stethoscope, Calendar, Pill, FileText } from "lucide-react";
+import { Calendar, FileText, Pill, Stethoscope } from "lucide-react";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+
+const services = [
+	{
+		icon: Stethoscope,
+		title: "Patient management",
+		description:
+			"Demographics, medical history and treatment plans in one record that stays current.",
+	},
+	{
+		icon: Calendar,
+		title: "Appointment scheduling",
+		description:
+			"Flexible booking with automated reminders for both practitioners and patients.",
+	},
+	{
+		icon: Pill,
+		title: "E-prescriptions",
+		description:
+			"Issue electronic scripts in seconds, reducing errors and repeat admin.",
+	},
+	{
+		icon: FileText,
+		title: "Invoicing",
+		description:
+			"Generate invoices and track payments without leaving the patient file.",
+	},
+];
 
 function Services() {
 	return (
-		<section id="services" className="py-16 bg-white">
-			<div className="container mx-auto px-4">
-				<div className="text-center mb-16">
-					<h2 className="text-3xl font-bold text-gray-800 mb-4">
-						What we offer
+		<section id="services" className="border-b bg-muted/30">
+			<div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+				<div className="mx-auto max-w-2xl text-center">
+					<p className="text-sm font-medium text-primary">What we offer</p>
+					<h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
+						Everything your practice runs on
 					</h2>
-					<p className="text-gray-600 max-w-2xl mx-auto">
-						Everything you need to run your practice efficiently, all in one
-						place
+					<p className="mt-5 text-base text-muted-foreground">
+						Four essentials, designed to work together rather than as bolted-on
+						modules.
 					</p>
 				</div>
 
-				<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-					{/* Patient Management */}
-					<div
-						className="bg-white p-6 rounded-lg shadow-sm border border-gray-100
-                    hover:shadow-md hover:bg-blue-600 group transition-all duration-400
-                    ease-in-out hover:scale-105"
-					>
-						<div
-							className="w-12 h-12 rounded-full flex items-center justify-center mb-4
-            group-hover:bg-blue-500"
+				<div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+					{services.map((service) => (
+						<Card
+							key={service.title}
+							className="transition-shadow hover:shadow-lg"
 						>
-							<Stethoscope className="text-blue-600 h-5 w-5 group-hover:text-white" />
-						</div>
-						<h2 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white">
-							Patient Management
-						</h2>
-						<p className="text-gray-600 group-hover:text-white">
-							Comprehensive tools for storing and managing patient demographics,
-							medical history, and treatment plans.
-						</p>
-					</div>
-
-					{/* Appointment Scheduling */}
-					<div
-						className="bg-white p-6 rounded-lg shadow-sm border border-gray-100
-                    hover:shadow-md hover:bg-blue-600 group transition-all duration-400
-                    ease-in-out hover:scale-105"
-					>
-						<div
-							className="w-12 h-12 rounded-full flex items-center justify-center mb-4
-            group-hover:bg-blue-500"
-						>
-							<Calendar className="text-blue-600 h-5 w-5 group-hover:text-white" />
-						</div>
-						<h2 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white">
-							Appointment Scheduling
-						</h2>
-						<p className="text-gray-600 group-hover:text-white">
-							Flexible scheduling with automated reminders and notifications for
-							practitioners and patients.
-						</p>
-					</div>
-
-					{/* E-Prescriptions */}
-					<div
-						className="bg-white p-6 rounded-lg shadow-sm border border-gray-100
-                    hover:shadow-md hover:bg-blue-600 group transition-all duration-400
-                    ease-in-out hover:scale-105"
-					>
-						<div
-							className="w-12 h-12 rounded-full flex items-center justify-center mb-4
-            group-hover:bg-blue-500"
-						>
-							<Pill className="text-blue-600 h-5 w-5 group-hover:text-white" />
-						</div>
-						<h2 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white">
-							E-Prescriptions
-						</h2>
-						<p className="text-gray-600 group-hover:text-white">
-							Generate electronic prescriptions with ease, reducing errors and
-							improving medication management.
-						</p>
-					</div>
-
-					{/* Billing and Invoicing */}
-					<div
-						className="bg-white p-6 rounded-lg shadow-sm border border-gray-100
-                    hover:shadow-md hover:bg-blue-600 group transition-all duration-400
-                    ease-in-out hover:scale-105"
-					>
-						<div
-							className="w-12 h-12 rounded-full flex items-center justify-center mb-4
-            group-hover:bg-blue-500"
-						>
-							<FileText className="text-blue-600 h-5 w-5 group-hover:text-white" />
-						</div>
-						<h2 className="text-xl font-semibold text-gray-800 mb-3 group-hover:text-white">
-							Invoicing
-						</h2>
-						<p className="text-gray-600 group-hover:text-white">
-							Automate billing processes and generate invoices seamlessly with
-							insurance integration.
-						</p>
-					</div>
+							<CardHeader>
+								<span className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+									<service.icon className="size-5" />
+								</span>
+								<CardTitle>{service.title}</CardTitle>
+								<CardDescription>{service.description}</CardDescription>
+							</CardHeader>
+							<CardContent />
+						</Card>
+					))}
 				</div>
 			</div>
 		</section>
