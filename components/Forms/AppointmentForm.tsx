@@ -1,26 +1,37 @@
-import React, { useState } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
 import { APPOINTMENT_TYPES, STATUS_LABELS } from "@/types";
-import {
-	Calendar,
-	User,
-	ClipboardList,
-	Clock,
-	FileText,
-	CalendarCheck,
-} from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useCreateAppointment } from "@/hooks/useAppointments";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 interface AppointmentFormProps {
 	onClose: () => void;
 }
 
 const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
-	const [appointmentType, setAppointmentType] = useState("");
-	const [status, setStatus] = useState("");
 	const createAppointment = useCreateAppointment();
+	const isLoading = createAppointment.isPending;
 
 	const formik = useFormik({
 		initialValues: {
@@ -54,265 +65,168 @@ const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
 		},
 	});
 
+	const fieldError = (field: keyof typeof formik.values) =>
+		formik.touched[field] && formik.errors[field] ? (
+			<p className="text-xs text-destructive">{formik.errors[field]}</p>
+		) : null;
+
+	const isInvalid = (field: keyof typeof formik.values) =>
+		Boolean(formik.touched[field] && formik.errors[field]) || undefined;
+
 	return (
-		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-			<div
-				className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 max-w-3xl w-full
-      max-h-[90vh] overflow-y-auto"
-			>
-				<button
-					onClick={onClose}
-					className="absolute top-4 right-4 text-blue-700 hover:text-gray-700 text-2xl"
-				>
-					&times;
-				</button>
+		<Dialog
+			open
+			onOpenChange={(open) => {
+				if (!open) onClose();
+			}}
+		>
+			<DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+				<DialogHeader>
+					<DialogTitle>Schedule appointment</DialogTitle>
+					<DialogDescription>
+						Book a visit and set its type, time and status.
+					</DialogDescription>
+				</DialogHeader>
 
-				<form onSubmit={formik.handleSubmit} className="space-y-6">
-					<h2
-						className="text-2xl font-semibold text-gray-800 mb-6 text-center flex items-center
-          justify-center"
-					>
-						<Calendar className="mr-2 text-blue-500" size={24} />
-						Schedule Appointment
-					</h2>
-
-					{/* Patient Name */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<div className="flex items-center text-lg font-semibold text-gray-700 mb-4">
-							<User className="mr-2 text-gray-500" size={18} />
-							Patient Information
-						</div>
-						<div className="grid md:grid-cols-2 gap-4">
-							<div>
-								<label
-									htmlFor="patientFirstName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									First Name
-								</label>
-								<input
-									type="text"
-									id="patientFirstName"
-									name="patientFirstName"
-									value={formik.values.patientFirstName}
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								{formik.touched.patientFirstName &&
-									formik.errors.patientFirstName && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.patientFirstName}
-										</p>
-									)}
-							</div>
-							<div>
-								<label
-									htmlFor="patientLastName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Last Name
-								</label>
-								<input
-									type="text"
-									id="patientLastName"
-									name="patientLastName"
-									value={formik.values.patientLastName}
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								{formik.touched.patientLastName &&
-									formik.errors.patientLastName && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.patientLastName}
-										</p>
-									)}
-							</div>
-						</div>
-					</div>
-
-					{/* Appointment Details */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<div className="flex items-center text-lg font-semibold text-gray-700 mb-4">
-							<ClipboardList className="mr-2 text-gray-500" size={18} />
-							Appointment Details
-						</div>
-						<div className="grid md:grid-cols-2 gap-4">
-							<div>
-								<label
-									htmlFor="appointmentType"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Appointment Type
-								</label>
-								<select
-									id="appointmentType"
-									name="appointmentType"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-									value={appointmentType}
-									onChange={(e) => {
-										setAppointmentType(e.target.value);
-										formik.setFieldValue("appointmentType", e.target.value);
-									}}
-								>
-									<option value="" disabled>
-										Select appointment type
-									</option>
-									{Object.entries(APPOINTMENT_TYPES).map(([key, label]) => (
-										<option key={key} value={key}>
-											{label.toUpperCase()}
-										</option>
-									))}
-								</select>
-								{formik.touched.appointmentType &&
-									formik.errors.appointmentType && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.appointmentType}
-										</p>
-									)}
-							</div>
-							<div>
-								<label
-									htmlFor="status"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Status
-								</label>
-								<select
-									id="status"
-									name="status"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-									value={formik.values.status}
-									onChange={(e) => {
-										setStatus(e.target.value);
-										formik.setFieldValue("status", e.target.value);
-									}}
-								>
-									{Object.entries(STATUS_LABELS).map(([value, label]) => (
-										<option key={value} value={value}>
-											{label}
-										</option>
-									))}
-								</select>
-								{formik.touched.status && formik.errors.status && (
-									<p className="text-red-600 text-xs mt-1">
-										{formik.errors.status}
-									</p>
-								)}
-							</div>
-						</div>
-					</div>
-
-					{/* Date and Time */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<div className="flex items-center text-lg font-semibold text-gray-700 mb-4">
-							<Clock className="mr-2 text-gray-500" size={18} />
-							Date & Time
-						</div>
-						<div className="grid md:grid-cols-2 gap-4">
-							<div>
-								<label
-									htmlFor="appointmentDate"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Appointment Date
-								</label>
-								<input
-									type="date"
-									id="appointmentDate"
-									name="appointmentDate"
-									value={formik.values.appointmentDate}
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								{formik.touched.appointmentDate &&
-									formik.errors.appointmentDate && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.appointmentDate}
-										</p>
-									)}
-							</div>
-							<div>
-								<label
-									htmlFor="appointmentTime"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Appointment Time
-								</label>
-								<input
-									type="time"
-									id="appointmentTime"
-									name="appointmentTime"
-									value={formik.values.appointmentTime}
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-								/>
-								{formik.touched.appointmentTime &&
-									formik.errors.appointmentTime && (
-										<p className="text-red-600 text-xs mt-1">
-											{formik.errors.appointmentTime}
-										</p>
-									)}
-							</div>
-						</div>
-					</div>
-
-					{/* Notes */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<div className="flex items-center text-lg font-semibold text-gray-700 mb-4">
-							<FileText className="mr-2 text-gray-500" size={18} />
-							Additional Information
-						</div>
-						<div>
-							<label
-								htmlFor="notes"
-								className="block text-sm font-medium text-gray-700 mb-1"
-							>
-								Notes (Optional)
-							</label>
-							<textarea
-								id="notes"
-								name="notes"
-								value={formik.values.notes}
+				<form onSubmit={formik.handleSubmit} className="flex flex-col gap-5">
+					<div className="grid gap-4 sm:grid-cols-2">
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="patientFirstName">First name</Label>
+							<Input
+								id="patientFirstName"
+								name="patientFirstName"
+								value={formik.values.patientFirstName}
 								onChange={formik.handleChange}
-								rows={3}
-								className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+								onBlur={formik.handleBlur}
+								disabled={isLoading}
+								aria-invalid={isInvalid("patientFirstName")}
 							/>
+							{fieldError("patientFirstName")}
+						</div>
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="patientLastName">Last name</Label>
+							<Input
+								id="patientLastName"
+								name="patientLastName"
+								value={formik.values.patientLastName}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								disabled={isLoading}
+								aria-invalid={isInvalid("patientLastName")}
+							/>
+							{fieldError("patientLastName")}
+						</div>
+
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="appointmentType">Appointment type</Label>
+							<Select
+								value={formik.values.appointmentType}
+								onValueChange={(value) =>
+									formik.setFieldValue("appointmentType", value)
+								}
+							>
+								<SelectTrigger id="appointmentType" className="w-full">
+									<SelectValue placeholder="Select appointment type" />
+								</SelectTrigger>
+								<SelectContent>
+									{Object.entries(APPOINTMENT_TYPES).map(([key, label]) => (
+										<SelectItem key={key} value={key}>
+											{label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							{fieldError("appointmentType")}
+						</div>
+
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="status">Status</Label>
+							<Select
+								value={formik.values.status}
+								onValueChange={(value) => formik.setFieldValue("status", value)}
+							>
+								<SelectTrigger id="status" className="w-full">
+									<SelectValue placeholder="Select status" />
+								</SelectTrigger>
+								<SelectContent>
+									{Object.entries(STATUS_LABELS).map(([value, label]) => (
+										<SelectItem key={value} value={value}>
+											{label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							{fieldError("status")}
+						</div>
+
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="appointmentDate">Date</Label>
+							<Input
+								type="date"
+								id="appointmentDate"
+								name="appointmentDate"
+								value={formik.values.appointmentDate}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								disabled={isLoading}
+								aria-invalid={isInvalid("appointmentDate")}
+							/>
+							{fieldError("appointmentDate")}
+						</div>
+
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="appointmentTime">Time</Label>
+							<Input
+								type="time"
+								id="appointmentTime"
+								name="appointmentTime"
+								value={formik.values.appointmentTime}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								disabled={isLoading}
+								aria-invalid={isInvalid("appointmentTime")}
+							/>
+							{fieldError("appointmentTime")}
 						</div>
 					</div>
 
-					{/* Submit Button */}
-					<div className="flex justify-center gap-4 pt-4">
-						<button
+					<div className="flex flex-col gap-2">
+						<Label htmlFor="notes">
+							Notes <span className="text-muted-foreground">(optional)</span>
+						</Label>
+						<Textarea
+							id="notes"
+							name="notes"
+							rows={3}
+							value={formik.values.notes}
+							onChange={formik.handleChange}
+							disabled={isLoading}
+						/>
+					</div>
+
+					<DialogFooter>
+						<Button
 							type="button"
+							variant="outline"
 							onClick={onClose}
-							className="px-6 py-2 border border-gray-300 rounded-md text-gray-700
-              hover:bg-gray-200 transition-colors"
+							disabled={isLoading}
 						>
 							Cancel
-						</button>
-						<button
-							type="submit"
-							className="px-6 py-2 bg-blue-600 rounded-md text-white font-medium
-              hover:bg-blue-700 transition-colors flex items-center"
-						>
-							<CalendarCheck className="mr-2" size={18} />
-							Schedule Appointment
-						</button>
-					</div>
+						</Button>
+						<Button type="submit" disabled={isLoading}>
+							{isLoading ? (
+								<>
+									<Loader2 className="animate-spin" />
+									Scheduling...
+								</>
+							) : (
+								"Schedule appointment"
+							)}
+						</Button>
+					</DialogFooter>
 				</form>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
 };
 
