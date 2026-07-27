@@ -157,7 +157,7 @@ export default function PatientForm({ onClose }: PatientFormProps) {
 								<Label htmlFor="sex">Sex</Label>
 								<Select
 									value={formik.values.sex}
-									onValueChange={(value) => formik.setFieldValue("sex", value)}
+									onValueChange={(value) => formik.setFieldValue("sex", value ?? "")}
 								>
 									<SelectTrigger id="sex" className="w-full">
 										<SelectValue placeholder="Select sex" />
@@ -334,7 +334,7 @@ export default function PatientForm({ onClose }: PatientFormProps) {
 								<Select
 									value={formik.values.currentMedication}
 									onValueChange={(value) =>
-										formik.setFieldValue("currentMedication", value)
+										formik.setFieldValue("currentMedication", value ?? "")
 									}
 								>
 									<SelectTrigger

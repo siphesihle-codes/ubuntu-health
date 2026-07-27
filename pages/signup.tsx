@@ -208,7 +208,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 										<Select
 											value={formik.values.role}
 											onValueChange={(value) =>
-												formik.setFieldValue("role", value)
+												formik.setFieldValue("role", value ?? "")
 											}
 										>
 											<SelectTrigger id="role" className="w-full">
@@ -292,7 +292,7 @@ const SignUpForm = ({ plan = "basic" }) => {
 										<Select
 											value={formik.values.specialty}
 											onValueChange={(value) =>
-												formik.setFieldValue("specialty", value)
+												formik.setFieldValue("specialty", value ?? "")
 											}
 										>
 											<SelectTrigger id="specialty" className="w-full">

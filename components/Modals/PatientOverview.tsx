@@ -1,106 +1,107 @@
 import { Patient } from "@/types";
 import React from "react";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 interface PatientOverviewProps {
 	patient: Patient;
 }
 
+const Detail = ({
+	label,
+	value,
+	className,
+}: {
+	label: string;
+	value: React.ReactNode;
+	className?: string;
+}) => (
+	<div className={`flex flex-col gap-1 ${className ?? ""}`}>
+		<dt className="text-xs text-muted-foreground">{label}</dt>
+		<dd className="text-sm">{value || "Not provided"}</dd>
+	</div>
+);
+
 const PatientOverview = ({ patient }: PatientOverviewProps) => {
+	const address = [
+		patient.street,
+		patient.streetTwo,
+		patient.city,
+		patient.province,
+		patient.postalCode,
+	]
+		.filter(Boolean)
+		.join(", ");
+
+	const emergencyContact = [
+		`${patient.emergencyContactFirstName ?? ""} ${
+			patient.emergencyContactLastName ?? ""
+		}`.trim(),
+		patient.emergencyContactRelationship
+			? `(${patient.emergencyContactRelationship})`
+			: "",
+		patient.emergencyContactPhone,
+	]
+		.filter(Boolean)
+		.join(" ");
+
 	return (
-		<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-			{/* Demographics */}
-			<div className="border rounded-lg p-6 bg-white">
-				<h2 className="text-lg font-medium mb-4">Demographics</h2>
-				<div className="grid grid-cols-2 gap-4">
-					<div>
-						<p className="text-xs">ID Number</p>
-						<p>{patient.idNumber}</p>
-					</div>
-					<div>
-						<p className="text-xs">Gender</p>
-						<p>{patient.sex.toUpperCase()}</p>
-					</div>
-					<div>
-						<p className="text-xs">Email</p>
-						<p>{patient.email}</p>
-					</div>
-					<div>
-						<p className="text-xs">Contact</p>
-						<p>{patient.phone}</p>
-					</div>
-					<div>
-						<p className="text-xs">Membership No.</p>
-						<p>{patient.membershipNumber}</p>
-					</div>
-					<div className="col-span-2">
-						<p className="text-xs">Address</p>
-						<p>
-							{patient.street}
-							{patient.streetTwo ? `, ${patient.streetTwo}` : ""},{" "}
-							{patient.city}, {patient.province} {patient.postalCode}
+		<div className="grid gap-4 lg:grid-cols-2">
+			<Card className="lg:col-span-2">
+				<CardHeader>
+					<CardTitle>Demographics</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<dl className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+						<Detail label="ID number" value={patient.idNumber} />
+						<Detail label="Sex" value={patient.sex} className="capitalize" />
+						<Detail label="Email" value={patient.email} />
+						<Detail label="Contact" value={patient.phone} />
+						<Detail label="Medical aid" value={patient.medicalAidName} />
+						<Detail label="Membership no." value={patient.membershipNumber} />
+						<Detail
+							label="Address"
+							value={address}
+							className="sm:col-span-2 lg:col-span-3"
+						/>
+						<Detail
+							label="Emergency contact"
+							value={emergencyContact}
+							className="sm:col-span-2 lg:col-span-3"
+						/>
+					</dl>
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Allergies</CardTitle>
+				</CardHeader>
+				<CardContent>
+					{patient.allergies ? (
+						<p className="text-sm text-destructive">{patient.allergies}</p>
+					) : (
+						<p className="text-sm text-muted-foreground">
+							No allergies recorded
 						</p>
-					</div>
-					{patient.medicalAidName && (
-						<div className="col-span-2">
-							<p className="text-xs">Medical Aid</p>
-							<p>{patient.medicalAidName}</p>
-						</div>
 					)}
-					{patient.currentMedication && (
-						<div>
-							<p className="text-xs">Current Medication</p>
-							<p>{patient.currentMedication}</p>
-						</div>
-					)}
-					<div className="col-span-2">
-						<p className="text-xs">Emergency Contact</p>
-						<p>
-							{patient.emergencyContactFirstName}{" "}
-							{patient.emergencyContactLastName}
-							{patient.emergencyContactRelationship
-								? ` (${patient.emergencyContactRelationship})`
-								: ""}
-							&nbsp;– {patient.emergencyContactPhone}
-						</p>
-					</div>
-				</div>
-			</div>
+				</CardContent>
+			</Card>
 
-			<div className="border rounded-lg p-6 bg-white">
-				<h2 className=" text-lg font-medium mb-4">Medical History</h2>
-				<ul className="list-disc list-inside space-y-1">
-					{/* {patient.medicalHistory.map((item, index) => (
-						<li key={index} className=" ">
-							{item}
-						</li>
-					))} */}
-				</ul>
-			</div>
-
-			<div className="border rounded-lg p-6 bg-white">
-				<h2 className=" text-lg font-medium mb-4">Allergies</h2>
-				<div className="flex flex-wrap gap-2">
-					{patient.allergies && (
-						<div>
-							<p className="text-red-400">{patient.allergies}</p>
-						</div>
-					)}
-				</div>
-			</div>
-
-			<div className="border rounded-lg p-6 bg-white">
-				<h2 className=" text-lg font-medium mb-4">Active Conditions</h2>
-				<div className="flex flex-wrap gap-2">
-					{/* {patient.activeConditions.map((condition, index) => (
-						<span
-							key={index}
-							className="px-3 py-1 bg-amber-900/30 border border-amber-400/20 text-amber-400 rounded-full text-xs"
-						>
-							{condition}
-						</span>
-					))} */}
-				</div>
-			</div>
+			<Card>
+				<CardHeader>
+					<CardTitle>Current medication</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<p className="text-sm text-muted-foreground">
+						{patient.currentMedication || "None recorded"}
+					</p>
+				</CardContent>
+			</Card>
 		</div>
 	);
 };

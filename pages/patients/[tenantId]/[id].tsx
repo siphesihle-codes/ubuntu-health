@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Link from "next/link";
 import PatientOverview from "@/components/Modals/PatientOverview";
 import VisitsOverview from "@/components/Modals/Visits";
@@ -10,10 +9,21 @@ import { useRouter } from "next/router";
 import { usePatient } from "@/hooks/usePatients";
 import { usePatientClinicalNotes } from "@/hooks/useClinicalNotes";
 import { usePatientPrescriptions } from "@/hooks/usePrescriptions";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "@/components/ui/tabs";
 
 const PatientPage = () => {
-	const { id } = useRouter().query as { id?: string };
-	const [activeTab, setActiveTab] = useState<string>("overview");
+	const { id, tenantId } = useRouter().query as {
+		id?: string;
+		tenantId?: string;
+	};
 	const patientId = Number(id);
 
 	const { data: patient, isLoading, error } = usePatient(id);
@@ -22,124 +32,74 @@ const PatientPage = () => {
 
 	if (isLoading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className=" ">Loading patient data...</div>
-			</div>
+			<Layout title="Patient">
+				<div className="mx-auto flex max-w-7xl flex-col gap-4">
+					<Skeleton className="h-9 w-64" />
+					<Card className="gap-3">
+						{Array.from({ length: 5 }).map((_, index) => (
+							<Skeleton key={index} className="mx-6 h-4" />
+						))}
+					</Card>
+				</div>
+			</Layout>
 		);
 	}
 
 	if (error) {
 		return (
-			<div className="min-h-screen flex items-center justify-center text-red-600">
-				Error loading patient data. Please try again later.
-			</div>
+			<Layout title="Patient">
+				<Card className="mx-auto max-w-7xl">
+					<div className="px-6 py-12 text-center text-sm text-destructive">
+						Error loading patient data. Please try again later.
+					</div>
+				</Card>
+			</Layout>
 		);
 	}
 
 	return (
-		<Layout>
-			<div className="min-h-screen bg-gray-50 p-6">
-				{/* Header */}
-				<div className="max-w-7xl mx-auto">
-					<div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-						<div>
-							<p className="text-xs tracking-wider">
-								Patient ID: {patient?.id}
-							</p>
-							<h1 className="text-2xl font-semibold">{`${patient?.firstName} ${patient?.lastName}`}</h1>
-						</div>
-						<div className="flex items-center gap-4">
-							{/* <span className="mx-4 mt-3 px-4 py-1 rounded-full border border-cyan-400/20 text-xs">
-								{patient?.activeConditions.length > 0
-									? "Active Conditions"
-									: "No Active Conditions"}
-							</span> */}
-							<Link
-								href={`/patients/${patient?.id}/consultation/new`}
-								className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-md
-                text-white text-sm font-medium hover:bg-blue-700 transition-colors"
-							>
-								<PlusCircle size={18} />
-								New Consultation
-							</Link>
-						</div>
-					</div>
-				</div>
+		<Layout
+			title={`${patient?.firstName ?? ""} ${patient?.lastName ?? ""}`.trim()}
+			description={`Patient ID: ${patient?.id ?? ""}`}
+			actions={
+				<Button
+					size="sm"
+					render={
+						<Link
+							href={`/patients/${tenantId}/${patient?.id}/consultation/new`}
+						/>
+					}
+				>
+					<PlusCircle />
+					<span className="hidden sm:inline">New consultation</span>
+				</Button>
+			}
+		>
+			<div className="mx-auto max-w-7xl">
+				<Tabs defaultValue="overview" className="gap-6">
+					<TabsList>
+						<TabsTrigger value="overview">Overview</TabsTrigger>
+						<TabsTrigger value="visits">Visit history</TabsTrigger>
+						<TabsTrigger value="prescriptions">Prescriptions</TabsTrigger>
+						<TabsTrigger value="invoices">Invoices</TabsTrigger>
+					</TabsList>
 
-				{/* Main Content */}
-				<main className="max-w-7xl mx-auto p-4">
-					{/* Tabs */}
-					<div className="flex gap-6 mb-6 border-b">
-						<button
-							type="button"
-							onClick={() => setActiveTab("overview")}
-							className={`pb-4 px-2 relative ${
-								activeTab === "overview" ? " " : "  hover: "
-							}`}
-						>
-							Overview
-							{activeTab === "overview" && (
-								<span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
-							)}
-						</button>
-						<button
-							type="button"
-							onClick={() => setActiveTab("visits")}
-							className={`pb-4 px-2 relative ${
-								activeTab === "visits" ? " " : "  hover: "
-							}`}
-						>
-							Visit History
-							{activeTab === "visits" && (
-								<span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
-							)}
-						</button>
-						<button
-							type="button"
-							onClick={() => setActiveTab("prescriptions")}
-							className={`pb-4 px-2 relative ${
-								activeTab === "prescriptions" ? " " : "  hover: "
-							}`}
-						>
-							Prescriptions
-							{activeTab === "prescriptions" && (
-								<span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
-							)}
-						</button>
-						<button
-							type="button"
-							onClick={() => setActiveTab("invoices")}
-							className={`pb-4 px-2 relative ${
-								activeTab === "invoices" ? " " : " hover: "
-							}`}
-						>
-							Invoices & Appointments
-							{activeTab === "invoices" && (
-								<span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-700"></span>
-							)}
-						</button>
-					</div>
+					<TabsContent value="overview">
+						{patient ? <PatientOverview patient={patient} /> : null}
+					</TabsContent>
 
-					{/* Tab Content */}
-					<div className="space-y-8">
-						{/* Overview Tab */}
-						{activeTab === "overview" && patient && (
-							<PatientOverview patient={patient} />
-						)}
+					<TabsContent value="visits">
+						<VisitsOverview clinicalNotes={clinicalNotes} />
+					</TabsContent>
 
-						{/* Visit History Tab */}
-						{activeTab === "visits" && clinicalNotes.length > 0 && (
-							<VisitsOverview clinicalNotes={clinicalNotes} />
-						)}
+					<TabsContent value="prescriptions">
+						<PrescriptionsOverview prescriptions={prescriptions} />
+					</TabsContent>
 
-						{/* Prescriptions Tab */}
-						{activeTab === "prescriptions" && (
-							<PrescriptionsOverview prescriptions={prescriptions} />
-						)}
-
-						{activeTab === "invoices" && <InvoicesOverview />}
-					</div>
-				</main>
+					<TabsContent value="invoices">
+						<InvoicesOverview />
+					</TabsContent>
+				</Tabs>
 			</div>
 		</Layout>
 	);

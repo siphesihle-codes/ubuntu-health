@@ -122,7 +122,7 @@ const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
 							<Select
 								value={formik.values.appointmentType}
 								onValueChange={(value) =>
-									formik.setFieldValue("appointmentType", value)
+									formik.setFieldValue("appointmentType", value ?? "")
 								}
 							>
 								<SelectTrigger id="appointmentType" className="w-full">
@@ -143,7 +143,7 @@ const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
 							<Label htmlFor="status">Status</Label>
 							<Select
 								value={formik.values.status}
-								onValueChange={(value) => formik.setFieldValue("status", value)}
+								onValueChange={(value) => formik.setFieldValue("status", value ?? "")}
 							>
 								<SelectTrigger id="status" className="w-full">
 									<SelectValue placeholder="Select status" />

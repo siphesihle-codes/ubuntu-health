@@ -1,19 +1,38 @@
 import { Patient } from "@/types";
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import {
-	User,
-	Users,
-	UserRoundPen,
-	MapPin,
-	PillBottle,
-	ClipboardList,
-} from "lucide-react";
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 interface EditPatientModalProps {
 	patient: Patient;
 	onSave: (updatedPatient: Patient) => void;
 	onClose: () => void;
 }
+
+const SectionHeading = ({ children }: { children: React.ReactNode }) => (
+	<div className="flex flex-col gap-1">
+		<h3 className="text-sm font-medium">{children}</h3>
+		<Separator />
+	</div>
+);
 
 const EditPatientModal = ({
 	patient,
@@ -23,465 +42,272 @@ const EditPatientModal = ({
 	const [formData, setFormData] = useState<Patient>({ ...patient });
 
 	const handleChange = (
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-		>
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
-		const { name, value } = e.target;
+		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
+	const handleSelectChange = (name: keyof Patient, value: string | null) => {
+		setFormData((prev) => ({ ...prev, [name]: value ?? "" }));
+	};
 
+	const handleSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
 		onSave(formData);
 	};
 
 	return (
-		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-			<div
-				className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 max-w-3xl w-full
-    max-h-[90vh] overflow-y-auto"
-			>
-				<button
-					type="button"
-					onClick={onClose}
-					className="absolute top-4 right-4 text-blue-700 hover:text-gray-700 text-2xl"
-				>
-					&times;
-				</button>
+		<Dialog
+			open
+			onOpenChange={(open) => {
+				if (!open) onClose();
+			}}
+		>
+			<DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+				<DialogHeader>
+					<DialogTitle>Edit patient</DialogTitle>
+					<DialogDescription>
+						Update this patient&apos;s record.
+					</DialogDescription>
+				</DialogHeader>
 
-				<form onSubmit={handleSubmit} className="space-y-6">
-					<h2
-						className="text-2xl font-semibold text-gray-800 mb-6 text-center flex items-center
-            justify-center"
-					>
-						<UserRoundPen className="mr-2 text-blue-500" size={24} />
-						Edit Patient
-					</h2>
-
-					{/* Personal Information */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-							<User className="mr-2 text-gray-500" size={18} />
-							Personal Information
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							{/* First Name */}
-							<div>
-								<label
-									htmlFor="firstName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									First Name *
-								</label>
-								<input
-									type="text"
-									name="firstName"
+				<form onSubmit={handleSubmit} className="flex flex-col gap-8">
+					<section className="flex flex-col gap-4">
+						<SectionHeading>Personal information</SectionHeading>
+						<div className="grid gap-4 sm:grid-cols-2">
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="firstName">First name</Label>
+								<Input
 									id="firstName"
+									name="firstName"
 									value={formData.firstName}
 									onChange={handleChange}
 									placeholder="John"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Last Name */}
-							<div>
-								<label
-									htmlFor="lastName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Last Name *
-								</label>
-								<input
-									type="text"
-									name="lastName"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="lastName">Last name</Label>
+								<Input
 									id="lastName"
+									name="lastName"
 									value={formData.lastName}
 									onChange={handleChange}
 									placeholder="Doe"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* ID Number */}
-							<div>
-								<label
-									htmlFor="idNumber"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									ID Number
-								</label>
-								<input
-									type="text"
-									name="idNumber"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="idNumber">ID number</Label>
+								<Input
 									id="idNumber"
+									name="idNumber"
 									value={formData.idNumber}
 									onChange={handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Gender */}
-							<div>
-								<label
-									htmlFor="sex"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Sex *
-								</label>
-								<select
-									required
-									id="sex"
-									name="sex"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="sex">Sex</Label>
+								<Select
 									value={formData.sex}
-									onChange={handleChange}
+									onValueChange={(value) => handleSelectChange("sex", value)}
 								>
-									<option value="">Select Sex</option>
-									<option value="male">Male</option>
-									<option value="female">Female</option>
-								</select>
+									<SelectTrigger id="sex" className="w-full">
+										<SelectValue placeholder="Select sex" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="male">Male</SelectItem>
+										<SelectItem value="female">Female</SelectItem>
+									</SelectContent>
+								</Select>
 							</div>
-
-							{/* Phone Number */}
-							<div>
-								<label
-									htmlFor="phone"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Phone Number
-								</label>
-								<input
-									type="text"
-									name="phone"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="phone">Phone number</Label>
+								<Input
 									id="phone"
+									name="phone"
+									type="tel"
 									value={formData.phone}
 									onChange={handleChange}
 									placeholder="000 000 0000"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Email */}
-							<div>
-								<label
-									htmlFor="email"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Email
-								</label>
-								<input
-									type="email"
-									name="email"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="email">Email</Label>
+								<Input
 									id="email"
+									name="email"
+									type="email"
 									value={formData.email}
 									onChange={handleChange}
 									placeholder="johndoe@email.com"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
 						</div>
-					</div>
+					</section>
 
-					{/* Address */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-							<MapPin className="mr-2 text-gray-500" size={18} />
-							Address
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							{/* Street Address */}
-							<div>
-								<label
-									htmlFor="street"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Street Address
-								</label>
-								<input
-									type="text"
-									name="street"
+					<section className="flex flex-col gap-4">
+						<SectionHeading>Address</SectionHeading>
+						<div className="grid gap-4 sm:grid-cols-2">
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="street">Street address</Label>
+								<Input
 									id="street"
+									name="street"
 									value={formData.street ?? ""}
 									onChange={handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Street Address Line 2 */}
-							<div>
-								<label
-									htmlFor="streetTwo"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Street Address Line 2
-								</label>
-								<input
-									type="text"
-									name="streetTwo"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="streetTwo">Street address line 2</Label>
+								<Input
 									id="streetTwo"
+									name="streetTwo"
 									value={formData.streetTwo ?? ""}
 									onChange={handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* City */}
-							<div>
-								<label
-									htmlFor="city"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									City
-								</label>
-								<input
-									type="text"
-									name="city"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="city">City</Label>
+								<Input
 									id="city"
+									name="city"
 									value={formData.city}
 									onChange={handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Province */}
-							<div>
-								<label
-									htmlFor="province"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Province
-								</label>
-								<input
-									type="text"
-									name="province"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="province">Province</Label>
+								<Input
 									id="province"
+									name="province"
 									value={formData.province}
 									onChange={handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
 						</div>
-					</div>
+					</section>
 
-					{/* Emergency Contact */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-							<Users className="mr-2 text-gray-500" size={18} />
-							Emergency Contact
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							{/* Emergency Contact First Name */}
-							<div>
-								<label
-									htmlFor="emergencyContactFirstName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									First Name
-								</label>
-								<input
-									type="text"
-									name="emergencyContactFirstName"
+					<section className="flex flex-col gap-4">
+						<SectionHeading>Emergency contact</SectionHeading>
+						<div className="grid gap-4 sm:grid-cols-2">
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="emergencyContactFirstName">First name</Label>
+								<Input
 									id="emergencyContactFirstName"
+									name="emergencyContactFirstName"
 									value={formData.emergencyContactFirstName}
 									onChange={handleChange}
 									placeholder="Jane"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Emergency Contact Last Name */}
-							<div>
-								<label
-									htmlFor="emergencyContactLastName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Last Name
-								</label>
-								<input
-									type="text"
-									name="emergencyContactLastName"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="emergencyContactLastName">Last name</Label>
+								<Input
 									id="emergencyContactLastName"
+									name="emergencyContactLastName"
 									value={formData.emergencyContactLastName}
 									onChange={handleChange}
 									placeholder="Doe"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Relationship */}
-							<div>
-								<label
-									htmlFor="emergencyContactRelationship"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="emergencyContactRelationship">
 									Relationship
-								</label>
-								<input
-									type="text"
-									name="emergencyContactRelationship"
+								</Label>
+								<Input
 									id="emergencyContactRelationship"
+									name="emergencyContactRelationship"
 									value={formData.emergencyContactRelationship ?? ""}
 									onChange={handleChange}
 									placeholder="Mother"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Contact Number */}
-							<div>
-								<label
-									htmlFor="emergencyContactPhone"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Contact Number
-								</label>
-								<input
-									type="text"
-									name="emergencyContactPhone"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="emergencyContactPhone">Contact number</Label>
+								<Input
 									id="emergencyContactPhone"
+									name="emergencyContactPhone"
+									type="tel"
 									value={formData.emergencyContactPhone}
 									onChange={handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
 						</div>
-					</div>
+					</section>
 
-					{/* Medical Aid */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-							<PillBottle className="mr-2 text-gray-500" size={18} />
-							Medical Aid
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							{/* Medical Aid Name */}
-							<div>
-								<label
-									htmlFor="medicalAidName"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Medical Aid Name
-								</label>
-								<input
-									type="text"
-									name="medicalAidName"
+					<section className="flex flex-col gap-4">
+						<SectionHeading>Medical aid</SectionHeading>
+						<div className="grid gap-4 sm:grid-cols-2">
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="medicalAidName">Medical aid name</Label>
+								<Input
 									id="medicalAidName"
+									name="medicalAidName"
 									value={formData.medicalAidName ?? ""}
 									onChange={handleChange}
 									placeholder="Discovery"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
-
-							{/* Membership Number */}
-							<div>
-								<label
-									htmlFor="membershipNumber"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Membership Number
-								</label>
-								<input
-									type="text"
-									name="membershipNumber"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="membershipNumber">Membership number</Label>
+								<Input
 									id="membershipNumber"
+									name="membershipNumber"
 									value={formData.membershipNumber ?? ""}
 									onChange={handleChange}
 									placeholder="123456789"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
 						</div>
-					</div>
+					</section>
 
-					{/* Additional Information */}
-					<div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-						<h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-							<ClipboardList className="mr-2 text-gray-500" size={18} />
-							Additional Information
-						</h2>
-						<div className="grid md:grid-cols-2 gap-4">
-							{/* Current Medication */}
-							<div>
-								<label
-									htmlFor="currentMedication"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
+					<section className="flex flex-col gap-4">
+						<SectionHeading>Additional information</SectionHeading>
+						<div className="flex flex-col gap-4">
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="currentMedication">
 									Taking any medication?
-								</label>
-								<select
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+								</Label>
+								<Select
 									value={formData.currentMedication ?? ""}
-									onChange={handleChange}
+									onValueChange={(value) =>
+										handleSelectChange("currentMedication", value)
+									}
 								>
-									<option value="">Select</option>
-									<option value="Yes">Yes</option>
-									<option value="No">No</option>
-								</select>
+									<SelectTrigger
+										id="currentMedication"
+										className="w-full sm:max-w-xs"
+									>
+										<SelectValue placeholder="Select" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="Yes">Yes</SelectItem>
+										<SelectItem value="No">No</SelectItem>
+									</SelectContent>
+								</Select>
 							</div>
-
-							{/* Allergies */}
-							<div className="md:col-span-2">
-								<label
-									htmlFor="allergies"
-									className="block text-sm font-medium text-gray-700 mb-1"
-								>
-									Allergies *
-								</label>
-								<textarea
-									name="allergies"
+							<div className="flex flex-col gap-2">
+								<Label htmlFor="allergies">Allergies</Label>
+								<Textarea
 									id="allergies"
+									name="allergies"
+									rows={3}
 									value={formData.allergies ?? ""}
 									onChange={handleChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
-                focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-									rows={3}
 								/>
 							</div>
 						</div>
-					</div>
+					</section>
 
-					{/* Submit button */}
-					<div className="flex justify-center gap-4 pt-4">
-						<button
-							type="button"
-							onClick={onClose}
-							className="px-6 py-2 border border-gray-300 rounded-md text-gray-700
-            hover:bg-gray-200 transition-colors"
-						>
+					<DialogFooter>
+						<Button type="button" variant="outline" onClick={onClose}>
 							Cancel
-						</button>
-						<button
-							type="submit"
-							className="px-6 py-2 bg-blue-600 rounded-md text-white font-medium
-            hover:bg-blue-700 transition-colors"
-						>
-							Save
-						</button>
-					</div>
+						</Button>
+						<Button type="submit">Save changes</Button>
+					</DialogFooter>
 				</form>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
 };
 

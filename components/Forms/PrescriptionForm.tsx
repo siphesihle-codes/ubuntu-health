@@ -265,7 +265,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 								<Select
 									value={formik.values.frequency}
 									onValueChange={(value) =>
-										formik.setFieldValue("frequency", value)
+										formik.setFieldValue("frequency", value ?? "")
 									}
 								>
 									<SelectTrigger id="frequency" className="w-full">
@@ -300,7 +300,7 @@ export default function PrescriptionForm({ onClose }: PrescriptionFormProps) {
 								<Label htmlFor="status">Status</Label>
 								<Select
 									value={formik.values.status}
-									onValueChange={(value) => formik.setFieldValue("status", value)}
+									onValueChange={(value) => formik.setFieldValue("status", value ?? "")}
 								>
 									<SelectTrigger id="status" className="w-full">
 										<SelectValue placeholder="Select status" />

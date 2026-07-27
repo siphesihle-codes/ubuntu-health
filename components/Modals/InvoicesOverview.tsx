@@ -1,19 +1,27 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { usePatientInvoices } from "@/hooks/useInvoices";
-import {
-	AlertCircle,
-	Check,
-	Clock,
-	Download,
-	FileText,
-	Printer,
-} from "lucide-react";
+import { FileText } from "lucide-react";
 import ClientDate from "../ClientDate";
+import { INVOICE_STATUS_COLORS } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+
+const currency = (amount: number) =>
+	`R${amount.toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
 
 const InvoicesOverview = () => {
-	const { id: patientIdparam } = useRouter().query as { id: string };
-	const patientId = parseInt(patientIdparam, 10);
+	const { id: patientIdParam } = useRouter().query as { id: string };
+	const patientId = parseInt(patientIdParam, 10);
 
 	const {
 		data: invoices = [],
@@ -23,126 +31,84 @@ const InvoicesOverview = () => {
 
 	if (isLoading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center">
-				Loading invoices data...
-			</div>
+			<Card className="gap-3">
+				{Array.from({ length: 4 }).map((_, index) => (
+					<div key={index} className="flex items-center gap-4 px-6">
+						<Skeleton className="h-4 w-16" />
+						<Skeleton className="h-4 flex-1" />
+						<Skeleton className="h-4 w-24" />
+					</div>
+				))}
+			</Card>
 		);
 	}
 
 	if (error) {
 		return (
-			<div className="min-h-screen flex items-center justify-center text-red-600 ">
-				Error loading invoices data.
-			</div>
+			<Card>
+				<div className="px-6 py-12 text-center text-sm text-destructive">
+					Error loading invoices data.
+				</div>
+			</Card>
 		);
 	}
 
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case "draft":
-				return "   ";
-			case "sent":
-				return "bg-blue-900/30 text-blue-400";
-			case "paid":
-				return "bg-green-900/30 text-green-400";
-			case "overdue":
-				return "bg-red-900/30 text-red-400";
-			default:
-				return "   ";
-		}
-	};
-
-	const getStatusIcon = (status: string) => {
-		switch (status) {
-			case "paid":
-				return <Check size={16} />;
-			case "overdue":
-				return <AlertCircle size={16} />;
-			case "sent":
-				return <Clock size={16} />;
-			default:
-				return <FileText size={16} />;
-		}
-	};
+	if (invoices.length === 0) {
+		return (
+			<Card>
+				<div className="flex flex-col items-center px-6 py-14 text-center">
+					<span className="flex size-12 items-center justify-center rounded-3xl bg-muted text-muted-foreground">
+						<FileText className="size-5" />
+					</span>
+					<h2 className="mt-4 text-base font-medium">No invoices yet</h2>
+					<p className="mt-1 text-sm text-muted-foreground">
+						Invoices raised for this patient will appear here.
+					</p>
+				</div>
+			</Card>
+		);
+	}
 
 	return (
-		<div className="max-h-[45rem] bg-white border border-gray-200 rounded-xl shadow-sm overflow-auto">
-			<table className="w-full text-sm table-auto text-left">
-				<thead>
-					<tr>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Invoice #
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Patient ID
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Amount
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Status
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Due Date
-						</th>
-						<th className="sticky top-0 bg-gray-50 z-10 px-6 py-3 font-medium text-gray-700">
-							Actions
-						</th>
-					</tr>
-				</thead>
-				<tbody className="divide-y divide-cyan-800/30">
-					{invoices.map((invoice) => (
-						<tr key={invoice.id} className="hover:bg-gray-50 transition-colors">
-							<td className="px-6 py-4 font-mono">{invoice.id}</td>
-							<td className="px-6 py-4">{invoice.patientId}</td>
-							<td className="px-6 py-4 font-medium">
-								R{invoice.totalAmount.toLocaleString()}
-							</td>
-							<td className="px-6 py-4">
-								<div className="flex items-center gap-2">
-									<span
-										className={`p-1.5 rounded-full ${getStatusColor(
-											invoice.status
-										)}`}
+		<Card className="p-0 [--card-spacing:0px]">
+			<div className="max-h-[60vh] overflow-auto">
+				<Table>
+					<TableHeader className="sticky top-0 z-10 bg-card">
+						<TableRow>
+							<TableHead className="px-6">Invoice #</TableHead>
+							<TableHead className="px-6">Amount</TableHead>
+							<TableHead className="px-6">Status</TableHead>
+							<TableHead className="px-6">Created</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{invoices.map((invoice) => (
+							<TableRow key={invoice.id}>
+								<TableCell className="px-6 py-3 font-medium tabular-nums">
+									{invoice.id}
+								</TableCell>
+								<TableCell className="px-6 py-3 font-medium tabular-nums">
+									{currency(invoice.totalAmount)}
+								</TableCell>
+								<TableCell className="px-6 py-3">
+									<Badge
+										className={
+											INVOICE_STATUS_COLORS[invoice.status] ??
+											"bg-muted text-muted-foreground"
+										}
 									>
-										{getStatusIcon(invoice.status)}
-									</span>
-									<span className="capitalize">{invoice.status}</span>
-								</div>
-							</td>
-							<td className="px-6 py-4 font-medium">
-								<ClientDate dateString={invoice.createdAt} />
-							</td>
-							<td className="px-6 py-4">
-								<div className="flex gap-4">
-									<button
-										type="button"
-										className="hover:text-cyan-300 transition-colors"
-										title="View"
-									>
-										<FileText size={18} />
-									</button>
-									<button
-										type="button"
-										className="hover:text-cyan-300 transition-colors"
-										title="Print"
-									>
-										<Printer size={18} />
-									</button>
-									<button
-										type="button"
-										className="hover:text-cyan-300 transition-colors"
-										title="Download"
-									>
-										<Download size={18} />
-									</button>
-								</div>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
-		</div>
+										{invoice.status}
+									</Badge>
+								</TableCell>
+								<TableCell className="px-6 py-3 text-muted-foreground">
+									<ClientDate dateString={invoice.createdAt} />
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</div>
+		</Card>
 	);
 };
 
