@@ -156,6 +156,7 @@ export default function PatientForm({ onClose }: PatientFormProps) {
 							<div className="flex flex-col gap-2">
 								<Label htmlFor="sex">Sex</Label>
 								<Select
+									items={{ male: "Male", female: "Female" }}
 									value={formik.values.sex}
 									onValueChange={(value) => formik.setFieldValue("sex", value ?? "")}
 								>

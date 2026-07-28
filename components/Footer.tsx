@@ -33,7 +33,7 @@ const Footer = () => {
 
 				<div className="mt-16 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row">
 					<div className="flex items-center gap-2.5">
-						<span className="flex size-8 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+						<span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
 							<Activity className="size-4" />
 						</span>
 						<span className="font-heading text-sm font-semibold">

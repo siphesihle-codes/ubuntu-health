@@ -57,7 +57,7 @@ const InvoicesOverview = () => {
 		return (
 			<Card>
 				<div className="flex flex-col items-center px-6 py-14 text-center">
-					<span className="flex size-12 items-center justify-center rounded-3xl bg-muted text-muted-foreground">
+					<span className="flex size-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
 						<FileText className="size-5" />
 					</span>
 					<h2 className="mt-4 text-base font-medium">No invoices yet</h2>

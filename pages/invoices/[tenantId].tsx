@@ -139,7 +139,7 @@ const InvoicePage = () => {
 										{stat.value}
 									</span>
 								</div>
-								<span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-muted">
+								<span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
 									<stat.icon className={`size-5 ${stat.tone}`} />
 								</span>
 							</CardContent>
@@ -176,7 +176,7 @@ const InvoicePage = () => {
 				<Card className="p-0 [--card-spacing:0px]">
 					{filteredInvoices.length === 0 ? (
 						<div className="flex flex-col items-center px-6 py-14 text-center">
-							<span className="flex size-12 items-center justify-center rounded-3xl bg-muted text-muted-foreground">
+							<span className="flex size-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
 								<FileText className="size-5" />
 							</span>
 							<h3 className="mt-4 text-base font-medium">No invoices found</h3>

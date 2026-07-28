@@ -40,6 +40,10 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
 const NewPrescriptionPage = () => {
 	const { tenantId } = useRouter().query as { tenantId: string };
 	const { data: patients = [] } = usePatients();
+	const patientItems = patients.map((patient) => ({
+		label: `${patient.firstName} ${patient.lastName}`,
+		value: String(patient.id),
+	}));
 	const createPrescription = useCreatePrescription();
 	const isSubmitting = createPrescription.isPending;
 
@@ -123,6 +127,7 @@ const NewPrescriptionPage = () => {
 								<div className="flex flex-col gap-2 sm:max-w-xs">
 									<Label htmlFor="patientId">Patient</Label>
 									<Select
+										items={patientItems}
 										value={formik.values.patientId}
 										onValueChange={(value) =>
 											formik.setFieldValue("patientId", value ?? "")

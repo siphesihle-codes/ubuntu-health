@@ -103,7 +103,7 @@ const PrescriptionScript = ({
 
 				<style>{SCRIPT_STYLES}</style>
 
-				<div ref={scriptRef} className="script rounded-2xl ring-1 ring-border">
+				<div ref={scriptRef} className="script rounded-md ring-1 ring-border">
 					<div className="script-head">
 						<div>
 							<h1>{profile?.practiceName || "Practice"}</h1>

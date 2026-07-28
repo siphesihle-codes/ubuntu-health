@@ -33,6 +33,10 @@ const EditAppointmentModal = ({
 }: EditAppointmentModalProps) => {
 	const [formData, setFormData] = useState<Appointment>({ ...appointment });
 	const { data: practitioners = [] } = usePractitioners();
+	const practitionerItems = practitioners.map((practitioner) => ({
+		label: practitioner.name,
+		value: practitioner.id,
+	}));
 
 	const handlePractitionerChange = (practitionerId: string | null) => {
 		const practitioner = practitioners.find(
@@ -102,6 +106,7 @@ const EditAppointmentModal = ({
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="practitionerId">Practitioner</Label>
 							<Select
+								items={practitionerItems}
 								value={formData.practitionerId ?? ""}
 								onValueChange={handlePractitionerChange}
 							>
@@ -121,6 +126,7 @@ const EditAppointmentModal = ({
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="appointmentType">Appointment type</Label>
 							<Select
+								items={APPOINTMENT_TYPES}
 								value={formData.appointmentType}
 								onValueChange={(value) =>
 									handleSelectChange("appointmentType", value)
@@ -142,6 +148,7 @@ const EditAppointmentModal = ({
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="status">Status</Label>
 							<Select
+								items={STATUS_LABELS}
 								value={formData.status}
 								onValueChange={(value) => handleSelectChange("status", value)}
 							>

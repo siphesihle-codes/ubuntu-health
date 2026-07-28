@@ -20,9 +20,9 @@ const TrialExpired = () => {
 	};
 
 	return (
-		<div className="mx-auto flex w-full max-w-7xl flex-col gap-3 rounded-3xl border border-destructive/30 bg-destructive/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+		<div className="mx-auto flex w-full max-w-7xl flex-col gap-3 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
 			<div className="flex items-center gap-2.5">
-				<span className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-destructive/15 text-destructive">
+				<span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-destructive/15 text-destructive">
 					<Lock className="size-4" />
 				</span>
 				<div className="flex flex-col">

@@ -76,7 +76,7 @@ const ResetPasswordPage = () => {
 					<div className="mb-8 flex justify-center">
 						<Link
 							href="/"
-							className="flex size-12 items-center justify-center rounded-3xl bg-primary text-primary-foreground"
+							className="flex size-12 items-center justify-center rounded-md bg-primary text-primary-foreground"
 							aria-label="Ubuntu Health home"
 						>
 							<Activity className="size-6" />

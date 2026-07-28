@@ -98,7 +98,7 @@ const DashboardNav = () => {
 			<Sidebar collapsible="icon">
 				<SidebarHeader>
 					<div className="flex items-center gap-2.5 px-2 py-1.5">
-						<div className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+						<div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
 							<Activity className="size-4.5" />
 						</div>
 						<div className="flex flex-col group-data-[collapsible=icon]:hidden">

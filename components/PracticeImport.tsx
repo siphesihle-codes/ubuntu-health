@@ -104,7 +104,7 @@ const PracticeImport = () => {
 				</p>
 
 				{summary ? (
-					<div className="flex flex-col gap-3 rounded-2xl bg-muted/60 p-4">
+					<div className="flex flex-col gap-3 rounded-md bg-muted/60 p-4">
 						<div className="grid gap-2 sm:grid-cols-2">
 							{summaryLines(summary).map(([label, value]) => (
 								<div key={label} className="flex justify-between gap-4 text-sm">

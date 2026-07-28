@@ -135,7 +135,7 @@ const DashboardPage = () => {
 											{card.value}
 										</span>
 									</div>
-									<span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+									<span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
 										<card.icon className="size-5" />
 									</span>
 								</CardContent>
@@ -172,7 +172,7 @@ const DashboardPage = () => {
 											<li key={patient.id}>
 												<Link
 													href={`/patients/${tenantId}/${patient.id}`}
-													className="flex items-center gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-muted"
+													className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted"
 												>
 													<span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium text-secondary-foreground">
 														{initials(patient.firstName, patient.lastName)}
@@ -215,7 +215,7 @@ const DashboardPage = () => {
 									{appointments.slice(0, 8).map((appointment) => (
 										<li
 											key={appointment.id}
-											className="flex items-start justify-between gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-muted"
+											className="flex items-start justify-between gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted"
 										>
 											<div className="flex min-w-0 flex-col gap-1">
 												<span className="truncate text-sm font-medium">
@@ -264,7 +264,7 @@ const DashboardPage = () => {
 									{invoices.slice(0, 8).map((invoice) => (
 										<li
 											key={invoice.id}
-											className="flex items-center justify-between gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-muted"
+											className="flex items-center justify-between gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted"
 										>
 											<div className="flex min-w-0 flex-col gap-1">
 												<span className="truncate text-sm font-medium">
@@ -307,7 +307,7 @@ const DashboardPage = () => {
 							{financials.map((item) => (
 								<div
 									key={item.label}
-									className="flex flex-col gap-2 rounded-3xl bg-muted/50 p-4"
+									className="flex flex-col gap-2 rounded-md bg-muted/50 p-4"
 								>
 									<div className="flex items-center justify-between">
 										<span className="text-xs text-muted-foreground">

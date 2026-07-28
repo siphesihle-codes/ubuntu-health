@@ -29,7 +29,7 @@ const ForgotPasswordPage = () => (
 				<div className="mb-8 flex justify-center">
 					<Link
 						href="/"
-						className="flex size-12 items-center justify-center rounded-3xl bg-primary text-primary-foreground"
+						className="flex size-12 items-center justify-center rounded-md bg-primary text-primary-foreground"
 						aria-label="Ubuntu Health home"
 					>
 						<Activity className="size-6" />
@@ -45,8 +45,8 @@ const ForgotPasswordPage = () => (
 					</CardHeader>
 
 					<CardContent className="flex flex-col gap-5">
-						<div className="flex gap-3 rounded-2xl bg-muted/60 p-4">
-							<span className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-background text-muted-foreground">
+						<div className="flex gap-3 rounded-md bg-muted/60 p-4">
+							<span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-background text-muted-foreground">
 								<KeyRound className="size-4" />
 							</span>
 							<div className="flex flex-col gap-2 text-sm text-muted-foreground">

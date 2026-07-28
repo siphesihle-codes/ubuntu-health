@@ -108,6 +108,7 @@ const EditPatientModal = ({
 							<div className="flex flex-col gap-2">
 								<Label htmlFor="sex">Sex</Label>
 								<Select
+									items={{ male: "Male", female: "Female" }}
 									value={formData.sex}
 									onValueChange={(value) => handleSelectChange("sex", value)}
 								>

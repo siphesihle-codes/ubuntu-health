@@ -54,6 +54,10 @@ export default function PrescriptionForm({
 	const medicationIdPrefix = useId();
 	const medicationCount = useRef(0);
 	const { data: patients = [] } = usePatients();
+	const patientItems = patients.map((patient) => ({
+		label: `${patient.firstName} ${patient.lastName}`,
+		value: String(patient.id),
+	}));
 	const createPrescription = useCreatePrescription();
 	const isLoading = createPrescription.isPending;
 
@@ -171,6 +175,7 @@ export default function PrescriptionForm({
 						<div className="flex flex-col gap-2 sm:max-w-xs">
 							<Label htmlFor="patientId">Patient</Label>
 							<Select
+								items={patientItems}
 								value={formik.values.patientId}
 								onValueChange={(value) =>
 									formik.setFieldValue("patientId", value ?? "")
@@ -197,7 +202,7 @@ export default function PrescriptionForm({
 							{formik.values.medications.map((medication, index) => (
 								<div
 									key={medication.medicationId}
-									className="flex flex-col gap-3 rounded-3xl bg-muted/50 p-4"
+									className="flex flex-col gap-3 rounded-md bg-muted/50 p-4"
 								>
 									<div className="flex items-center justify-between">
 										<span className="text-xs font-medium text-muted-foreground">
@@ -318,6 +323,7 @@ export default function PrescriptionForm({
 							<div className="flex flex-col gap-2">
 								<Label htmlFor="status">Status</Label>
 								<Select
+									items={PRESCRIPTION_STATUS}
 									value={formik.values.status}
 									onValueChange={(value) =>
 										formik.setFieldValue("status", value ?? "")

@@ -29,6 +29,11 @@ import {
 const toTitleCase = (value: string) =>
 	value.charAt(0).toUpperCase() + value.slice(1);
 
+const specialtyItems = MEDICAL_SPECIALTIES.map((specialty) => ({
+	label: toTitleCase(specialty),
+	value: specialty,
+}));
+
 const ProfileForm = () => {
 	const { data: profile } = useCurrentUser();
 	const updateProfile = useUpdateProfile();
@@ -214,6 +219,7 @@ const ProfileForm = () => {
 									<div className="flex flex-col gap-2">
 										<Label htmlFor="specialty">Specialty</Label>
 										<Select
+											items={specialtyItems}
 											value={formik.values.specialty}
 											onValueChange={(value) =>
 												formik.setFieldValue("specialty", value ?? "")

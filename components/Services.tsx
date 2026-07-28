@@ -57,7 +57,7 @@ function Services() {
 							className="transition-shadow hover:shadow-lg"
 						>
 							<CardHeader>
-								<span className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+								<span className="mb-3 flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
 									<service.icon className="size-5" />
 								</span>
 								<CardTitle>{service.title}</CardTitle>

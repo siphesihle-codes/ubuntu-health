@@ -284,7 +284,7 @@ export const STATUS_LABELS = {
 	scheduled: "Scheduled",
 	confirmed: "Confirmed",
 	checkedIn: "Checked in",
-	inProgress: "In Progress",
+	inProgress: "In progress",
 	completed: "Completed",
 	cancelled: "Cancelled",
 	noShow: "No show",

@@ -60,6 +60,15 @@ const Diary = () => {
 	const { data: appointments = [], isPending } = useDiary(from, to);
 	const { data: practitioners = [] } = usePractitioners();
 
+	const practitionerFilterItems = [
+		{ label: "All practitioners", value: "all" },
+		...practitioners.map((practitioner) => ({
+			label: practitioner.name,
+			value: practitioner.id,
+		})),
+		{ label: "Unassigned", value: UNASSIGNED },
+	];
+
 	const days = useMemo(
 		() => Array.from({ length: 7 }, (_, index) => addDays(weekStart, index)),
 		[weekStart]
@@ -125,6 +134,7 @@ const Diary = () => {
 				</div>
 
 				<Select
+					items={practitionerFilterItems}
 					value={practitionerFilter}
 					onValueChange={(value) => setPractitionerFilter(value ?? "all")}
 				>
@@ -146,7 +156,7 @@ const Diary = () => {
 			{isPending ? (
 				<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
 					{Array.from({ length: 4 }).map((_, index) => (
-						<Skeleton key={index} className="h-56 rounded-3xl" />
+						<Skeleton key={index} className="h-56 rounded-md" />
 					))}
 				</div>
 			) : (
@@ -193,7 +203,7 @@ const Diary = () => {
 										entries.map((appointment) => (
 											<div
 												key={appointment.id}
-												className="flex flex-col gap-1 rounded-2xl bg-muted/60 p-3"
+												className="flex flex-col gap-1 rounded-md bg-muted/60 p-3"
 											>
 												<div className="flex items-center justify-between gap-2">
 													<span className="text-xs font-medium tabular-nums">
@@ -233,7 +243,7 @@ const Diary = () => {
 			{visibleAppointments.length === 0 && !isPending ? (
 				<Card>
 					<div className="flex flex-col items-center px-6 py-10 text-center">
-						<span className="flex size-12 items-center justify-center rounded-3xl bg-muted text-muted-foreground">
+						<span className="flex size-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
 							<CalendarDays className="size-5" />
 						</span>
 						<h3 className="mt-4 text-base font-medium">

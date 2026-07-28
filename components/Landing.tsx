@@ -52,7 +52,7 @@ const Landing = () => {
 				</div>
 
 				<div className="mt-16 lg:mt-20">
-					<div className="relative mx-auto aspect-16/10 w-full max-w-4xl overflow-hidden rounded-xl bg-card shadow-xl ring-1 ring-foreground/10">
+					<div className="relative mx-auto aspect-16/10 w-full max-w-4xl overflow-hidden rounded-md bg-card shadow-xl ring-1 ring-foreground/10">
 						<Image
 							src="/dashboard.png"
 							alt="Ubuntu Health EMR dashboard"

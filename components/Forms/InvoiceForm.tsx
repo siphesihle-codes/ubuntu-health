@@ -39,6 +39,10 @@ const inThirtyDays = () =>
 
 const InvoiceForm = ({ invoice, onClose }: InvoiceFormProps) => {
 	const { data: patients = [] } = usePatients();
+	const patientItems = patients.map((patient) => ({
+		label: `${patient.firstName} ${patient.lastName}`,
+		value: String(patient.id),
+	}));
 	const createInvoice = useCreateInvoice();
 	const updateInvoice = useUpdateInvoice();
 	const isEditing = Boolean(invoice);
@@ -129,6 +133,7 @@ const InvoiceForm = ({ invoice, onClose }: InvoiceFormProps) => {
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="patientId">Patient</Label>
 							<Select
+								items={patientItems}
 								value={formik.values.patientId}
 								onValueChange={(value) =>
 									formik.setFieldValue("patientId", value ?? "")
@@ -169,6 +174,7 @@ const InvoiceForm = ({ invoice, onClose }: InvoiceFormProps) => {
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="status">Status</Label>
 							<Select
+								items={INVOICE_STATUS}
 								value={formik.values.status}
 								onValueChange={(value) =>
 									formik.setFieldValue("status", value ?? "")

@@ -164,7 +164,7 @@ const AdminBoard = () => {
 										{stat.value}
 									</span>
 								</div>
-								<span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-muted">
+								<span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
 									<stat.icon className="size-5" />
 								</span>
 							</CardContent>
@@ -219,6 +219,7 @@ const AdminBoard = () => {
 												<TableCell className="px-6 py-3">
 													{canManage(staffMember) ? (
 														<Select
+															items={ROLE_LABELS}
 															value={staffMember.roles[0]}
 															onValueChange={(value) =>
 																handleRoleChange(staffMember, value as Role)
@@ -304,7 +305,7 @@ const AdminBoard = () => {
 					<Card className="p-0 [--card-spacing:0px]">
 						{invitations.length === 0 ? (
 							<div className="flex flex-col items-center px-6 py-14 text-center">
-								<span className="flex size-12 items-center justify-center rounded-3xl bg-muted text-muted-foreground">
+								<span className="flex size-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
 									<MailPlus className="size-5" />
 								</span>
 								<h3 className="mt-4 text-base font-medium">

@@ -22,7 +22,7 @@ const Navbar = () => {
 					className="flex items-center gap-2.5"
 					aria-label="Ubuntu Health home"
 				>
-					<span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+					<span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
 						<Activity className="size-4.5" />
 					</span>
 					<span className="font-heading text-base font-semibold">
@@ -35,7 +35,7 @@ const Navbar = () => {
 						<Link
 							key={item.href}
 							href={item.href}
-							className="rounded-4xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+							className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 						>
 							{item.label}
 						</Link>
@@ -79,7 +79,7 @@ const Navbar = () => {
 								key={item.href}
 								href={item.href}
 								onClick={handleMenuClose}
-								className="rounded-2xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+								className="rounded-md px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 							>
 								{item.label}
 							</Link>

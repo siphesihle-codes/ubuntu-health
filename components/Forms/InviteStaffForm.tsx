@@ -150,6 +150,7 @@ export default function InviteStaffForm({
 							<div className="flex flex-col gap-2">
 								<Label htmlFor="role">Role</Label>
 								<Select
+									items={ROLE_LABELS}
 									value={formik.values.role}
 									onValueChange={(value) =>
 										formik.setFieldValue("role", value ?? "")

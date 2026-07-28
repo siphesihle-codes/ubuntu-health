@@ -40,6 +40,14 @@ const AppointmentForm = ({
 }: AppointmentFormProps) => {
 	const { data: patients = [] } = usePatients();
 	const { data: practitioners = [] } = usePractitioners();
+	const patientItems = patients.map((patient) => ({
+		label: `${patient.firstName} ${patient.lastName}`,
+		value: String(patient.id),
+	}));
+	const practitionerItems = practitioners.map((practitioner) => ({
+		label: practitioner.name,
+		value: practitioner.id,
+	}));
 	const createAppointment = useCreateAppointment();
 	const isLoading = createAppointment.isPending;
 
@@ -128,6 +136,7 @@ const AppointmentForm = ({
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="patientId">Patient</Label>
 							<Select
+								items={patientItems}
 								value={formik.values.patientId}
 								onValueChange={(value) =>
 									formik.setFieldValue("patientId", value ?? "")
@@ -150,6 +159,7 @@ const AppointmentForm = ({
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="practitionerId">Practitioner</Label>
 							<Select
+								items={practitionerItems}
 								value={formik.values.practitionerId}
 								onValueChange={(value) =>
 									formik.setFieldValue("practitionerId", value ?? "")
@@ -172,6 +182,7 @@ const AppointmentForm = ({
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="appointmentType">Appointment type</Label>
 							<Select
+								items={APPOINTMENT_TYPES}
 								value={formik.values.appointmentType}
 								onValueChange={(value) =>
 									formik.setFieldValue("appointmentType", value ?? "")
@@ -194,6 +205,7 @@ const AppointmentForm = ({
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="status">Status</Label>
 							<Select
+								items={STATUS_LABELS}
 								value={formik.values.status}
 								onValueChange={(value) => formik.setFieldValue("status", value ?? "")}
 							>

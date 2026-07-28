@@ -13,9 +13,9 @@ const TrialBanner = () => {
 	const daysRemaining = profile.trialDaysRemaining;
 
 	return (
-		<div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 rounded-3xl border border-warning/30 bg-warning/10 px-4 py-3">
+		<div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 rounded-md border border-warning bg-warning px-4 py-3 text-warning-foreground">
 			<div className="flex items-center gap-2.5">
-				<span className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-warning/15 text-warning">
+				<span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-warning-foreground/15 text-warning-foreground">
 					<Clock className="size-4" />
 				</span>
 				<div className="flex flex-col">
@@ -23,7 +23,7 @@ const TrialBanner = () => {
 						{daysRemaining} {daysRemaining === 1 ? "day" : "days"} left in your
 						free trial
 					</span>
-					<span className="text-xs text-muted-foreground">
+					<span className="text-xs text-warning-foreground/80">
 						Access ends on <ClientDate dateString={profile.trialEndsAt} />
 					</span>
 				</div>

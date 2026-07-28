@@ -75,7 +75,7 @@ const InvitePage = () => {
 				<div className="mb-8 flex justify-center">
 					<Link
 						href="/"
-						className="flex size-12 items-center justify-center rounded-3xl bg-primary text-primary-foreground"
+						className="flex size-12 items-center justify-center rounded-md bg-primary text-primary-foreground"
 						aria-label="Ubuntu Health home"
 					>
 						<Activity className="size-6" />
@@ -92,7 +92,7 @@ const InvitePage = () => {
 				) : invitation.isError || !invitation.data ? (
 					<Card>
 						<CardContent className="flex flex-col items-center px-6 py-14 text-center">
-							<span className="flex size-12 items-center justify-center rounded-3xl bg-destructive/10 text-destructive">
+							<span className="flex size-12 items-center justify-center rounded-md bg-destructive/10 text-destructive">
 								<TriangleAlert className="size-5" />
 							</span>
 							<h2 className="mt-4 text-base font-medium">
