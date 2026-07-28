@@ -20,6 +20,7 @@ import { useInvoices } from "@/hooks/useInvoices";
 import { INVOICE_STATUS_COLORS, STATUS_LABELS } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { toIsoDate } from "@/lib/utils";
 import {
 	Card,
 	CardAction,
@@ -46,6 +47,14 @@ const DashboardPage = () => {
 	const { data: prescriptions = [] } = usePrescriptions();
 	const { data: appointments = [] } = useAppointments();
 	const { data: invoices = [] } = useInvoices();
+
+	const upcoming = appointments
+		.filter((appointment) => appointment.appointmentDate >= toIsoDate(new Date()))
+		.sort((a, b) =>
+			`${a.appointmentDate} ${a.appointmentTime ?? ""}`.localeCompare(
+				`${b.appointmentDate} ${b.appointmentTime ?? ""}`
+			)
+		);
 
 	const stats = {
 		patients: patients.length,
@@ -208,11 +217,11 @@ const DashboardPage = () => {
 							</CardAction>
 						</CardHeader>
 						<CardContent className="max-h-96 overflow-y-auto">
-							{appointments.length === 0 ? (
+							{upcoming.length === 0 ? (
 								<EmptyState message="No appointments scheduled" />
 							) : (
 								<ul className="flex flex-col gap-1">
-									{appointments.slice(0, 8).map((appointment) => (
+									{upcoming.slice(0, 8).map((appointment) => (
 										<li
 											key={appointment.id}
 											className="flex items-start justify-between gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted"
@@ -229,10 +238,7 @@ const DashboardPage = () => {
 											<div className="flex shrink-0 flex-col items-end text-xs">
 												<ClientDate dateString={appointment.appointmentDate} />
 												<span className="text-muted-foreground">
-													<ClientDate
-														dateString={appointment.appointmentDate}
-														format="time"
-													/>
+													{appointment.appointmentTime || "No time"}
 												</span>
 											</div>
 										</li>

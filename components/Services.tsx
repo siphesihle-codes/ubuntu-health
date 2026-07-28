@@ -1,8 +1,16 @@
 import React from "react";
-import { Calendar, FileText, Pill, Stethoscope } from "lucide-react";
+import {
+	ArrowLeftRight,
+	CalendarCheck,
+	CreditCard,
+	MonitorSmartphone,
+	NotebookPen,
+	Pill,
+	Stethoscope,
+	Users,
+} from "lucide-react";
 import {
 	Card,
-	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
@@ -11,27 +19,51 @@ import {
 const services = [
 	{
 		icon: Stethoscope,
-		title: "Patient management",
+		title: "Patient records",
 		description:
-			"Demographics, medical history and treatment plans in one record that stays current.",
+			"Demographics, ID number, address, medical aid, allergies, current medication and emergency contact in one file that stays current.",
 	},
 	{
-		icon: Calendar,
-		title: "Appointment scheduling",
+		icon: CalendarCheck,
+		title: "Shared diary",
 		description:
-			"Flexible booking with automated reminders for both practitioners and patients.",
+			"A weekly view every practitioner works from, with filtering per practitioner and booking straight into any day.",
+	},
+	{
+		icon: NotebookPen,
+		title: "Clinical notes",
+		description:
+			"Consultation notes recorded against the patient and tagged with an ICD-10 diagnosis code for later reference.",
 	},
 	{
 		icon: Pill,
-		title: "E-prescriptions",
+		title: "Prescriptions",
 		description:
-			"Issue electronic scripts in seconds, reducing errors and repeat admin.",
+			"Multi-medication scripts with dosage, frequency and repeats, printed with your prescriber details and a signature line.",
 	},
 	{
-		icon: FileText,
+		icon: CreditCard,
 		title: "Invoicing",
 		description:
-			"Generate invoices and track payments without leaving the patient file.",
+			"Invoices raised against a patient and a visit, with due dates and statuses from draft through to paid or overdue.",
+	},
+	{
+		icon: Users,
+		title: "Staff and roles",
+		description:
+			"Invite doctors, nurses and reception by email. Each role sees only the part of the practice it needs.",
+	},
+	{
+		icon: ArrowLeftRight,
+		title: "Import and export",
+		description:
+			"Bring patients across by CSV, and take a full JSON export of everything in your practice whenever you want it.",
+	},
+	{
+		icon: MonitorSmartphone,
+		title: "Works anywhere",
+		description:
+			"Runs in the browser on the consulting room PC, the tablet at reception or a phone on call. Light and dark themes included.",
 	},
 ];
 
@@ -40,13 +72,13 @@ function Services() {
 		<section id="services" className="border-b bg-muted/30">
 			<div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
 				<div className="mx-auto max-w-2xl text-center">
-					<p className="text-sm font-medium text-primary">What we offer</p>
+					<p className="text-sm font-medium text-primary">What is included</p>
 					<h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
 						Everything your practice runs on
 					</h2>
 					<p className="mt-5 text-base text-muted-foreground">
-						Four essentials, designed to work together rather than as bolted-on
-						modules.
+						Every plan includes all of it. There are no add-on modules and no
+						feature held back for a higher tier.
 					</p>
 				</div>
 
@@ -63,7 +95,6 @@ function Services() {
 								<CardTitle>{service.title}</CardTitle>
 								<CardDescription>{service.description}</CardDescription>
 							</CardHeader>
-							<CardContent />
 						</Card>
 					))}
 				</div>

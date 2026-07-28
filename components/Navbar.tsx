@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
-	{ href: "/#about", label: "About" },
-	{ href: "/#services", label: "Services" },
+	{ href: "/#demo", label: "Demo" },
+	{ href: "/#tour", label: "Features" },
+	{ href: "/#security", label: "Security" },
 	{ href: "/#pricing", label: "Pricing" },
+	{ href: "/#faq", label: "FAQ" },
 ];
 
 const Navbar = () => {

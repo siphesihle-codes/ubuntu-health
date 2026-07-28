@@ -7,6 +7,7 @@ import { useCreateInvoice, useUpdateInvoice } from "@/hooks/useInvoices";
 import { usePatients } from "@/hooks/usePatients";
 import { INVOICE_STATUS } from "@/types";
 import type { Invoice } from "@/types";
+import { toIsoDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,10 +33,10 @@ interface InvoiceFormProps {
 	onClose: () => void;
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => toIsoDate(new Date());
 
 const inThirtyDays = () =>
-	new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+	toIsoDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
 
 const InvoiceForm = ({ invoice, onClose }: InvoiceFormProps) => {
 	const { data: patients = [] } = usePatients();

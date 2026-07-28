@@ -226,7 +226,11 @@ const InvoicePage = () => {
 													</Badge>
 												</TableCell>
 												<TableCell className="px-6 py-3 text-muted-foreground">
-													{invoice.dueDate || "Not set"}
+													{invoice.dueDate ? (
+														<ClientDate dateString={invoice.dueDate} />
+													) : (
+														"Not set"
+													)}
 												</TableCell>
 												<TableCell className="px-6 py-3 text-muted-foreground">
 													<ClientDate dateString={invoice.createdAt} />

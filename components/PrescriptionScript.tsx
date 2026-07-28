@@ -149,7 +149,7 @@ const PrescriptionScript = ({
 								<div className="script-med-detail">
 									{prescription.frequency}
 									{medication.instructions
-										? ` . ${medication.instructions}`
+										? ` · ${medication.instructions}`
 										: ""}
 								</div>
 							</div>

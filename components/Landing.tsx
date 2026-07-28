@@ -1,9 +1,16 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, PlayCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { TRIAL_LENGTH_DAYS } from "@/types";
+
+const proofPoints = [
+	"Medical aid and membership numbers on every file",
+	"HPCSA number and signature line on every script",
+	"Invoices, revenue and outstanding balances in rands",
+];
 
 const Landing = () => {
 	return (
@@ -21,14 +28,14 @@ const Landing = () => {
 					</Badge>
 
 					<h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-						Modern EMR built for{" "}
-						<span className="text-primary">independent</span> practitioners
+						Run the whole practice from{" "}
+						<span className="text-primary">one screen</span>
 					</h1>
 
 					<p className="mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-						Ubuntu Health brings patients, appointments, prescriptions and
-						billing into one calm workspace, so you spend less time on admin and
-						more with the people in front of you.
+						Ubuntu Health keeps patient files, the diary, clinical notes,
+						prescriptions and invoicing in a single workspace built for South
+						African rooms. No servers to run, no per-seat charge for reception.
 					</p>
 
 					<div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
@@ -38,11 +45,12 @@ const Landing = () => {
 								<Link href={{ pathname: "/signup", query: { plan: "free" } }} />
 							}
 						>
-							Start 30-day free trial
+							Start {TRIAL_LENGTH_DAYS}-day free trial
 							<ArrowRight data-icon="inline-end" />
 						</Button>
-						<Button size="lg" variant="outline" render={<Link href="/login" />}>
-							Sign in
+						<Button size="lg" variant="outline" render={<Link href="#demo" />}>
+							<PlayCircle data-icon="inline-start" />
+							Watch the 90-second demo
 						</Button>
 					</div>
 
@@ -54,14 +62,23 @@ const Landing = () => {
 				<div className="mt-16 lg:mt-20">
 					<div className="relative mx-auto aspect-16/10 w-full max-w-4xl overflow-hidden rounded-md bg-card shadow-xl ring-1 ring-foreground/10">
 						<Image
-							src="/dashboard.png"
-							alt="Ubuntu Health EMR dashboard"
+							src="/screens/dashboard.png"
+							alt="The Ubuntu Health dashboard showing patient totals, upcoming appointments, recent invoices and a financial overview"
 							fill
 							priority
 							className="object-cover object-top"
 							sizes="(max-width: 1024px) 100vw, 896px"
 						/>
 					</div>
+
+					<ul className="mx-auto mt-10 flex max-w-4xl flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:justify-center sm:gap-8">
+						{proofPoints.map((point) => (
+							<li key={point} className="flex items-start gap-2">
+								<ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+								<span>{point}</span>
+							</li>
+						))}
+					</ul>
 				</div>
 			</div>
 		</section>

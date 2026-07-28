@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toIsoDate } from "@/lib/utils";
 import {
 	Select,
 	SelectContent,
@@ -18,8 +19,6 @@ import {
 } from "@/components/ui/select";
 
 const UNASSIGNED = "unassigned";
-
-const toIsoDate = (date: Date) => date.toISOString().slice(0, 10);
 
 const startOfWeek = (date: Date) => {
 	const start = new Date(date);
